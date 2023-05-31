@@ -24,4 +24,4 @@ RUN adduser -D myuser
 USER myuser
 
 # Run gunicorn
-CMD gunicorn drpproject.wsgi:drpapp --bind 0.0.0.0:8000
+CMD cd drpproject && gunicorn drpproject.wsgi:drpapp --bind 0.0.0.0:8000
