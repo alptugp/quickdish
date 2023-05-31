@@ -22,3 +22,6 @@ RUN cd drpproject && python3 manage.py collectstatic --noinput
 # Add and run as non-root user
 RUN adduser -D myuser
 USER myuser
+
+# Run gunicorn
+CMD gunicorn drpproject.wsgi:drpapp --bind 0.0.0.0:8000
