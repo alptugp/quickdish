@@ -11,4 +11,4 @@ test-job:
 deploy-job-heroku:
   stage: deploy
   script:
-    - dpl heroku api --app=$HEROKU_APP_NAME --api-key=$HEROKU_API_KEY
+    - dpl heroku api --app $HEROKU_APP_NAME --api_key $HEROKU_API_KEY
