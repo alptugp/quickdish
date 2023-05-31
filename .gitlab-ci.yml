@@ -5,6 +5,7 @@ stages:
 test-job:
   stage: test
   script:
+    - cd drp01
     - python3 manage.py test #TOCHECK
 
 deploy-job-heroku:
