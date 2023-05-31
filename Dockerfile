@@ -10,7 +10,7 @@ ENV DEBUG 0
 
 # Install dependencies
 COPY ./requirements.txt .
-RUN pip3 install -r requirements.txt
+# RUN pip3 install -r requirements.txt
 
 # Copy project
 COPY . .
