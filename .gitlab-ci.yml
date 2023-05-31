@@ -6,9 +6,9 @@ test-job:
   stage: test
   script:
     - cd drp01
-    - python3 manage.py test #TOCHECK
+    - python3 manage.py test
 
 deploy-job-heroku:
   stage: deploy
   script:
-    - echo "deploying to heroku" #TODO
+    - dpl --provider=heroku --app=$HEROKU_APP_NAME --api-key=$HEROKU_API_KEY
