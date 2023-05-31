@@ -9,8 +9,9 @@ ENV PYTHONUNBUFFERED 1
 ENV DEBUG 0
 
 # Install dependencies
+RUN apk add build-base
 COPY ./requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip3 install -r requirements.txt
 
 # Copy project
 COPY . .
