@@ -9,7 +9,7 @@ ENV PYTHONUNBUFFERED 1
 ENV DEBUG 0
 
 # Install dependencies
-RUN apk add build-base
+RUN apk add --no-cache build-base libxml2-dev libxslt-dev
 COPY ./requirements.txt .
 RUN pip3 install -r requirements.txt
 
