@@ -1,9 +1,68 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>App Webpage</title>
+    <title>Ingredient Cost Comparison</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .ingredient-list {
+            margin-bottom: 20px;
+        }
+        .ingredient-list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .ingredient-list li {
+            margin-bottom: 5px;
+        }
+        .total-price-column {
+            width: 50%;
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to our DRP App!</h1>
+    <h1>Ingredient Cost Comparison</h1>
+    
+    <div class="ingredient-list">
+        <h2>Ingredients</h2>
+        <ul>
+            {% for ingredient in ingredients %}
+                <li>{{ ingredient }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    
+    <table>
+        <caption>Price Comparison</caption>
+        <thead>
+            <tr>
+                <th>Tesco</th>
+                <th>Asda</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="total-price-column">4.50</td>
+                <td class="total-price-column">4.60</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <script>
+        // Add JavaScript code here for any calculations or dynamic behavior
+    </script>
 </body>
 </html>
