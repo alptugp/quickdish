@@ -15,6 +15,9 @@ COPY ./requirements.txt .
 # Copy project
 COPY . .
 
+# Collect static files
+RUN python manage.py collectstatic --noinput
+
 # Add and run as non-root user
 RUN adduser -D myuser
 USER myuser
