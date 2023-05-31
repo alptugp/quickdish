@@ -16,7 +16,7 @@ COPY ./requirements.txt .
 COPY . .
 
 # Collect static files
-RUN python3 manage.py collectstatic --noinput
+RUN cd drpproject && python3 manage.py collectstatic --noinput
 
 # Add and run as non-root user
 RUN adduser -D myuser
