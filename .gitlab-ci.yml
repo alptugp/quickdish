@@ -1,17 +1,11 @@
 stages:
-  - build
   - test
   - deploy
-
-build-job:
-  stage: build
-  script:
-    - echo "building" #TODO
 
 test-job:
   stage: test
   script:
-    - echo "testing" #TODO
+    - python3 manage.py test #TOCHECK
 
 deploy-job-heroku:
   stage: deploy
