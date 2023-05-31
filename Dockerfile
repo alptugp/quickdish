@@ -1,7 +1,7 @@
 FROM python:3.8.2-alpine
 
 # Set working directory
-WORKDIR /drp01
+WORKDIR /drpproject
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
