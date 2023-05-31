@@ -1,7 +1,7 @@
 FROM python:3.8.2-alpine
 
 # Set working directory
-WORKDIR /drpapp
+WORKDIR /drpproject
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -16,7 +16,7 @@ COPY ./requirements.txt .
 COPY . .
 
 # Collect static files
-RUN python manage.py collectstatic --noinput
+RUN python3 manage.py collectstatic --noinput
 
 # Add and run as non-root user
 RUN adduser -D myuser
