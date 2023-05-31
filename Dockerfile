@@ -17,11 +17,11 @@ RUN pip3 install -r requirements.txt
 COPY . .
 
 # Collect static files
-RUN cd drpproject && python3 manage.py collectstatic --noinput
+RUN cd drpproject && python3 manage.py collectstatic
 
 # Add and run as non-root user
 RUN adduser -D myuser
 USER myuser
 
 # Run gunicorn
-CMD cd drpproject && gunicorn drpproject.wsgi:drpapp --bind 0.0.0.0:8000
+CMD cd drpproject && gunicorn drpproject.wsgi --bind 0.0.0.0:8000
