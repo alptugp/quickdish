@@ -11,4 +11,7 @@ test-job:
 deploy-job-heroku:
   stage: deploy
   script:
-    - dpl --provider=heroku --app=$HEROKU_APP_NAME --api-key=$HEROKU_API_KEY
+    - apt update -yq
+    - apt install -y ruby-dev
+    - gem install dpl
+    - dpl heroku api --app=$HEROKU_APP_NAME --api-key=$HEROKU_API_KEY
