@@ -4,6 +4,7 @@ Django==4.2.1
 # APIs
 recipe-scrapers==14.36.1
 apify-client==1.2.2
+spacy==3.5.3
 
 # Date/Time
 python-dateutil==2.8.2
