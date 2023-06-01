@@ -9,7 +9,7 @@ ENV PYTHONUNBUFFERED 1
 ENV DEBUG 0
 
 # Install APT dependencies
-RUN apt install --no-cache build-essential
+RUN apt install build-essential --no-cache
 
 # Set up virtual environment
 RUN python3 -m venv /opt/venv
