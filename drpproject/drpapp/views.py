@@ -7,7 +7,12 @@ import concurrent.futures
 
 
 def index(request):
-    ingredients = get_ingredients("https://www.bbcgoodfood.com/recipes/basic-omelette")
+    return render(request, "drpapp/index.html")
+
+def comparison(request): 
+    # Get what the user typed in the search bar (the recipe url) after they press the enter button
+    query = request.GET.get('query', '')
+    ingredients = get_ingredients(query)
     tesco_total_price, tesco_item_links = total_price_tesco(ingredients)
     asda_total_price, asda_item_links = total_price_asda(ingredients)
 
@@ -19,7 +24,7 @@ def index(request):
         'asda_item_links': asda_item_links
     }
     
-    return render(request, "drpapp/index.html", context)
+    return render(request, "drpapp/comparison.html", context)
 
 def get_tesco_product_links(items):
     # A Tesco link looks like this: https://www.tesco.com/groceries/en-GB/products/<product-id>

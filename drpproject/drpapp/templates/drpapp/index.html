@@ -1,69 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Ingredient Cost Comparison</title>
+    <h1>Search Page</h1>
     <style>
         body {
             font-family: Arial, sans-serif;
         }
-        .ingredient-list {
-            margin-bottom: 20px;
+        .search-container {
+            text-align: center;
+            margin-top: 200px;
         }
-        .ingredient-list ul {
-            list-style-type: none;
-            padding: 0;
+        .search-input {
+            padding: 10px;
+            width: 350px;
         }
-        .ingredient-list li {
-            margin-bottom: 5px;
-        }
-        .total-price-column {
-            width: 50%;
+        .search-button {
+            padding: 10px 20px;
+            background-color: #89CFF0;
+            color: white;
+            border: none;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    {% load custom_tags %}
-    <h1>Ingredient Cost Comparison</h1>
-
-    <div class="ingredient-list">
-        <h2>Ingredients</h2>
-        <ul>
-            {% for ingredient in ingredients %}
-                <li>{{ ingredient }}</li>
-            {% endfor %}
-        </ul>
+    <div class="search-container">
+        <form action="{% url 'comparison' %}" method="get">
+            {% csrf_token %}
+            <input type="text" name="query" class="search-input" placeholder="E.g: https://www.bbcgoodfood.com/recipes/basic-omelette">
+            <button type="submit" class="search-button">Enter</button>
+        </form>
     </div>
-
-    <table>
-        <caption>Price Comparison</caption>
-        <thead>
-            <tr>
-                <th>Tesco</th>
-                <th>Asda</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for ingredient, link in tesco_item_links.items %}
-                <tr>
-                    <td>
-                        <a href="{{ link }}">{{ ingredient }}</a>
-                    </td>
-                    <td>
-                        <a href="{{ asda_item_links|dict_lookup:ingredient }}">{{ ingredient }}</a>
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-        <tfoot>
-            <tr>
-                <td>
-                    Total Price: £{{ tesco_total_price }}
-                </td>
-                <td>
-                    Total Price: £{{ asda_total_price }}
-                </td>
-            </tr>
-        </tfoot>
-    </table>
 </body>
 </html>
