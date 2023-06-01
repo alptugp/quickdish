@@ -4,6 +4,7 @@ from .TescoWebScraper import getMostRelevantItemTesco
 from .AsdaWebScraper import getMostRelevantItemAsda
 import multiprocessing
 import concurrent.futures
+import spacy
 
 
 def index(request):
@@ -13,8 +14,21 @@ def comparison(request):
     # Get what the user typed in the search bar (the recipe url) after they press the enter button
     query = request.GET.get('query', '')
     ingredients = get_ingredients(query)
-    tesco_total_price, tesco_item_links = total_price_tesco(ingredients)
-    asda_total_price, asda_item_links = total_price_asda(ingredients)
+    print(ingredients)
+    results = []
+    for ingredient in ingredients:
+        res = ""
+        nlp = spacy.load("en_core_web_sm")
+        tokens = nlp(ingredient)
+        for token in tokens:
+            if token.pos_ == "NOUN" and token.text != "tbsp" and token.text != "tsp":
+                res += " "
+                res += token.text
+        print(res)
+        results.append(res)
+    print(results)
+    tesco_total_price, tesco_item_links = total_price_tesco(results)
+    asda_total_price, asda_item_links = total_price_asda(results)
 
     context = {
         'ingredients': ingredients,
@@ -51,15 +65,20 @@ def tesco_worker(ingredient, items):
 
 def asda_worker(ingredient, items):
     most_relevant_item = getMostRelevantItemAsda(str(ingredient))
-    # price is a string of the form £<price> (not a string for the tesco api though)
-    price_str = most_relevant_item['price']['price_info']['price']
-    # remove the £ sign and convert to float (2dp)
-    price = round(float(price_str[1:]), 2)
-    item_id = most_relevant_item['inventory']['sku_id']
-    print(ingredient) 
-    print(most_relevant_item['item'])
-    items[ingredient] = item_id
-    return price
+    if most_relevant_item is not None:
+        # price is a string of the form £<price> (not a string for the tesco api though)
+        price_str = most_relevant_item['price']['price_info']['price']
+        # remove the £ sign and convert to float (2dp)
+        price = round(float(price_str[1:]), 2)
+        print(ingredient) 
+        print(most_relevant_item)
+        item_id = most_relevant_item['item']['sku_id']
+        items[ingredient] = item_id
+        return price
+    else:
+        # TODO: fix this 
+        items[ingredient] = '0'
+        return 0 
 
 def total_price_tesco(ingredients):
     items = {}
