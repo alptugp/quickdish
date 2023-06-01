@@ -181,3 +181,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Add custom tags
 INSTALLED_APPS += ['drpapp.templatetags.custom_tags']
+
+# CSRF trusted origins
+CSRF_TRUSTED_ORIGINS = ['https://icl-drp-group01.herokuapp.com']
