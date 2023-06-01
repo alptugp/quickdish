@@ -11,8 +11,7 @@ test-job:
 
 deploy-job-heroku:
   stage: deploy
-  only:
-    refs:
-      - main
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "main"'
   script:
     - dpl heroku api --app $HEROKU_APP_NAME --api_key $HEROKU_API_KEY
