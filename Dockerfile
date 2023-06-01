@@ -1,4 +1,4 @@
-FROM python:3.8.2-alpine
+FROM python:3.11.3-slim-bullseye
 
 # Set working directory
 WORKDIR /drpproject
@@ -10,6 +10,8 @@ ENV DEBUG 0
 
 # Install dependencies
 RUN python3 -m pip install --upgrade pip
+RUN python3 -m venv .env
+RUN source .env/bin/activate
 RUN apk add --no-cache build-base libxml2-dev libxslt-dev
 COPY ./requirements.txt .
 RUN pip3 install -r requirements.txt
