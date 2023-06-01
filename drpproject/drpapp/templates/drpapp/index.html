@@ -22,6 +22,7 @@
     </style>
 </head>
 <body>
+    {% load custom_tags %}
     <h1>Ingredient Cost Comparison</h1>
 
     <div class="ingredient-list">
@@ -42,13 +43,13 @@
             </tr>
         </thead>
         <tbody>
-            {% for key, value in tesco_items.items %}
+            {% for ingredient, link in tesco_item_links.items %}
                 <tr>
                     <td>
-                        <a href="https://www.tesco.com/groceries/en-GB/products/{{ value }}">{{ key }}</a>
+                        <a href="{{ link }}">{{ ingredient }}</a>
                     </td>
                     <td>
-                        <a href="https://groceries.asda.com/search/{{ value }}">{{ key }}</a>
+                        <a href="{{ asda_item_links|dict_lookup:ingredient }}">{{ ingredient }}</a>
                     </td>
                 </tr>
             {% endfor %}

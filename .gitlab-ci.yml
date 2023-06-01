@@ -6,7 +6,7 @@ test-job:
   stage: test
   script:
     - cd ./drpproject
-    - python3 manage.py test
+    - python3 manage.py test drpapp/test
 
 deploy-job-heroku:
   stage: deploy
