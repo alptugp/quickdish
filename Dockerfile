@@ -18,16 +18,17 @@ ENV PATH="${VIRTUAL_ENV}/bin:${PATH}"
 ##############################
 FROM venv-stage AS dependency-stage
 
-# Install APT dependencies
-RUN apt update && apt install -y build-essential
+# APT dependencies
+RUN apt update && \
+    # GCC-related
+    apt install -y build-essential
 
-# Install PIP dependencies
 COPY ./requirements.txt .
-RUN python3 -m pip install --upgrade pip
-RUN pip3 install --no-cache-dir -r requirements.txt
-
-# Download SpaCy EN language pack
-RUN python3 -m spacy download en_core_web_sm
+# Install PIP dependencies
+RUN python3 -m pip install --upgrade pip && \
+    pip3 install --no-cache-dir -r requirements.txt && \
+    # SpaCy EN language pack
+    python3 -m spacy download en_core_web_sm
 
 ##############################
 # PRODUCTION STAGE
@@ -47,10 +48,10 @@ COPY --from=dependency-stage ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 COPY . .
 
 # Collect static files
-RUN cd drpproject && python3 manage.py collectstatic
-
-# Add and run as non-root user
-RUN adduser --disabled-password --gecos "" myuser
+RUN cd drpproject && \
+    python3 manage.py collectstatic && \
+    # Add and run as non-root user
+    RUN adduser --disabled-password --gecos "" myuser
 USER myuser
 
 # Run gunicorn
