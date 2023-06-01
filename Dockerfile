@@ -40,8 +40,8 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 ENV DEBUG 0
 
-# Copy dependencies from build-stage
-COPY --from=build-stage ${VIRTUAL_ENV} ${VIRTUAL_ENV}
+# Copy dependencies from dependency-stage
+COPY --from=dependency-stage ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 
 # Copy project
 COPY . .
