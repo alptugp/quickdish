@@ -42,7 +42,7 @@ def diet(request):
             print(instance)
             request.session['instance_id'] = instance.id
             # redirect to home page (index)
-            return HttpResponseRedirect("/")
+            return HttpResponseRedirect("/drpapp/")
 
     else:
         form = DietForm()

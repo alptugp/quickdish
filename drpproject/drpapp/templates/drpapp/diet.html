@@ -14,7 +14,7 @@
 <body>
     <h1>Diet Preferences</h1>
 
-    <form action="/drpapp/" method="post">
+    <form action="/drpapp/diet/" method="post">
         {% csrf_token %}
         {{form.as_p}}
         <button type="submit">submit</button>
