@@ -78,6 +78,7 @@ WSGI_APPLICATION = 'drpproject.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# TODO: Change to postgres
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -160,6 +161,7 @@ LOGGING = {
 
 LANGUAGE_CODE = 'en-us'
 
+# TODO: Change to BST (UTC+1)
 TIME_ZONE = 'UTC'
 
 USE_I18N = True

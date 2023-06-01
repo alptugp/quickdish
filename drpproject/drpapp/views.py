@@ -1,11 +1,12 @@
+from timeit import default_timer as timer
 from django.shortcuts import render
+from django.http import HttpResponseRedirect
 from .RecipeParser import get_ingredients
 from .TescoWebScraper import getMostRelevantItemTesco
 from .AsdaWebScraper import getMostRelevantItemAsda
-import multiprocessing
+from .models import DietForm, DietaryRestriction
 import concurrent.futures
 import spacy
-from timeit import default_timer as timer
 
 def index(request):
     return render(request, "drpapp/index.html")
@@ -21,8 +22,13 @@ def token_good(token):
 def comparison(request): 
     # Get what the user typed in the search bar (the recipe url) after they press the enter button
     query = request.GET.get('query', '')
+
+    instance_id = request.session.get('instance_id')
+    print("HERE LIES THE INSTANCE ID IDIDIDIDIDIDIDID ID DI DI DID ID ID DI ")
+    print(instance_id)
+
     ingredients = get_ingredients(query)
-    print(ingredients)
+    print("Original ingredients: " + str(ingredients) + "\n")
 
     toProcess = []
     for ingredient in ingredients:
@@ -47,10 +53,10 @@ def comparison(request):
                 ingredientName += token.text
         results.append(ingredientName)
 
-    print(results)
+    print("NLP-cleaned ingredients:" + str(results) + "\n")
     print("\nNLP took " + str(elapsed) + " seconds\n")
 
-    tesco_total_price, tesco_item_links = total_price_tesco(results)
+    tesco_total_price, tesco_item_links = total_price_tesco(results, instance_id)
     asda_total_price, asda_item_links = total_price_asda(results)
 
     context = {
@@ -62,6 +68,26 @@ def comparison(request):
     }
     
     return render(request, "drpapp/comparison.html", context)
+
+def diet(request):
+    if request.method == 'POST':
+        form = DietForm(request.POST)
+        if form.is_valid():
+            print("FORM IS FUCKINT VALID")
+            # save form data to the database
+            instance = form.save()  
+            print("HERE LIES THE INSTANCE=FORM.SAVE() IN DIET FDKFJDKFJDJFKDJ")
+            print(instance)
+            request.session['instance_id'] = instance.id
+            # redirect to home page (index)
+            return HttpResponseRedirect("/drpapp/")
+
+    else:
+        form = DietForm()
+
+    context = {'form': form }
+
+    return render(request, 'drpapp/diet.html', context)
 
 def get_tesco_product_links(items):
     # A Tesco link looks like this: https://www.tesco.com/groceries/en-GB/products/<product-id>
@@ -78,8 +104,8 @@ def get_asda_product_links(items):
     return items
    
 
-def tesco_worker(ingredient, items):
-    most_relevant_item = getMostRelevantItemTesco(str(ingredient))
+def tesco_worker(ingredient, items, form_instance):
+    most_relevant_item = getMostRelevantItemTesco(str(ingredient), form_instance)
     price = most_relevant_item['price']
     price = round(float(price), 2)
     item_id = most_relevant_item['id']
@@ -103,12 +129,12 @@ def asda_worker(ingredient, items):
         items[ingredient] = '0'
         return 0 
 
-def total_price_tesco(ingredients):
+def total_price_tesco(ingredients, instance_id):
     items = {}
     num_threads = 5
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
-
-    results = [executor.submit(tesco_worker, ingredient, items) for ingredient in ingredients]
+    form_instance = DietaryRestriction.objects.get(id = instance_id)
+    results = [executor.submit(tesco_worker, ingredient, items, form_instance) for ingredient in ingredients]
 
     concurrent.futures.wait(results)
 
