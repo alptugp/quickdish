@@ -25,24 +25,30 @@ def comparison(request):
     print(ingredients)
     results = []
     start = timer()
+    toProcess = []
     for ingredient in ingredients:
-        res = ""
+        # res = ""
         nlp = spacy.load("en_core_web_sm")
         if "of" in ingredient:
-            tokens = nlp(ingredient.split("of")[1])
+            toProcess.append(ingredient.split("of")[1])
+            # tokens = nlp(ingredient.split("of")[1])
         else:
-            tokens = nlp(ingredient)
+            toProcess.append(ingredient)
+            # tokens = nlp(ingredient)
+    processed = list(nlp.pipe(toProcess))
+    
+    for tokens in processed:
+        res = ""
         for token in tokens:
             if token.text == "or" or token.text == ",":
                 break
             if token_good(token):
                 res += " "
                 res += token.text
-        print(res)
         results.append(res)
     end = timer()
     print(results)
-    print("\nNLP took \n" + str(end - start) + " seconds")
+    print("\nNLP took " + str(end - start) + " seconds\n")
     tesco_total_price, tesco_item_links = total_price_tesco(results)
     asda_total_price, asda_item_links = total_price_asda(results)
 
