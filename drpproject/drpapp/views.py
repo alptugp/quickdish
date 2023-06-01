@@ -32,7 +32,7 @@ def comparison(request):
         else:
             tokens = nlp(ingredient)
         for token in tokens:
-            if token.text == "or":
+            if token.text == "or" or token.text == ",":
                 break
             if token_good(token):
                 res += " "
