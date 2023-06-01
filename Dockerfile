@@ -12,14 +12,17 @@ ENV DEBUG 0
 RUN apt update && apt install -y build-essential
 
 # Set up Python virtual environment
-RUN python3 -m venv /opt/venv
+ENV VIRTUAL_ENV=/opt/venv
+RUN python3 -m venv ${VIRTUAL_ENV}
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 # Install PIP dependencies
 COPY ./requirements.txt .
-RUN . /opt/venv/bin/activate && python3 -m pip install --upgrade pip && pip3 install -r requirements.txt
+RUN python3 -m pip install --upgrade pip
+RUN pip3 install -r requirements.txt
 
 # Download SpaCy EN language pack
-RUN . /opt/venv/bin/activate && python3 -m spacy download en
+RUN python3 -m spacy download en
 
 # Copy project
 COPY . .
