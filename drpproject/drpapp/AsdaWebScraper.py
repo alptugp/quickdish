@@ -11,8 +11,11 @@ def getMostRelevantItemAsda(query):
     run = client.actor("jupri/asda-scraper").call(run_input=run_input)
 
     # Fetch and print actor results from the run's dataset (if there are any)
-    for item in client.dataset(run["defaultDatasetId"]).iterate_items():
-        return item
+    items = client.dataset(run["defaultDatasetId"]).iterate_items()
+    try:
+        return next(items)
+    except StopIteration:
+        return None
 
 
 
