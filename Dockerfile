@@ -31,7 +31,7 @@ COPY . .
 RUN cd drpproject && python3 manage.py collectstatic
 
 # Add and run as non-root user
-RUN adduser myuser
+RUN useradd -D myuser
 USER myuser
 
 # Run gunicorn
