@@ -13,7 +13,7 @@ ENV DEBUG 0
 
 # Install dependencies
 RUN python3 -m pip install --upgrade pip
-RUN apt install gcc libxml2-dev libxslt-dev
+RUN apt install build-essential
 COPY ./requirements.txt .
 RUN . /opt/venv/bin/activate && pip3 install -r requirements.txt
 
