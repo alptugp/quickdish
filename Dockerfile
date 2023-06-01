@@ -27,12 +27,12 @@ RUN python3 -m spacy download en_core_web_sm
 # Copy project
 COPY . .
 
+# Collect static files
+RUN cd drpproject && python3 manage.py collectstatic
+
 # Add and run as non-root user
 RUN adduser --disabled-password myuser
 USER myuser
-
-# Collect static files
-RUN cd drpproject && python3 manage.py collectstatic
 
 # Run gunicorn
 CMD cd drpproject && gunicorn drpproject.wsgi
