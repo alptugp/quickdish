@@ -3,17 +3,19 @@ FROM python:3.11.3-slim-bullseye
 # Set working directory
 WORKDIR /drpproject
 
-# Set up virtual environment
-RUN python3 -m venv /opt/venv
-
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 ENV DEBUG 0
 
-# Install dependencies
+# Install APT dependencies
+RUN apt install --no-cache build-essential
+
+# Set up virtual environment
+RUN python3 -m venv /opt/venv
+
+# Install PIP dependencies
 RUN python3 -m pip install --upgrade pip
-RUN apt install build-essential
 COPY ./requirements.txt .
 RUN . /opt/venv/bin/activate && pip3 install -r requirements.txt
 
