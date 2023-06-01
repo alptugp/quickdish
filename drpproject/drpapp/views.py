@@ -27,10 +27,10 @@ def comparison(request):
     print("HERE LIES THE INSTANCE ID IDIDIDIDIDIDIDID ID DI DI DID ID ID DI ")
     print(instance_id)
 
-    ingredients = get_ingredients(query)
+    ingredientsOriginal = get_ingredients(query)
 
     toProcess = []
-    for ingredient in ingredients:
+    for ingredient in ingredientsOriginal:
         nlp = spacy.load("en_core_web_sm")
         if "of" in ingredient:
             toProcess.append(ingredient.split("of")[1])
@@ -40,24 +40,24 @@ def comparison(request):
     processed = list(nlp.pipe(toProcess))
     elapsed = timer() - start
     
-    results = []
+    ingredients = []
     for tokens in processed:
-        ingredientName = ""
+        ingredient = ""
         for token in tokens:
             if token.text == "or" or token.text == ",":
                 break
             if token_good(token):
-                if ingredientName:
-                    ingredientName += " "
-                ingredientName += token.text
-        results.append(ingredientName)
+                if ingredient:
+                    ingredient += " "
+                ingredient += token.text
+        ingredients.append(ingredient)
 
-    print("Original ingredients: " + str(ingredients) + "\n")
-    print("NLP-cleaned ingredients:" + str(results) + "\n")
+    print("Original ingredients: " + str(ingredientsOriginal) + "\n")
+    print("NLP-cleaned ingredients:" + str(ingredients) + "\n")
     print("\nNLP took " + str(elapsed * 1000) + "ms\n")
 
-    tesco_total_price, tesco_item_links = total_price_tesco(results, instance_id)
-    asda_total_price, asda_item_links = total_price_asda(results)
+    tesco_total_price, tesco_item_links = total_price_tesco(ingredients, instance_id)
+    asda_total_price, asda_item_links = total_price_asda(ingredients)
 
     context = {
         'ingredients': ingredients,
