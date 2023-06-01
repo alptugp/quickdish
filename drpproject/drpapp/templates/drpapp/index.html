@@ -6,18 +6,6 @@
         body {
             font-family: Arial, sans-serif;
         }
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-        th, td {
-            padding: 8px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
         .ingredient-list {
             margin-bottom: 20px;
         }
@@ -35,7 +23,7 @@
 </head>
 <body>
     <h1>Ingredient Cost Comparison</h1>
-    
+
     <div class="ingredient-list">
         <h2>Ingredients</h2>
         <ul>
@@ -44,7 +32,7 @@
             {% endfor %}
         </ul>
     </div>
-    
+
     <table>
         <caption>Price Comparison</caption>
         <thead>
@@ -54,15 +42,17 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td class="total-price-column">4.50</td>
-                <td class="total-price-column">4.60</td>
-            </tr>
+            {% for key, value in tesco_items.items %}
+                <tr>
+                    <td>
+                        <a href="https://www.tesco.com/groceries/en-GB/products/{{ value }}">{{ key }}</a>
+                    </td>
+                    <td>
+                        <a href="https://groceries.asda.com/search/{{ value }}">{{ key }}</a>
+                    </td>
+                </tr>
+            {% endfor %}
         </tbody>
     </table>
-    
-    <script>
-        // Add JavaScript code here for any calculations or dynamic behavior
-    </script>
 </body>
 </html>
