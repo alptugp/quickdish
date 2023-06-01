@@ -22,7 +22,7 @@ RUN python3 -m pip install --upgrade pip
 RUN pip3 install -r requirements.txt
 
 # Download SpaCy EN language pack
-RUN python3 -m spacy download en
+RUN python3 -m spacy download en_core_web_sm
 
 # Copy project
 COPY . .
