@@ -28,7 +28,6 @@ def comparison(request):
     print(instance_id)
 
     ingredients = get_ingredients(query)
-    print("Original ingredients: " + str(ingredients) + "\n")
 
     toProcess = []
     for ingredient in ingredients:
@@ -53,8 +52,9 @@ def comparison(request):
                 ingredientName += token.text
         results.append(ingredientName)
 
+    print("Original ingredients: " + str(ingredients) + "\n")
     print("NLP-cleaned ingredients:" + str(results) + "\n")
-    print("\nNLP took " + str(elapsed) + " seconds\n")
+    print("\nNLP took " + str(elapsed * 1000) + "ms\n")
 
     tesco_total_price, tesco_item_links = total_price_tesco(results, instance_id)
     asda_total_price, asda_item_links = total_price_asda(results)
