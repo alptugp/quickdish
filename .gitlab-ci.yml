@@ -6,6 +6,7 @@ test-job:
   stage: test
   script:
     - cd ./drpproject
+    - pip install -r requirements.txt
     - python3 manage.py test drpapp/test
 
 deploy-job-heroku:
