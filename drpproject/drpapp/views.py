@@ -5,7 +5,7 @@ from .AsdaWebScraper import getMostRelevantItemAsda
 import multiprocessing
 import concurrent.futures
 import spacy
-
+from timeit import default_timer as timer
 
 def index(request):
     return render(request, "drpapp/index.html")
@@ -24,6 +24,7 @@ def comparison(request):
     ingredients = get_ingredients(query)
     print(ingredients)
     results = []
+    start = timer()
     for ingredient in ingredients:
         res = ""
         nlp = spacy.load("en_core_web_sm")
@@ -39,7 +40,9 @@ def comparison(request):
                 res += token.text
         print(res)
         results.append(res)
+    end = timer()
     print(results)
+    print("\nNLP took \n" + str(end - start) + " seconds")
     tesco_total_price, tesco_item_links = total_price_tesco(results)
     asda_total_price, asda_item_links = total_price_asda(results)
 
