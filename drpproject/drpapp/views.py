@@ -10,6 +10,14 @@ import spacy
 def index(request):
     return render(request, "drpapp/index.html")
 
+def token_good(token):
+    units = ["tbsp", "tsp", "g", "kg"]
+    if not (token.pos_ == "NOUN" or token.pos_ == "ADJ"):
+        return False
+    if token.text in units:
+        return False
+    return True
+
 def comparison(request): 
     # Get what the user typed in the search bar (the recipe url) after they press the enter button
     query = request.GET.get('query', '')
@@ -19,9 +27,14 @@ def comparison(request):
     for ingredient in ingredients:
         res = ""
         nlp = spacy.load("en_core_web_sm")
-        tokens = nlp(ingredient)
+        if "of" in ingredient:
+            tokens = nlp(ingredient.split("of")[1])
+        else:
+            tokens = nlp(ingredient)
         for token in tokens:
-            if token.pos_ == "NOUN" and token.text != "tbsp" and token.text != "tsp":
+            if token.text == "or":
+                break
+            if token_good(token):
                 res += " "
                 res += token.text
         print(res)
