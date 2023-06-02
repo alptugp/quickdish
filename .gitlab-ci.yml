@@ -21,6 +21,6 @@ deploy-celery-setup:
   rules:
     - if: '$CI_COMMIT_REF_NAME == "celeryTasks"'
   script:
-    - docker build . --tag myDrpApp:latest --label myDrpAppLabel --file ./Dockerfile
-    - docker image prune --force --filter='label=myDrpAppLabel'
-    - docker run -d myDrpApp
+    - docker build . --tag drpapp:latest --label drpapplabel --file ./Dockerfile
+    - docker image prune --force --filter='label=drpapplabel'
+    - docker run -d drpapp
