@@ -173,8 +173,7 @@ LOGGING = {
 
 LANGUAGE_CODE = 'en-us'
 
-# TODO: Change to BST (UTC+1)
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/London'
 
 USE_I18N = True
 
