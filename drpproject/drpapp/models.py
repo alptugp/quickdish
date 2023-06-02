@@ -10,4 +10,3 @@ class DietForm(ModelForm):
     class Meta:
         model = DietaryRestriction
         fields = ["vegan", "vegetarian", "gluten_free"]
-    

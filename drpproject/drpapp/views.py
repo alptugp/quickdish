@@ -116,6 +116,7 @@ def asda_worker(ingredient, items):
     most_relevant_item = getMostRelevantItemAsda(str(ingredient))
     if most_relevant_item is not None:
         # price is a string of the form £<price> (not a string for the tesco api though)
+        print(most_relevant_item)
         price_str = most_relevant_item['price']['price_info']['price']
         # remove the £ sign and convert to float (2dp)
         price = round(float(price_str[1:]), 2)
@@ -133,7 +134,12 @@ def total_price_tesco(ingredients, instance_id):
     items = {}
     num_threads = 5
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
-    form_instance = DietaryRestriction.objects.get(id = instance_id)
+    print("INSTYANCE ID", instance_id)
+    if instance_id is None:
+        form_instance = None
+    else:
+        form_instance = DietaryRestriction.objects.get(id = instance_id)
+
     results = [executor.submit(tesco_worker, ingredient, items, form_instance) for ingredient in ingredients]
 
     concurrent.futures.wait(results)
