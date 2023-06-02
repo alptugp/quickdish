@@ -23,4 +23,4 @@ deploy-celery-setup:
   script:
     - docker build . --tag drpapp:latest --label drpapplabel --file ./Dockerfile
     - docker image prune --force --filter='label=drpapplabel'
-    - docker run -d drpapp
+    - docker run -d drpapp --network host
