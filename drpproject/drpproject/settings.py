@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -77,13 +78,20 @@ WSGI_APPLICATION = 'drpproject.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+inHerokuEnvironment = 'DATABASE_URL' in os.environ
+if inHerokuEnvironment:
+    # Heroku Postgres
+    DATABASES = {
+        'default': dj_database_url.config(conn_health_checks=True, conn_max_age=600, ssl_require=True)
     }
-}
+else:
+    # Local version of SQLite
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
 
 
 # Password validation
@@ -160,6 +168,7 @@ LOGGING = {
 
 LANGUAGE_CODE = 'en-us'
 
+# TODO: Change to BST (UTC+1)
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
@@ -179,3 +188,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Add custom tags
 INSTALLED_APPS += ['drpapp.templatetags.custom_tags']
+
+# CSRF trusted origins
+CSRF_TRUSTED_ORIGINS = ['https://icl-drp-group01.herokuapp.com']
