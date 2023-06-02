@@ -191,3 +191,6 @@ INSTALLED_APPS += ['drpapp.templatetags.custom_tags']
 
 # CSRF trusted origins
 CSRF_TRUSTED_ORIGINS = ['https://icl-drp-group01.herokuapp.com']
+
+# Save session to database
+SESSION_SAVE_EVERY_REQUEST = True

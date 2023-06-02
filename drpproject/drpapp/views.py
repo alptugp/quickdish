@@ -1,5 +1,5 @@
 from timeit import default_timer as timer
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from .RecipeParser import get_ingredients
 from .TescoWebScraper import getMostRelevantItemTesco
@@ -80,10 +80,19 @@ def diet(request):
             print(instance)
             request.session['instance_id'] = instance.id
             # redirect to home page (index)
-            return HttpResponseRedirect("/drpapp/")
+            return redirect('index')
 
     else:
-        form = DietForm()
+        instance_id = request.session.get('instance_id')
+        instance = DietaryRestriction.objects.filter(id=instance_id).first()
+        form = DietForm(instance=instance)
+
+        # initial_data = {
+        #     'vegan': request.GET.get('vegan', False), # request.session.get?
+        #     'vegetarian': request.GET.get('vegetarian', False),
+        #     'gluten_free': request.GET.get('gluten_free', False) 
+        # }
+        # form = DietForm(initial=initial_data)
 
     context = {'form': form }
 
