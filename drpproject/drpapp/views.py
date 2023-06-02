@@ -60,6 +60,7 @@ def comparison(request):
     asda_total_price, asda_item_links = total_price_asda(ingredients)
 
     context = {
+        'original_ingredients': ingredientsOriginal,
         'ingredients': ingredients,
         'tesco_total_price': tesco_total_price,
         'asda_total_price': asda_total_price,
