@@ -24,8 +24,8 @@ def comparison(request):
     query = request.GET.get('query', '')
 
     instance_id = request.session.get('instance_id')
-    print("HERE LIES THE INSTANCE ID IDIDIDIDIDIDIDID ID DI DI DID ID ID DI ")
-    print(instance_id)
+    # print("HERE LIES THE INSTANCE ID IDIDIDIDIDIDIDID ID DI DI DID ID ID DI ")
+    # print(instance_id)
 
     ingredientsOriginal = get_ingredients(query)
 
@@ -52,9 +52,9 @@ def comparison(request):
                 ingredient += token.text
         ingredients.append(ingredient)
 
-    print("Original ingredients: " + str(ingredientsOriginal) + "\n")
-    print("NLP-cleaned ingredients:" + str(ingredients) + "\n")
-    print("\nNLP took " + str(elapsed * 1000) + "ms\n")
+    # print("Original ingredients: " + str(ingredientsOriginal) + "\n")
+    # print("NLP-cleaned ingredients:" + str(ingredients) + "\n")
+    # print("\nNLP took " + str(elapsed * 1000) + "ms\n")
 
     tesco_total_price, tesco_item_links = total_price_tesco(ingredients, instance_id)
     asda_total_price, asda_item_links = total_price_asda(ingredients)
@@ -74,11 +74,8 @@ def diet(request):
     if request.method == 'POST':
         form = DietForm(request.POST)
         if form.is_valid():
-            print("FORM IS FUCKINT VALID")
             # save form data to the database
             instance = form.save()  
-            print("HERE LIES THE INSTANCE=FORM.SAVE() IN DIET FDKFJDKFJDJFKDJ")
-            print(instance)
             request.session['instance_id'] = instance.id
             # redirect to home page (index)
             return redirect('index')
@@ -126,12 +123,12 @@ def asda_worker(ingredient, items):
     most_relevant_item = getMostRelevantItemAsda(str(ingredient))
     if most_relevant_item is not None:
         # price is a string of the form £<price> (not a string for the tesco api though)
-        print(most_relevant_item)
+        # print(most_relevant_item)
         price_str = most_relevant_item['price']['price_info']['price']
         # remove the £ sign and convert to float (2dp)
         price = round(float(price_str[1:]), 2)
-        print(ingredient) 
-        print(most_relevant_item)
+        # print(ingredient) 
+        # print(most_relevant_item)
         item_id = most_relevant_item['item']['sku_id']
         items[ingredient] = item_id
         return price
@@ -144,7 +141,7 @@ def total_price_tesco(ingredients, instance_id):
     items = {}
     num_threads = 5
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
-    print("INSTYANCE ID", instance_id)
+    # print("INSTANCE ID", instance_id)
     if instance_id is None:
         form_instance = None
     else:
