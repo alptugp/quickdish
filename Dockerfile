@@ -55,4 +55,4 @@ RUN cd drpproject && \
 USER myuser
 
 # Run gunicorn
-CMD cd drpproject && gunicorn drpproject.wsgi
+CMD cd drpproject && gunicorn --bind 0.0.0.0:8000 drpproject.wsgi
