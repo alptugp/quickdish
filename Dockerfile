@@ -57,4 +57,8 @@ RUN cd drpproject && \
 USER myuser
 
 # Run gunicorn
-CMD echo "Running command ${CMD_GUNICORN}" && ${CMD_GUNICORN}
+CMD if [ "${IN_HEROKU}" = "true" ]; then \
+        cd drpproject && gunicorn drpproject.wsgi; \
+    else \
+        cd drpproject && gunicorn --bind 0.0.0.0:8000 drpproject.wsgi; \
+    fi
