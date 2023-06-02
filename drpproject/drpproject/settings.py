@@ -30,8 +30,13 @@ SECRET_KEY = os.environ.get('SECRET_KEY', default='foo')
 # DEBUG = True
 DEBUG = int(os.environ.get('DEBUG', default=0))
 
-# ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'icl-drp-group01.herokuapp.com']
+ALLOWED_HOSTS = [
+    'localhost',                     # Local
+    '127.0.0.1',                     # Local
+    'icl-drp-group01.herokuapp.com', # Heroku
+    'cloud-vm-42-57.doc.ic.ac.uk',   # DoC VM
+    'cloud-vm-42-197.doc.ic.ac.uk',  # DoC VM
+]
 
 # Application definition
 
