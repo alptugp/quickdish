@@ -36,6 +36,8 @@ RUN python3 -m pip install --upgrade pip && \
 ##############################
 FROM venv-stage AS production-stage
 
+ENTRYPOINT ["./entrypoint.sh"]
+
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
@@ -55,4 +57,4 @@ RUN cd drpproject && \
 USER myuser
 
 # Run gunicorn
-CMD cd drpproject && gunicorn --bind 0.0.0.0:8000 drpproject.wsgi
+CMD ${CMD_TO_RUN}
