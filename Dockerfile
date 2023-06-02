@@ -57,4 +57,4 @@ RUN cd drpproject && \
 USER myuser
 
 # Run gunicorn
-CMD ${CMD_TO_RUN}
+CMD echo "Running command ${CMD_GUNICORN}" && ${CMD_GUNICORN}
