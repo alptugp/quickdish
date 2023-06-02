@@ -11,7 +11,7 @@ def index(request):
     return render(request, "drpapp/index.html")
 
 def token_good(token):
-    units = ["tbsp", "tsp", "g", "kg"]
+    units = ["tbsp", "tsp", "g", "kg", "oz"]
     if not (token.pos_ == "NOUN" or token.pos_ == "ADJ"):
         return False
     if token.text in units:
