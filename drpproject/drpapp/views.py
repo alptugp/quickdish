@@ -25,13 +25,11 @@ def comparison(request):
     query = request.GET.get('query', '')
 
     instance_id = request.session.get('instance_id')
-    # print("HERE LIES THE INSTANCE ID IDIDIDIDIDIDIDID ID DI DI DID ID ID DI ")
-    # print(instance_id)
 
-    ingredientsOriginal = get_ingredients(query)
+    original_ingredients = get_ingredients(query)
 
     toProcess = []
-    for ingredient in ingredientsOriginal:
+    for ingredient in original_ingredients:
         nlp = spacy.load("en_core_web_sm")
         if "of" in ingredient:
             toProcess.append(ingredient.split("of")[1])
@@ -39,7 +37,6 @@ def comparison(request):
             toProcess.append(ingredient)
     start = timer()
     processed = list(nlp.pipe(toProcess))
-    elapsed = timer() - start
     
     ingredients = []
     for tokens in processed:
@@ -53,20 +50,25 @@ def comparison(request):
                 ingredient += token.text
         ingredients.append(ingredient)
 
-    # print("Original ingredients: " + str(ingredientsOriginal) + "\n")
-    # print("NLP-cleaned ingredients:" + str(ingredients) + "\n")
-    # print("\nNLP took " + str(elapsed * 1000) + "ms\n")
-
+    sains_start_time = timer()
     sainsburys_total_price, sainsburys_item_links = total_price_sainsburys(ingredients, instance_id)
+    sains_end_time = timer()
+    asda_start_time = timer()
     asda_total_price, asda_item_links = total_price_asda(ingredients)
+    asda_end_time = timer()
+
+    sains_elapsed = sains_end_time - sains_start_time
+    asda_elapsed = asda_end_time - asda_start_time
 
     context = {
-        'original_ingredients': ingredientsOriginal,
+        'original_ingredients': original_ingredients,
         'ingredients': ingredients,
         'sainsburys_total_price': sainsburys_total_price,
         'asda_total_price': asda_total_price,
         'sainsburys_item_links': sainsburys_item_links,
-        'asda_item_links': asda_item_links
+        'asda_item_links': asda_item_links,
+        'sains_elapsed': sains_elapsed,
+        'asda_elapsed': asda_elapsed
     }
     
     return render(request, "drpapp/comparison.html", context)
