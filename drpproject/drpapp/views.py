@@ -1,6 +1,5 @@
 from timeit import default_timer as timer
 from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect
 from .RecipeParser import get_ingredients
 from .TescoWebScraper import getMostRelevantItemTesco
 from .AsdaSearch import searchAsda
@@ -129,11 +128,18 @@ def get_asda_product_links(items):
             items[ingredient] = base_url + items[ingredient]
     return items
    
+def money_value(price):
+    if str(price)[0].isnumeric():
+        val = price
+    else:
+        # remove the £ sign
+        val = price[1:]
+    return round(float(val), 2)
 
 def tesco_worker(ingredient, items, form_instance):
     most_relevant_item = getMostRelevantItemTesco(str(ingredient), form_instance)
     price = most_relevant_item['price']
-    price = round(float(price), 2)
+    price = money_value(price)
     item_id = most_relevant_item['id']
     items[ingredient] = item_id
     return price
@@ -142,7 +148,7 @@ def sainsburys_worker(ingredient, items):
     most_relevant_item = searchSainsburys(ingredient)
     if most_relevant_item is not None:
         price = most_relevant_item['retail_price']['price']
-        price = round(float(price), 2)
+        price = money_value(price)
         items[ingredient] = most_relevant_item['full_url']
         return price
     else:
@@ -154,8 +160,7 @@ def asda_worker(ingredient, items):
     if most_relevant_item is not None:
         # price is a string of the form £<price> (not a string for the tesco api though)
         price_str = most_relevant_item.get('price')
-        # remove the £ sign and convert to float (2dp)
-        price = round(float(price_str[1:]), 2)
+        price = money_value(price_str)
         item_id = most_relevant_item['id']
         items[ingredient] = item_id
         return price
@@ -201,7 +206,7 @@ def total_price_asda(ingredients):
     for result in results:
         total_price += result.result()
     
-    total_price = (total_price // 0.01) * 0.01
+    total_price = money_value(total_price)
     
     item_links = get_asda_product_links(items)
 
@@ -222,7 +227,7 @@ def total_price_sainsburys(ingredients):
     for result in results:
         total_price += result.result()
     
-    total_price = (total_price // 0.01) * 0.01
+    total_price = money_value(total_price)
     
     item_links = get_sainsburys_product_links(items)
 
