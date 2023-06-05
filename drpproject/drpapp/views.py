@@ -60,7 +60,7 @@ def comparison(request):
     sainsburys_total_price, sainsburys_item_links = total_price_sainsburys(ingredients)
     sains_end_time = timer()
     asda_start_time = timer()
-    asda_total_price, asda_item_links = total_price_asda(ingredients)
+    asda_total_price, asda_item_links = total_price_asda(ingredients, instance_id)
     asda_end_time = timer()
 
     ingredients_elapsed = round((ingredients_end_time - ingredients_start_time) * 1000)
@@ -155,8 +155,8 @@ def sainsburys_worker(ingredient, items):
         items[ingredient] = "INVALID"
         return 0
 
-def asda_worker(ingredient, items):
-    most_relevant_item = searchAsda(ingredient)
+def asda_worker(ingredient, items, form_instance):
+    most_relevant_item = searchAsda(ingredient, form_instance)
     if most_relevant_item is not None:
         # price is a string of the form £<price> (not a string for the tesco api though)
         price_str = most_relevant_item.get('price')
@@ -172,7 +172,7 @@ def total_price_tesco(ingredients, instance_id):
     items = {}
     num_threads = 5
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
-    # print("INSTANCE ID", instance_id)
+
     if instance_id is None:
         form_instance = None
     else:
@@ -193,12 +193,17 @@ def total_price_tesco(ingredients, instance_id):
 
     return total_price, item_links
 
-def total_price_asda(ingredients):
+def total_price_asda(ingredients, instance_id):
     items = {}
     num_threads = 2
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
 
-    results = [executor.submit(asda_worker, ingredient, items) for ingredient in ingredients]
+    if instance_id is None:
+        form_instance = None
+    else:
+        form_instance = DietaryRestriction.objects.get(id = instance_id)
+
+    results = [executor.submit(asda_worker, ingredient, items, form_instance) for ingredient in ingredients]
 
     concurrent.futures.wait(results)
 
