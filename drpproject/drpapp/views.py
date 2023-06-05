@@ -4,6 +4,7 @@ from django.http import HttpResponseRedirect
 from .RecipeParser import get_ingredients
 from .TescoWebScraper import getMostRelevantItemTesco
 from .AsdaSearch import searchAsda
+from .SainsburysSearch import searchSainsburys
 from .models import DietForm, DietaryRestriction
 import concurrent.futures
 import spacy
@@ -56,15 +57,15 @@ def comparison(request):
     # print("NLP-cleaned ingredients:" + str(ingredients) + "\n")
     # print("\nNLP took " + str(elapsed * 1000) + "ms\n")
 
-    tesco_total_price, tesco_item_links = total_price_tesco(ingredients, instance_id)
+    sainsburys_total_price, sainsburys_item_links = total_price_sainsburys(ingredients, instance_id)
     asda_total_price, asda_item_links = total_price_asda(ingredients)
 
     context = {
         'original_ingredients': ingredientsOriginal,
         'ingredients': ingredients,
-        'tesco_total_price': tesco_total_price,
+        'sainsburys_total_price': sainsburys_total_price,
         'asda_total_price': asda_total_price,
-        'tesco_item_links': tesco_item_links,
+        'sainsburys_item_links': sainsburys_item_links,
         'asda_item_links': asda_item_links
     }
     
@@ -103,6 +104,11 @@ def get_tesco_product_links(items):
         items[ingredient] = base_url + items[ingredient]
     return items
 
+def get_sainsburys_product_links(items):
+    for ingredient in items:
+        items[ingredient] = items[ingredient]
+    return items
+
 def get_asda_product_links(items):
     # An ASDA link looks like this: https://groceries.asda.com/product/<product-id>
     base_url = "https://groceries.asda.com/product/"
@@ -117,6 +123,14 @@ def tesco_worker(ingredient, items, form_instance):
     price = round(float(price), 2)
     item_id = most_relevant_item['id']
     items[ingredient] = item_id
+    return price
+
+def sainsburys_worker(ingredient, items):
+    most_relevant_item = searchSainsburys(str(ingredient))
+    price = most_relevant_item['retail_price']['price']
+    price = round(float(price), 2)
+    item_id = most_relevant_item['product_uid']
+    items[ingredient] = most_relevant_item['full_url']
     return price
 
 def asda_worker(ingredient, items):
@@ -173,6 +187,25 @@ def total_price_asda(ingredients):
         total_price += result.result()
     
     item_links = get_asda_product_links(items)
+
+    executor.shutdown()
+
+    return total_price, item_links
+
+def total_price_sainsburys(ingredients, instance):
+    items = {}
+    num_threads = 5
+    executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
+
+    results = [executor.submit(sainsburys_worker, ingredient, items) for ingredient in ingredients]
+
+    concurrent.futures.wait(results)
+
+    total_price = 0
+    for result in results:
+        total_price += result.result()
+    
+    item_links = get_sainsburys_product_links(items)
 
     executor.shutdown()
 
