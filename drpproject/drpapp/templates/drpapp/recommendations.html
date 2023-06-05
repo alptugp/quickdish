@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Recipe Recommendations</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .recipe-container {
+            text-align: center;
+            width: 30%; /* Adjust the width as needed */
+            display: inline-block;
+            margin: 1%;
+        }
+        .recipe-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .recipe-image {
+            width: 100%;
+            max-height: 150px; /* Adjust the max-height as needed */
+            object-fit: cover;
+            margin-bottom: 10px;
+            border: 2px solid black; /* Change the border color and thickness */
+        }
+        .recipe-link {
+            display: block;
+            margin-bottom: 5px;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .compare-prices-button {
+            display: inline-block;
+            margin-top: 0px;
+            margin-right: 5px; /* Adjust the spacing between buttons */
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .compare-prices-button:hover {
+            background-color: #0056b3;
+        }
+        .main-page-button {
+            position: fixed;
+            top: 10px;
+            right: 65px;
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .main-page-button:hover {
+            background-color: #0056b3;
+        }
+        /* Additional styles for three recipes per row */
+        @media (max-width: 768px) {
+            .recipe-container {
+                width: 45%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .recipe-container {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="{% url 'index' %}" class="main-page-button">Back to Main Page</a>
+
+    <h1>Recipe Recommendations</h1>
+
+    <div class="recipe-container">
+        <h2 class="recipe-title">Basic Omelette</h2>
+        <img src="https://images.immediate.co.uk/production/volatile/sites/30/2020/08/omelette-3cba9f8.jpg?quality=90&webp=true&resize=440,400" alt="Recipe 1" class="recipe-image">
+        <a href="https://www.bbcgoodfood.com/recipes/basic-omelette" class="recipe-link">View Recipe</a>
+        <form action="{% url 'comparison' %}" method="get">
+            <input type="hidden" name="query" value="https://www.bbcgoodfood.com/recipes/basic-omelette">
+            <button type="submit" class="compare-prices-button">Compare Supermarket Prices</button>
+        </form>
+    </div>
+
+    <div class="recipe-container">
+        <h2 class="recipe-title">Sponge Cake</h2>
+        <img src="https://images.immediate.co.uk/production/volatile/sites/30/2020/08/cake-f7d9f31.jpg?quality=90&webp=true&resize=440,400" alt="Recipe 2" class="recipe-image">
+        <a href="https://www.bbcgoodfood.com/recipes/sponge-cake" class="recipe-link">View Recipe</a>
+        <form action="{% url 'comparison' %}" method="get">
+            <input type="hidden" name="query" value="https://www.bbcgoodfood.com/recipes/sponge-cake">
+            <button type="submit" class="compare-prices-button">Compare Supermarket Prices</button>
+        </form>
+    </div>
+
+    <div class="recipe-container">
+        <h2 class="recipe-title">Mac and Cheese</h2>
+        <img src="https://images.immediate.co.uk/production/volatile/sites/30/2010/06/macaroni-cheese-3560f76.jpg?quality=90&webp=true&resize=600,545" alt="Recipe 3" class="recipe-image">
+        <a href="https://www.bbcgoodfood.com/recipes/best-ever-macaroni-cheese-recipe" class="recipe-link">View Recipe</a>
+        <form action="{% url 'comparison' %}" method="get">
+            <input type="hidden" name="query" value="https://www.bbcgoodfood.com/recipes/best-ever-macaroni-cheese-recipe">
+            <button type="submit" class="compare-prices-button">Compare Supermarket Prices</button>
+        </form>
+    </div>
+
+    <!-- Additional recipe containers -->
+    <div class="recipe-container">
+        <h2 class="recipe-title">Lasagna</h2>
+        <img src="https://images.immediate.co.uk/production/volatile/sites/30/2020/08/classic-lasange-4a66137.jpg?quality=90&webp=true&resize=440,400" alt="Recipe 4" class="recipe-image">
+        <a href="https://www.bbcgoodfood.com/recipes/classic-lasagne" class="recipe-link">View Recipe</a>
+        <form action="{% url 'comparison' %}" method="get">
+            <input type="hidden" name="query" value="https://www.bbcgoodfood.com/recipes/classic-lasagne">
+            <button type="submit" class="compare-prices-button">Compare Supermarket Prices</button>
+        </form>
+    </div>
+
+    <div class="recipe-container">
+        <h2 class="recipe-title">Chicken Stir-Fry</h2>
+        <img src="https://images.immediate.co.uk/production/volatile/sites/30/2018/05/Chicken-stir-fry-recipes-0d2adc1.jpg?quality=90&webp=true&resize=600,545" alt="Recipe 5" class="recipe-image">
+        <a href="https://www.bbcgoodfood.com/recipes/chicken-stir-fry" class="recipe-link">View Recipe</a>
+        <form action="{% url 'comparison' %}" method="get">
+            <input type="hidden" name="query" value="https://www.bbcgoodfood.com/recipes/chicken-stir-fry">
+            <button type="submit" class="compare-prices-button">Compare Supermarket Prices</button>
+        </form>
+    </div>
+
+    <div class="recipe-container">
+        <h2 class="recipe-title">Pasta Carbonara</h2>
+        <img src="https://images.immediate.co.uk/production/volatile/sites/30/2020/08/recipe-image-legacy-id-1001491_11-2e0fa5c.jpg?quality=90&webp=true&resize=440,400" alt="Recipe 6" class="recipe-image">
+        <a href="https://www.bbcgoodfood.com/recipes/ultimate-spaghetti-carbonara-recipe" class="recipe-link">View Recipe</a>
+        <form action="{% url 'comparison' %}" method="get">
+            <input type="hidden" name="query" value="https://www.bbcgoodfood.com/recipes/ultimate-spaghetti-carbonara-recipe">
+            <button type="submit" class="compare-prices-button">Compare Supermarket Prices</button>
+        </form>
+    </div>
+
+</body>
+</html>

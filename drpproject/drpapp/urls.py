@@ -9,4 +9,6 @@ urlpatterns = [
     path("comparison/", views.comparison, name="comparison"),
     # ex: /drpapp/diet/ - the dietary preferences page
     path("diet/", views.diet, name="diet"),
+    # ex: /drpapp/recommendations/ - the recipe recommendations page
+    path("recommendations/", views.recommendations, name="recommendations"),
 ]
