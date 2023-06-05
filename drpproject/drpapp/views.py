@@ -57,8 +57,8 @@ def comparison(request):
     asda_total_price, asda_item_links = total_price_asda(ingredients)
     asda_end_time = timer()
 
-    sains_elapsed = sains_end_time - sains_start_time
-    asda_elapsed = asda_end_time - asda_start_time
+    sains_elapsed = round((sains_end_time - sains_start_time) * 1000)
+    asda_elapsed = round((asda_end_time - asda_start_time) * 1000)
 
     context = {
         'original_ingredients': original_ingredients,
