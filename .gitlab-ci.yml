@@ -12,7 +12,7 @@ test-job:
 deploy-job-vm:
   stage: deploy
   rules:
-    - if: '$CI_COMMIT_REF_NAME == "celeryTasks"'
+    - if: '$CI_COMMIT_REF_NAME == "main"'
   script:
     - docker build . --tag drpapp:latest --label drpapplabel --file ./Dockerfile
     - docker stop $(docker ps -a -q)
@@ -27,3 +27,20 @@ deploy-job-heroku:
     - if: '$CI_COMMIT_REF_NAME == "main"'
   script:
     - dpl heroku api --app ${HEROKU_APP_NAME} --api_key ${HEROKU_API_KEY}
+
+##############################
+# Experimental
+##############################
+experiment-deploy-vm:
+  stage: deploy
+  tags:
+    - experiment
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "celeryTasks"'
+  script:
+    - docker build . --tag drpapp:latest --label drpapplabel --file ./Dockerfile
+    - docker stop $(docker ps -a -q)
+    - docker rm $(docker ps -a -q)
+    - docker image prune --force --filter='label=drpapplabel'
+    - fuser -k 8000/tcp || true
+    - docker run --detach -p 8000:8000 drpapp
