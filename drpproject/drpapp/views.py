@@ -26,7 +26,9 @@ def comparison(request):
 
     instance_id = request.session.get('instance_id')
 
+    ingredients_start_time = timer()
     original_ingredients = get_ingredients(query)
+    ingredients_end_time = timer()
 
     toProcess = []
     for ingredient in original_ingredients:
@@ -35,7 +37,8 @@ def comparison(request):
             toProcess.append(ingredient.split("of")[1])
         else:
             toProcess.append(ingredient)
-    start = timer()
+    
+    nlp_start_time = timer()
     processed = list(nlp.pipe(toProcess))
     
     ingredients = []
@@ -49,6 +52,7 @@ def comparison(request):
                     ingredient += " "
                 ingredient += token.text
         ingredients.append(ingredient)
+    nlp_end_time = timer()
 
     sains_start_time = timer()
     sainsburys_total_price, sainsburys_item_links = total_price_sainsburys(ingredients, instance_id)
@@ -57,6 +61,8 @@ def comparison(request):
     asda_total_price, asda_item_links = total_price_asda(ingredients)
     asda_end_time = timer()
 
+    ingredients_elapsed = round((ingredients_end_time - ingredients_start_time) * 1000)
+    nlp_elapsed = round((nlp_end_time - nlp_start_time) * 1000)
     sains_elapsed = round((sains_end_time - sains_start_time) * 1000)
     asda_elapsed = round((asda_end_time - asda_start_time) * 1000)
 
@@ -67,6 +73,8 @@ def comparison(request):
         'asda_total_price': asda_total_price,
         'sainsburys_item_links': sainsburys_item_links,
         'asda_item_links': asda_item_links,
+        'ingredients_elapsed': ingredients_elapsed,
+        'nlp_elapsed': nlp_elapsed,
         'sains_elapsed': sains_elapsed,
         'asda_elapsed': asda_elapsed
     }
