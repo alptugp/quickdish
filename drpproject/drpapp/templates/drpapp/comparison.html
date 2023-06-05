@@ -90,7 +90,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for ingredient, link in tesco_item_links.items %}
+            {% for ingredient, link in sainsburys_item_links.items %}
                 <tr>
                     <td>
                         <a href="{{ sainsburys_item_links|dict_lookup:ingredient }}">{{ ingredient }}</a>
