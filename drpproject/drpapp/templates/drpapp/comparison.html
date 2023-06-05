@@ -93,10 +93,18 @@
             {% for ingredient, link in sainsburys_item_links.items %}
                 <tr>
                     <td>
-                        <a href="{{ sainsburys_item_links|dict_lookup:ingredient }}">{{ ingredient }}</a>
+                        {% if sainsburys_item_links|dict_lookup:ingredient != "INVALID" %}
+                            <a href="{{ sainsburys_item_links|dict_lookup:ingredient }}">{{ ingredient }}</a>
+                        {% else %}
+                            {{ ingredient }} (not found)
+                        {% endif %}
                     </td>
                     <td>
+                        {% if asda_item_links|dict_lookup:ingredient != "INVALID" %}
                         <a href="{{ asda_item_links|dict_lookup:ingredient }}">{{ ingredient }}</a>
+                        {% else %}
+                            {{ ingredient }} (not found)
+                        {% endif %}
                     </td>
                 </tr>
             {% endfor %}

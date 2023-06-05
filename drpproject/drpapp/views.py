@@ -58,7 +58,7 @@ def comparison(request):
     nlp_end_time = timer()
 
     sains_start_time = timer()
-    sainsburys_total_price, sainsburys_item_links = total_price_sainsburys(ingredients, instance_id)
+    sainsburys_total_price, sainsburys_item_links = total_price_sainsburys(ingredients)
     sains_end_time = timer()
     asda_start_time = timer()
     asda_total_price, asda_item_links = total_price_asda(ingredients)
@@ -114,19 +114,19 @@ def get_tesco_product_links(items):
     # A Tesco link looks like this: https://www.tesco.com/groceries/en-GB/products/<product-id>
     base_url = "https://www.tesco.com/groceries/en-GB/products/"
     for ingredient in items:
-        items[ingredient] = base_url + items[ingredient]
+        if items[ingredient] != "INVALID":
+            items[ingredient] = base_url + items[ingredient]
     return items
 
 def get_sainsburys_product_links(items):
-    for ingredient in items:
-        items[ingredient] = items[ingredient]
     return items
 
 def get_asda_product_links(items):
     # An ASDA link looks like this: https://groceries.asda.com/product/<product-id>
     base_url = "https://groceries.asda.com/product/"
     for ingredient in items:
-        items[ingredient] = base_url + items[ingredient]
+        if items[ingredient] != "INVALID":
+            items[ingredient] = base_url + items[ingredient]
     return items
    
 
@@ -139,26 +139,28 @@ def tesco_worker(ingredient, items, form_instance):
     return price
 
 def sainsburys_worker(ingredient, items):
-    most_relevant_item = searchSainsburys(str(ingredient))
-    price = most_relevant_item['retail_price']['price']
-    price = round(float(price), 2)
-    item_id = most_relevant_item['product_uid']
-    items[ingredient] = most_relevant_item['full_url']
-    return price
+    most_relevant_item = searchSainsburys(ingredient)
+    if most_relevant_item is not None:
+        price = most_relevant_item['retail_price']['price']
+        price = round(float(price), 2)
+        items[ingredient] = most_relevant_item['full_url']
+        return price
+    else:
+        items[ingredient] = "INVALID"
+        return 0
 
 def asda_worker(ingredient, items):
-    most_relevant_item = searchAsda(str(ingredient))
+    most_relevant_item = searchAsda(ingredient)
     if most_relevant_item is not None:
         # price is a string of the form £<price> (not a string for the tesco api though)
         price_str = most_relevant_item.get('price')
         # remove the £ sign and convert to float (2dp)
         price = round(float(price_str[1:]), 2)
-        item_id = most_relevant_item.get('id')
+        item_id = most_relevant_item['id']
         items[ingredient] = item_id
         return price
     else:
-        # TODO: fix this 
-        items[ingredient] = '0'
+        items[ingredient] = "INVALID"
         return 0 
 
 def total_price_tesco(ingredients, instance_id):
@@ -188,7 +190,7 @@ def total_price_tesco(ingredients, instance_id):
 
 def total_price_asda(ingredients):
     items = {}
-    num_threads = 5
+    num_threads = 2
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
 
     results = [executor.submit(asda_worker, ingredient, items) for ingredient in ingredients]
@@ -207,9 +209,9 @@ def total_price_asda(ingredients):
 
     return total_price, item_links
 
-def total_price_sainsburys(ingredients, instance):
+def total_price_sainsburys(ingredients):
     items = {}
-    num_threads = 5
+    num_threads = 3
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
 
     results = [executor.submit(sainsburys_worker, ingredient, items) for ingredient in ingredients]
@@ -227,6 +229,3 @@ def total_price_sainsburys(ingredients, instance):
     executor.shutdown()
 
     return total_price, item_links
-
-
-
