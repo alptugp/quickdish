@@ -19,6 +19,9 @@ def token_good(token):
         return False
     return True
 
+def recommendations(request):
+    return render(request, "drpapp/recommendations.html")
+
 def comparison(request): 
     # Get what the user typed in the search bar (the recipe url) after they press the enter button
     query = request.GET.get('query', '')
