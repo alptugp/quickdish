@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from .RecipeParser import get_ingredients
 from .TescoWebScraper import getMostRelevantItemTesco
-from .AsdaWebScraper import getMostRelevantItemAsda
+from .AsdaSearch import searchAsda
 from .models import DietForm, DietaryRestriction
 import concurrent.futures
 import spacy
@@ -120,16 +120,13 @@ def tesco_worker(ingredient, items, form_instance):
     return price
 
 def asda_worker(ingredient, items):
-    most_relevant_item = getMostRelevantItemAsda(str(ingredient))
+    most_relevant_item = searchAsda(str(ingredient))
     if most_relevant_item is not None:
         # price is a string of the form £<price> (not a string for the tesco api though)
-        # print(most_relevant_item)
-        price_str = most_relevant_item['price']['price_info']['price']
+        price_str = most_relevant_item.get('price')
         # remove the £ sign and convert to float (2dp)
         price = round(float(price_str[1:]), 2)
-        # print(ingredient) 
-        # print(most_relevant_item)
-        item_id = most_relevant_item['item']['sku_id']
+        item_id = most_relevant_item.get('id')
         items[ingredient] = item_id
         return price
     else:
