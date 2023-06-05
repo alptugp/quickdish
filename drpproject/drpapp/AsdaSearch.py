@@ -1,5 +1,4 @@
 import requests
-import json
 
 # Sample GET request for "egg" search
 # https://groceries.asda.com/p13nservice/recommendations?storeId=4565&shipDate=currentDate&amendFlag=false&limit=2&placement=search_page.search1_mab&searchTerm=egg&searchQuery=egg&includeSponsoredProducts=false&pageType=SEARCH
