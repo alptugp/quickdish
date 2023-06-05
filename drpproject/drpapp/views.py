@@ -186,6 +186,8 @@ def total_price_asda(ingredients):
     for result in results:
         total_price += result.result()
     
+    total_price = (total_price // 0.01) * 0.01
+    
     item_links = get_asda_product_links(items)
 
     executor.shutdown()
@@ -204,6 +206,8 @@ def total_price_sainsburys(ingredients, instance):
     total_price = 0
     for result in results:
         total_price += result.result()
+    
+    total_price = (total_price // 0.01) * 0.01
     
     item_links = get_sainsburys_product_links(items)
 
