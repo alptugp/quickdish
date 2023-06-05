@@ -49,8 +49,11 @@ COPY --from=dependency-stage ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 # Copy project
 COPY . .
 
-# Collect static files
 RUN cd drpproject && \
+    # Apply database migrations
+    python3 manage.py makemigrations && \
+    python3 manage.py migrate && \
+    # Collect static files
     python3 manage.py collectstatic && \
     # Add and run as non-root user
     adduser --disabled-password --gecos "" myuser
