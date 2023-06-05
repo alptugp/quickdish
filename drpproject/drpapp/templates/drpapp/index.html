@@ -35,7 +35,7 @@
 </head>
 <body>
     <a href="{% url 'diet' %}" class="dietary-preferences-button">Dietary Preferences</a>
-    <a href="{% url 'recommendations' %}" class="recipe-recommendations-button">Give Recipe Recommendations</a>
+    <a href="{% url 'recommendations' %}" class="recipe-recommendations-button">Recipe Recommendations</a>
     <div class="search-container">
         <form action="{% url 'comparison' %}" method="get">
             {% csrf_token %}
