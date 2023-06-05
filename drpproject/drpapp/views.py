@@ -57,7 +57,7 @@ def comparison(request):
     nlp_end_time = timer()
 
     sains_start_time = timer()
-    sainsburys_total_price, sainsburys_item_links = total_price_sainsburys(ingredients)
+    sainsburys_total_price, sainsburys_item_links = total_price_sainsburys(ingredients, instance_id)
     sains_end_time = timer()
     asda_start_time = timer()
     asda_total_price, asda_item_links = total_price_asda(ingredients, instance_id)
@@ -144,8 +144,8 @@ def tesco_worker(ingredient, items, form_instance):
     items[ingredient] = item_id
     return price
 
-def sainsburys_worker(ingredient, items):
-    most_relevant_item = searchSainsburys(ingredient)
+def sainsburys_worker(ingredient, items, form_instance):
+    most_relevant_item = searchSainsburys(ingredient, form_instance)
     if most_relevant_item is not None:
         price = most_relevant_item['retail_price']['price']
         price = money_value(price)
@@ -219,12 +219,17 @@ def total_price_asda(ingredients, instance_id):
 
     return total_price, item_links
 
-def total_price_sainsburys(ingredients):
+def total_price_sainsburys(ingredients, instance_id):
     items = {}
     num_threads = 3
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
 
-    results = [executor.submit(sainsburys_worker, ingredient, items) for ingredient in ingredients]
+    if instance_id is None:
+        form_instance = None
+    else:
+        form_instance = DietaryRestriction.objects.get(id = instance_id)
+
+    results = [executor.submit(sainsburys_worker, ingredient, items, form_instance) for ingredient in ingredients]
 
     concurrent.futures.wait(results)
 

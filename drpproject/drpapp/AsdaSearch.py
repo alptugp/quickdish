@@ -5,7 +5,6 @@ import requests
 
 def constructAsdaGetRequest(item, diet_preferences):
     if diet_preferences is not None:
-        # Check each preference, if true, add to the list
         if diet_preferences.vegan:
             item = "vegan " + item
         if diet_preferences.vegetarian:

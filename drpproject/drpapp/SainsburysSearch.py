@@ -1,6 +1,13 @@
 import requests
 
-def constructSainsburysGetRequest(item):
+def constructSainsburysGetRequest(item, diet_preferences):
+    if diet_preferences is not None:
+        if diet_preferences.vegan:
+            item = "vegan " + item
+        if diet_preferences.vegetarian:
+            item = "vegetarian " + item
+        if diet_preferences.gluten_free:
+            item = "gluten-free " + item
     params = {
         "page_number" : "1",
         "page_size" : "1",
@@ -13,8 +20,8 @@ def constructSainsburysGetRequest(item):
     url += delim.join(paramString)
     return url
 
-def searchSainsburys(item):
-    request = constructSainsburysGetRequest(item)
+def searchSainsburys(item, form_instance):
+    request = constructSainsburysGetRequest(item, form_instance)
     response = requests.get(request)
     
     try:
