@@ -24,8 +24,6 @@ def token_good(token):
              "pack", "tub", "bag", "jar",
              "1/2", "1/4", "½",
              "handful", "large handful"]
-
-    print(token.text + ' ' + token.pos_)
     if not (token.pos_ == "NOUN" or token.pos_ == "ADJ" or token.pos_ == "PROPN"):
         return False
     if token.text in units:
@@ -37,7 +35,7 @@ def token_good(token):
 def cleanupIngredients(original_ingredients):
     toProcess = []
     for ingredient in original_ingredients:
-        if "of" in ingredient:
+        if " of " in ingredient:
             toProcess.append(ingredient.split("of")[1])
         else:
             toProcess.append(ingredient)
