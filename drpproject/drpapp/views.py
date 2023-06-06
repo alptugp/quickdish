@@ -13,7 +13,8 @@ def index(request):
 
 def token_good(token):
     units = ["tbsp", "tsp", "g", "kg", "oz", "ml", "l", "pack", "tub", "bag", "jar", "1/2", "1/4", "handful", "large handful"]
-    if not (token.pos_ == "NOUN" or token.pos_ == "ADJ"):
+    print(token.text + ' ' + token.pos_)
+    if not (token.pos_ == "NOUN" or token.pos_ == "ADJ" or token.pos_ == "PROPN"):
         return False
     if token.text in units:
         return False
@@ -47,7 +48,9 @@ def comparison(request):
     for tokens in processed:
         ingredient = ""
         for token in tokens:
-            if token.text == "or" or token.text == ",":
+            if token.text == "or":
+                ingredient = ""
+            if token.text == ",":
                 break
             if token_good(token):
                 if ingredient:
