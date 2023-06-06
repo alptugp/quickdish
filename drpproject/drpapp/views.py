@@ -142,7 +142,7 @@ def get_sainsburys_product_links(items):
 
 def get_asda_product_links(items):
     # An ASDA link looks like this: https://groceries.asda.com/product/<product-id>
-    base_url = "https://groceries.asdagetMostRelevantItemTesco.com/product/"
+    base_url = "https://groceries.asda.com/product/"
     for ingredient in items:
         if items[ingredient] != "INVALID":
             items[ingredient] = base_url + items[ingredient]
