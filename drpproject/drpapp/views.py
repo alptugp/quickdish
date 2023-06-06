@@ -52,8 +52,12 @@ def cleanupIngredients(original_ingredients):
             temp = temp.rsplit(",", 1)[0]
         if " or " in temp:
             temp = temp.split(" or ")[1]
-
-        toProcess.append(temp)
+        if " and " in temp:
+            [l, r] = temp.split(" and ", 1)
+            toProcess.append(l)
+            toProcess.append(r)
+        else:
+            toProcess.append(temp)
     
     processed = list(nlp.pipe(toProcess))
     
