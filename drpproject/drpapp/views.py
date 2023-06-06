@@ -38,7 +38,6 @@ def comparison(request):
     nlp = spacy.load("en_core_web_sm")
 
     toProcess = []
-    nlp = spacy.load("en_core_web_sm")
     for ingredient in original_ingredients:
         if "of" in ingredient:
             toProcess.append(ingredient.split("of")[1])
