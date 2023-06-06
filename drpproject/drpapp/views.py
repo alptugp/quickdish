@@ -12,7 +12,7 @@ def index(request):
     return render(request, "drpapp/index.html")
 
 def token_good(token):
-    units = ["tbsp", "tsp", "g", "kg", "oz", "ml", "l", "pack", "tub", "bag", "jar", "1/2", "1/4"]
+    units = ["tbsp", "tsp", "g", "kg", "oz", "ml", "l", "pack", "tub", "bag", "jar", "1/2", "1/4", "handful", "large handful"]
     if not (token.pos_ == "NOUN" or token.pos_ == "ADJ"):
         return False
     if token.text in units:
@@ -33,8 +33,8 @@ def comparison(request):
     ingredients_end_time = timer()
 
     toProcess = []
+    nlp = spacy.load("en_core_web_sm")
     for ingredient in original_ingredients:
-        nlp = spacy.load("en_core_web_sm")
         if "of" in ingredient:
             toProcess.append(ingredient.split("of")[1])
         else:
