@@ -9,8 +9,13 @@ from .models import DietForm, DietaryRestriction
 import concurrent.futures
 import spacy
 
+nlp = spacy.load("en_core_web_sm")
+
 def index(request):
     return render(request, "drpapp/index.html")
+
+def recommendations(request):
+    return render(request, "drpapp/recommendations.html")
 
 def token_good(token):
     units = ["tbsp", "tsp",
@@ -29,20 +34,7 @@ def token_good(token):
         return False
     return True
 
-def recommendations(request):
-    return render(request, "drpapp/recommendations.html")
-
-def comparison(request): 
-    # Get what the user typed in the search bar (the recipe url) after they press the enter button
-    query = request.GET.get('query', '')
-
-    instance_id = request.session.get('instance_id')
-
-    ingredients_start_time = timer()
-    original_ingredients = get_ingredients(query)
-    ingredients_end_time = timer()
-    nlp = spacy.load("en_core_web_sm")
-
+def cleanupIngredients(original_ingredients):
     toProcess = []
     for ingredient in original_ingredients:
         if "of" in ingredient:
@@ -50,7 +42,6 @@ def comparison(request):
         else:
             toProcess.append(ingredient)
     
-    nlp_start_time = timer()
     processed = list(nlp.pipe(toProcess))
     
     ingredients = []
@@ -66,6 +57,21 @@ def comparison(request):
                     ingredient += " "
                 ingredient += token.text
         ingredients.append(ingredient)
+
+    return ingredients
+
+def comparison(request): 
+    # Get what the user typed in the search bar (the recipe url) after they press the enter button
+    query = request.GET.get('query', '')
+
+    instance_id = request.session.get('instance_id')
+
+    ingredients_start_time = timer()
+    original_ingredients = get_ingredients(query)
+    ingredients_end_time = timer()
+
+    nlp_start_time = timer()
+    ingredients = cleanupIngredients(original_ingredients)
     nlp_end_time = timer()
 
     sains_start_time = timer()
