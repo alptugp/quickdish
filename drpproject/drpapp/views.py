@@ -38,7 +38,7 @@ def comparison(request):
     toProcess = []
     nlp = spacy.load("en_core_web_sm")
     for ingredient in original_ingredients:
-        if "of" in ingredient:
+        if " of " in ingredient:
             toProcess.append(ingredient.split("of")[1])
         else:
             toProcess.append(ingredient)
@@ -50,6 +50,7 @@ def comparison(request):
     for tokens in processed:
         ingredient = ""
         for token in tokens:
+            print("TOKEN " + token.text)
             if token.text == "," or token.text == "(":
                 break
             if token.text == "or":
