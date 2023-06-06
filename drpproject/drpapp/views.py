@@ -34,9 +34,11 @@ def token_good(token):
 
 def cleanupIngredients(original_ingredients):
     toProcess = []
+
+    # Example: 500g of butter => butter
     for ingredient in original_ingredients:
         if " of " in ingredient:
-            toProcess.append(ingredient.split("of")[1])
+            toProcess.append(ingredient.split(" of ")[1])
         else:
             toProcess.append(ingredient)
     
