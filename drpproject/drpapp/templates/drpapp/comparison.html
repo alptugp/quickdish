@@ -87,6 +87,7 @@
             <tr>
                 <th>Sainsbury's</th>
                 <th>Asda</th>
+                <th>Tesco</th>
             </tr>
         </thead>
         <tbody>
@@ -101,7 +102,14 @@
                     </td>
                     <td>
                         {% if asda_item_links|dict_lookup:ingredient != "INVALID" %}
-                        <a href="{{ asda_item_links|dict_lookup:ingredient }}">{{ ingredient }}</a>
+                            <a href="{{ asda_item_links|dict_lookup:ingredient }}">{{ ingredient }}</a>
+                        {% else %}
+                            {{ ingredient }} (not found)
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if tesco_item_links|dict_lookup:ingredient != "INVALID" %}
+                            <a href="{{ tesco_item_links|dict_lookup:ingredient }}">{{ ingredient }}</a>
                         {% else %}
                             {{ ingredient }} (not found)
                         {% endif %}
@@ -116,6 +124,9 @@
                 </td>
                 <td class="total-price-column">
                     Total Price: £{{ asda_total_price }}
+                </td>
+                <td class="total-price-column">
+                    Total Price: £{{ tesco_total_price }}
                 </td>
             </tr>
         </tfoot>

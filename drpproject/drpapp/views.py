@@ -2,6 +2,7 @@ from timeit import default_timer as timer
 from django.shortcuts import render, redirect
 from .RecipeParser import get_ingredients
 from .TescoWebScraper import getMostRelevantItemTesco
+from .TescoSearch import searchTesco
 from .AsdaSearch import searchAsda
 from .SainsburysSearch import searchSainsburys
 from .models import DietForm, DietaryRestriction
@@ -12,7 +13,12 @@ def index(request):
     return render(request, "drpapp/index.html")
 
 def token_good(token):
-    units = ["tbsp", "tsp", "g", "kg", "oz", "ml", "l", "pack", "tub", "bag", "jar", "1/2", "1/4", "handful", "large handful"]
+    units = ["tbsp", "tsp",
+             "g", "kg",
+             "oz", "ml", "l",
+             "pack", "tub", "bag", "jar",
+             "1/2", "1/4", "½",
+             "handful", "large handful"]
     if not (token.pos_ == "NOUN" or token.pos_ == "ADJ" or token.pos_ == "PROPN"):
         return False
     if token.text in units:
@@ -33,9 +39,9 @@ def comparison(request):
     ingredients_start_time = timer()
     original_ingredients = get_ingredients(query)
     ingredients_end_time = timer()
+    nlp = spacy.load("en_core_web_sm")
 
     toProcess = []
-    nlp = spacy.load("en_core_web_sm")
     for ingredient in original_ingredients:
         if " of " in ingredient:
             toProcess.append(ingredient.split("of")[1])
@@ -61,28 +67,41 @@ def comparison(request):
     nlp_end_time = timer()
 
     sains_start_time = timer()
+    print("Sainsbury start")
     sainsburys_total_price, sainsburys_item_links = total_price_sainsburys(ingredients, instance_id)
+    print("Sainsbury end")
     sains_end_time = timer()
     asda_start_time = timer()
+    print("Asda start")
     asda_total_price, asda_item_links = total_price_asda(ingredients, instance_id)
+    print("Asda end")
     asda_end_time = timer()
+    tesco_start_time = timer()
+    print("Tesco start")
+    tesco_total_price, tesco_item_links = total_price_tesco(ingredients, instance_id)
+    print("Tesco end")
+    tesco_end_time = timer()
 
     ingredients_elapsed = round((ingredients_end_time - ingredients_start_time) * 1000)
     nlp_elapsed = round((nlp_end_time - nlp_start_time) * 1000)
     sains_elapsed = round((sains_end_time - sains_start_time) * 1000)
     asda_elapsed = round((asda_end_time - asda_start_time) * 1000)
+    tesco_elapsed = round((tesco_end_time - tesco_start_time) * 1000)
 
     context = {
-        'original_ingredients': original_ingredients,
-        'ingredients': ingredients,
-        'sainsburys_total_price': sainsburys_total_price,
-        'asda_total_price': asda_total_price,
-        'sainsburys_item_links': sainsburys_item_links,
-        'asda_item_links': asda_item_links,
-        'ingredients_elapsed': ingredients_elapsed,
-        'nlp_elapsed': nlp_elapsed,
-        'sains_elapsed': sains_elapsed,
-        'asda_elapsed': asda_elapsed
+        'original_ingredients'   : original_ingredients,
+        'ingredients'            : ingredients,
+        'sainsburys_total_price' : sainsburys_total_price,
+        'asda_total_price'       : asda_total_price,
+        'tesco_total_price'      : tesco_total_price,
+        'sainsburys_item_links'  : sainsburys_item_links,
+        'asda_item_links'        : asda_item_links,
+        'tesco_item_links'       : tesco_item_links,
+        'ingredients_elapsed'    : ingredients_elapsed,
+        'nlp_elapsed'            : nlp_elapsed,
+        'sains_elapsed'          : sains_elapsed,
+        'asda_elapsed'           : asda_elapsed,
+        'tesco_elapsed'          : tesco_elapsed,
     }
     
     return render(request, "drpapp/comparison.html", context)
@@ -141,12 +160,16 @@ def money_value(price):
     return round(float(val), 2)
 
 def tesco_worker(ingredient, items, form_instance):
-    most_relevant_item = getMostRelevantItemTesco(str(ingredient), form_instance)
-    price = most_relevant_item['price']
-    price = money_value(price)
-    item_id = most_relevant_item['id']
-    items[ingredient] = item_id
-    return price
+    most_relevant_item = searchTesco(ingredient, form_instance)
+    if most_relevant_item is not None:
+        price = most_relevant_item['price']
+        price = money_value(price)
+        item_id = most_relevant_item['id']
+        items[ingredient] = item_id
+        return price
+    else:
+        items[ingredient] = "INVALID"
+        return 0
 
 def sainsburys_worker(ingredient, items, form_instance):
     most_relevant_item = searchSainsburys(ingredient, form_instance)
@@ -174,7 +197,7 @@ def asda_worker(ingredient, items, form_instance):
 
 def total_price_tesco(ingredients, instance_id):
     items = {}
-    num_threads = 5
+    num_threads = 2
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
 
     if instance_id is None:
@@ -186,12 +209,10 @@ def total_price_tesco(ingredients, instance_id):
 
     concurrent.futures.wait(results)
 
-    total_price = 0 
+    total_price = 0
     for result in results:
         total_price += result.result()
     
-    
-
     executor.shutdown()
     item_links = get_tesco_product_links(items)
 
