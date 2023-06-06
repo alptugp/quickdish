@@ -87,6 +87,7 @@
             <tr>
                 <th>Sainsbury's</th>
                 <th>Asda</th>
+                <th>Morrison's</th>
             </tr>
         </thead>
         <tbody>
@@ -106,6 +107,13 @@
                             {{ ingredient }} (not found)
                         {% endif %}
                     </td>
+                    <td>
+                        {% if morrisons_item_links|dict_lookup:ingredient != "INVALID" %}
+                        <a href="{{ morrisons_item_links|dict_lookup:ingredient }}">{{ ingredient }}</a>
+                        {% else %}
+                            {{ ingredient }} (not found)
+                        {% endif %}
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>
@@ -116,6 +124,9 @@
                 </td>
                 <td class="total-price-column">
                     Total Price: £{{ asda_total_price }}
+                </td>
+                <td class="total-price-column">
+                    Total Price: £{{ morrisons_total_price }}
                 </td>
             </tr>
         </tfoot>

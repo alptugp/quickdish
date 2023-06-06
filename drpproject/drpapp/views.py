@@ -4,6 +4,7 @@ from .RecipeParser import get_ingredients
 from .TescoWebScraper import getMostRelevantItemTesco
 from .AsdaSearch import searchAsda
 from .SainsburysSearch import searchSainsburys
+from .MorrisonsSearch import search_morrisons
 from .models import DietForm, DietaryRestriction
 import concurrent.futures
 import spacy
@@ -62,11 +63,15 @@ def comparison(request):
     asda_start_time = timer()
     asda_total_price, asda_item_links = total_price_asda(ingredients, instance_id)
     asda_end_time = timer()
+    morrisons_start_time = timer()
+    morrisons_total_price, morrisons_item_links = total_price_morrisons(ingredients, instance_id)
+    morrisons_end_time = timer()
 
     ingredients_elapsed = round((ingredients_end_time - ingredients_start_time) * 1000)
     nlp_elapsed = round((nlp_end_time - nlp_start_time) * 1000)
     sains_elapsed = round((sains_end_time - sains_start_time) * 1000)
     asda_elapsed = round((asda_end_time - asda_start_time) * 1000)
+    morrisons_elapsed = round((morrisons_end_time - morrisons_start_time) * 1000)
 
     context = {
         'original_ingredients': original_ingredients,
@@ -75,10 +80,13 @@ def comparison(request):
         'asda_total_price': asda_total_price,
         'sainsburys_item_links': sainsburys_item_links,
         'asda_item_links': asda_item_links,
+        'morrisons_item_links': morrisons_item_links,
+        'morrisons_total_price': morrisons_total_price,
         'ingredients_elapsed': ingredients_elapsed,
         'nlp_elapsed': nlp_elapsed,
         'sains_elapsed': sains_elapsed,
-        'asda_elapsed': asda_elapsed
+        'asda_elapsed': asda_elapsed,
+        'morrisons_elapsed': morrisons_elapsed
     }
     
     return render(request, "drpapp/comparison.html", context)
@@ -112,6 +120,14 @@ def diet(request):
 def get_tesco_product_links(items):
     # A Tesco link looks like this: https://www.tesco.com/groceries/en-GB/products/<product-id>
     base_url = "https://www.tesco.com/groceries/en-GB/products/"
+    for ingredient in items:
+        if items[ingredient] != "INVALID":
+            items[ingredient] = base_url + items[ingredient]
+    return items
+
+def get_morrisons_product_links(items):
+    # A Morrisons link looks like this: https://groceries.morrisons.com/products/<id>
+    base_url = "https://groceries.morrisons.com/products/"
     for ingredient in items:
         if items[ingredient] != "INVALID":
             items[ingredient] = base_url + items[ingredient]
@@ -168,6 +184,18 @@ def asda_worker(ingredient, items, form_instance):
         items[ingredient] = "INVALID"
         return 0 
 
+def morrisons_worker(ingredient, items, form_instance):
+    most_relevant_item = search_morrisons(ingredient, form_instance)
+    if most_relevant_item is not None:
+        price = most_relevant_item['product']['price']['current']
+        item_id = most_relevant_item['sku']
+        items[ingredient] = item_id
+        return price
+    else:
+        items[ingredient] = "INVALID"
+        return 0
+        
+
 def total_price_tesco(ingredients, instance_id):
     items = {}
     num_threads = 5
@@ -185,8 +213,6 @@ def total_price_tesco(ingredients, instance_id):
     total_price = 0 
     for result in results:
         total_price += result.result()
-    
-    
 
     executor.shutdown()
     item_links = get_tesco_product_links(items)
@@ -244,3 +270,32 @@ def total_price_sainsburys(ingredients, instance_id):
     executor.shutdown()
 
     return total_price, item_links
+
+def total_price_morrisons(ingredients, instance_id):
+    items = {}
+    num_threads = 3
+    executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
+    
+    if instance_id is None:
+        form_instance = None
+    else: 
+        form_instance = DietaryRestriction.objects.get(id = instance_id)
+    
+    results = [executor.submit(morrisons_worker, ingredient, items, form_instance) for ingredient in ingredients]
+    
+    concurrent.futures.wait(results)
+    
+    total_price = 0
+    for result in results:
+        total_price += result.result()
+    
+    total_price = money_value(total_price)
+    
+    item_links = get_morrisons_product_links(items)
+    
+    executor.shutdown()
+    
+    return total_price, item_links
+    
+    
+    
