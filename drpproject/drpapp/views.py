@@ -13,8 +13,9 @@ def index(request):
     return render(request, "drpapp/index.html")
 
 def token_good(token):
-    units = ["tbsp", "tsp", "g", "kg", "oz", "ml", "l", "pack", "tub", "bag", "jar", "1/2", "1/4"]
-    if not (token.pos_ == "NOUN" or token.pos_ == "ADJ"):
+    units = ["tbsp", "tsp", "g", "kg", "oz", "ml", "l", "pack", "tub", "bag", "jar", "1/2", "1/4", "handful", "large handful"]
+    print(token.text + ' ' + token.pos_)
+    if not (token.pos_ == "NOUN" or token.pos_ == "ADJ" or token.pos_ == "PROPN"):
         return False
     if token.text in units:
         return False
@@ -35,6 +36,7 @@ def comparison(request):
     nlp = spacy.load("en_core_web_sm")
 
     toProcess = []
+    nlp = spacy.load("en_core_web_sm")
     for ingredient in original_ingredients:
         if "of" in ingredient:
             toProcess.append(ingredient.split("of")[1])
@@ -48,7 +50,9 @@ def comparison(request):
     for tokens in processed:
         ingredient = ""
         for token in tokens:
-            if token.text == "or" or token.text == ",":
+            if token.text == "or":
+                ingredient = ""
+            if token.text == ",":
                 break
             if token_good(token):
                 if ingredient:
@@ -211,7 +215,7 @@ def total_price_tesco(ingredients, instance_id):
 
 def total_price_asda(ingredients, instance_id):
     items = {}
-    num_threads = 2
+    num_threads = 10
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
 
     if instance_id is None:
@@ -237,7 +241,7 @@ def total_price_asda(ingredients, instance_id):
 
 def total_price_sainsburys(ingredients, instance_id):
     items = {}
-    num_threads = 3
+    num_threads = 10
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
 
     if instance_id is None:
