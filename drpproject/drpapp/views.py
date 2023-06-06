@@ -58,7 +58,7 @@ def cleanupIngredients(original_ingredients):
                 ingredient += token.text
         ingredients.append(ingredient)
 
-    return ingredients
+    return set(ingredient.lower() for ingredient in ingredients)
 
 def comparison(request): 
     # Get what the user typed in the search bar (the recipe url) after they press the enter button
