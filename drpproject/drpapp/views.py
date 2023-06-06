@@ -19,6 +19,8 @@ def token_good(token):
         return False
     if token.text in units:
         return False
+    if token.text[0].isdigit():
+        return False
     return True
 
 def recommendations(request):
@@ -50,10 +52,10 @@ def comparison(request):
     for tokens in processed:
         ingredient = ""
         for token in tokens:
+            if token.text == "," or token.text == "(":
+                break
             if token.text == "or":
                 ingredient = ""
-            if token.text == ",":
-                break
             if token_good(token):
                 if ingredient:
                     ingredient += " "
