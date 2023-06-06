@@ -1,4 +1,5 @@
 import requests
+import json
 from bs4 import BeautifulSoup
 
 def constructTescoGetRequest(item, diet_preferences):
@@ -10,44 +11,63 @@ def constructTescoGetRequest(item, diet_preferences):
         if diet_preferences.gluten_free:
             item = "gluten-free " + item
     params = {
-        "q" : item
+        "query" : item,
+        # "icid" : f"tescohp_sws-1_m-ft_in-{item}_out-{item}"
     }
-    url = "https://www.tesco.com/search/?"
+    url = "https://www.tesco.com/groceries/en-GB/search?"
     paramString = [(param + "=" + val) for (param, val) in params.items()]
     delim = "&"
     url += delim.join(paramString)
-    return url
+
+    headers = {
+        'User-Agent' : 'Mozilla/5.0',
+    }
+    return url, headers
 
 def searchTesco(item, form_instance):
-    request = constructTescoGetRequest(item, form_instance)
-    response = requests.get(request)
+    request, headers = constructTescoGetRequest(item, form_instance)
 
-    print(f"{response.text}\nGOT HERE\n")
-
-    # Parse the HTML content using BeautifulSoup
-    soup = BeautifulSoup(response.content, 'html.parser')
-
-    # Find the first search result item
-    first_result = soup.find('div', {'class': 'product-list--list-item'})
-
-    # Extract information from the search result item
-    product_name = first_result.find('a', {'class': 'sc-kjoXOD'}).text
-    product_price = first_result.find('span', {'class': 'value'}).text
-    product_id = "some id"
-
-    result = {
-        'name' : product_name,
-        'price' : product_price,
-        'id' : product_id,
-    }
-
-    # Print the extracted information
-    print(f"Product Name: {product_name}")
-    print(f"Product Price: {product_price}")
-    print(f"Product ID: {product_id}")
-
+    # Tesco-specific class names
+    script_type = 'application/ld+json'
+    item_list_elem_key = 'itemListElement'
+    first_page_key = 'list-page-1'
+    first_list_item_key = 'product-list--list-item first'
+    product_name_element_key = 'styled__Text-sc-1xbujuz-1 ldbwMG beans-link__text'
+    product_price_element_key = 'styled__StyledHeading-sc-119w3hf-2 jWPEtj styled__Text-sc-8qlq5b-1 lnaeiZ beans-price__text'
+    
     try:
+        response = requests.get(request, headers=headers)
+
+        # Parse the HTML content using BeautifulSoup
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        # Find the first search result item
+        item_list = json.loads(soup.find('script', {'type': script_type})
+                               .contents[0])[2][item_list_elem_key]
+        product_url = item_list[0]['url']
+        product_id = product_url.rsplit('/', 1)[-1]
+        first_page = soup.find('div', {'class': first_page_key})
+        first_list_item = first_page.find('li', {'class': first_list_item_key})
+        
+        product_name_element = first_list_item.find('span', {'class': product_name_element_key})
+        product_name = product_name_element.contents[0]
+        product_price_element = first_list_item.find('p', {'class': product_price_element_key})
+        product_price = product_price_element.contents[0]
+
+        if product_price:
+            print(f"Found first result for {item}: {product_name} ({product_price})")
+        else:
+            print(f"CANNOT find first result for {item}")
+
+        result = {
+            'name' : product_name,
+            'price' : product_price,
+            'id' : product_id,
+            'url' : product_url,
+        }
+
         return result
+    
     except:
-      print(f"Cannot find {item} in Tesco")
-      return None
+        print(f"Cannot find {item} in Tesco")
+        return None

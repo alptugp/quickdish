@@ -32,10 +32,10 @@ def comparison(request):
     ingredients_start_time = timer()
     original_ingredients = get_ingredients(query)
     ingredients_end_time = timer()
+    nlp = spacy.load("en_core_web_sm")
 
     toProcess = []
     for ingredient in original_ingredients:
-        nlp = spacy.load("en_core_web_sm")
         if "of" in ingredient:
             toProcess.append(ingredient.split("of")[1])
         else:
@@ -58,13 +58,19 @@ def comparison(request):
     nlp_end_time = timer()
 
     sains_start_time = timer()
+    print("Sainsbury start")
     sainsburys_total_price, sainsburys_item_links = total_price_sainsburys(ingredients, instance_id)
+    print("Sainsbury end")
     sains_end_time = timer()
     asda_start_time = timer()
+    print("Asda start")
     asda_total_price, asda_item_links = total_price_asda(ingredients, instance_id)
+    print("Asda end")
     asda_end_time = timer()
     tesco_start_time = timer()
+    print("Tesco start")
     tesco_total_price, tesco_item_links = total_price_tesco(ingredients, instance_id)
+    print("Tesco end")
     tesco_end_time = timer()
 
     ingredients_elapsed = round((ingredients_end_time - ingredients_start_time) * 1000)
@@ -182,7 +188,7 @@ def asda_worker(ingredient, items, form_instance):
 
 def total_price_tesco(ingredients, instance_id):
     items = {}
-    num_threads = 1
+    num_threads = 2
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
 
     if instance_id is None:
