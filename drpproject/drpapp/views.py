@@ -221,7 +221,7 @@ def total_price_tesco(ingredients, instance_id):
     for result in results:
         total_price += result.result()
     
-    total_price = str(money_value(total_price))
+    total_price = "{:.2f}".format(money_value(total_price))
     
     executor.shutdown()
     item_links = get_tesco_product_links(items)
@@ -246,7 +246,7 @@ def total_price_asda(ingredients, instance_id):
     for result in results:
         total_price += result.result()
     
-    total_price = str(money_value(total_price))
+    total_price = "{:.2f}".format(money_value(total_price))
     
     item_links = get_asda_product_links(items)
 
