@@ -1,7 +1,7 @@
+import re
 from timeit import default_timer as timer
 from django.shortcuts import render, redirect
 from .RecipeParser import get_ingredients
-from .TescoWebScraper import getMostRelevantItemTesco
 from .TescoSearch import searchTesco
 from .AsdaSearch import searchAsda
 from .SainsburysSearch import searchSainsburys
@@ -32,15 +32,28 @@ def token_good(token):
         return False
     return True
 
+def remove_bracketed_text(original):
+    pattern = r'\([^)]*\)'
+    modified_string = re.sub(pattern, '', original)
+    return modified_string
+
 def cleanupIngredients(original_ingredients):
     toProcess = []
 
-    # Example: 500g of butter => butter
     for ingredient in original_ingredients:
-        if " of " in ingredient:
-            toProcess.append(ingredient.split(" of ")[1])
-        else:
-            toProcess.append(ingredient)
+        # Example: 500g of (soft) butter => 500g of butter
+        temp = remove_bracketed_text(ingredient)
+        
+        # Example: 500g of butter => butter
+        if " of " in temp:
+            temp = temp.split(" of ")[1]
+            # toProcess.append(temp.split(" of ")[1])
+        if "," in temp:
+            temp = temp.rsplit(",", 1)[0]
+        if " or " in temp:
+            temp = temp.split(" or ")[1]
+
+        toProcess.append(temp)
     
     processed = list(nlp.pipe(toProcess))
     
@@ -48,10 +61,6 @@ def cleanupIngredients(original_ingredients):
     for tokens in processed:
         ingredient = ""
         for token in tokens:
-            if token.text == "," or token.text == "(":
-                break
-            if token.text == "or":
-                ingredient = ""
             if token_good(token):
                 if ingredient:
                     ingredient += " "
