@@ -33,8 +33,8 @@ def comparison(request):
     ingredients_end_time = timer()
 
     toProcess = []
+    nlp = spacy.load("en_core_web_sm")
     for ingredient in original_ingredients:
-        nlp = spacy.load("en_core_web_sm")
         if "of" in ingredient:
             toProcess.append(ingredient.split("of")[1])
         else:
@@ -195,7 +195,7 @@ def total_price_tesco(ingredients, instance_id):
 
 def total_price_asda(ingredients, instance_id):
     items = {}
-    num_threads = 2
+    num_threads = 10
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
 
     if instance_id is None:
@@ -221,7 +221,7 @@ def total_price_asda(ingredients, instance_id):
 
 def total_price_sainsburys(ingredients, instance_id):
     items = {}
-    num_threads = 3
+    num_threads = 10
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
 
     if instance_id is None:
