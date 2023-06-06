@@ -272,7 +272,7 @@ def total_price_sainsburys(ingredients, instance_id):
     for result in results:
         total_price += result.result()
     
-    total_price = str(money_value(total_price))
+    total_price = "{:.2f}".format(money_value(total_price))
     
     item_links = get_sainsburys_product_links(items)
 
