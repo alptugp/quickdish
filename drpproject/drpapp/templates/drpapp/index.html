@@ -59,6 +59,7 @@
             border: none;
             cursor: pointer;
             font-size: 16px;
+            font-weight: bold;
             border-radius: 5px;
         }
 
@@ -76,10 +77,64 @@
             text-decoration: none;
             border-radius: 5px;
             font-size: 16px;
+            font-weight: bold;
         }
 
         span {
             pointer-events: none;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            background-color: #FFF;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            padding: 10px;
+            top: calc(100% + 5px);
+            left: 69px;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .dropdown-menu a {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .dropdown-menu a .checkbox {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 1px solid white;
+            border-radius: 3px;
+            margin-left: 5px; /* Adjust the margin as needed */
+            margin-right: 5px;
+        }
+
+        .dropdown-menu a .checkbox::after {
+            content: '';
+            display: block;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            border-radius: 2px;
+            visibility: hidden;
+            transform: scale(0); /* Initial scale */
+            transition: transform 0.2s;
+        }
+
+        .dropdown-menu a.checked .checkbox::after {
+            visibility: visible;
+            transform: scale(1); /* Fully fill the checkbox */
+        }
+
+        .dropdown-menu.show {
+            display: block;
         }
     </style>
     <script>
@@ -88,6 +143,7 @@
             max = Math.floor(max);
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
+
         function addEmojis() {
             const emojis = ['🍔', '🍛', '🌮', '🍣', '🧆', '🥘', '🥧', '🍲', '🥞', '🫔', '🥙', '🍕', '🥮', '🍰'];
             const body = document.querySelector('body');
@@ -130,35 +186,96 @@
             }
         }
 
-        function removeEmojis() {
-            const container = document.querySelector('.container');
-            const comparePricesText = container.querySelector('h1');
-            const emojis = comparePricesText.nextSibling;
+        function toggleDropdown() {
+            const dropdownMenu = document.getElementById('dropdownMenu');
+            dropdownMenu.classList.toggle('show');
+        }
+
+        function toggleOption(option) {
+            option.classList.toggle('checked');
+        }
+
+        document.addEventListener('click', function(event) {
+            const dropdownMenu = document.querySelector('.dropdown-menu');
+            const dietaryPreferencesButton = document.querySelector('.dietary-preferences-button');
+            const isClickedInsideDropdown = dropdownMenu.contains(event.target) || dietaryPreferencesButton.contains(event.target);
             
-            if (emojis && emojis.nodeType === Node.TEXT_NODE && emojis.textContent.trim() === 'Compare Prices') {
-                emojis.remove();
+            if (!isClickedInsideDropdown) {
+                dropdownMenu.classList.remove('show');
             }
+        });
+
+        function toggleDropdownMenu() {
+            const dropdownMenu = document.querySelector('.dropdown-menu');
+            dropdownMenu.classList.toggle('show');
+        }
+
+        function addDietaryPreferencesDropdown() {
+            const dietaryPreferencesButton = document.querySelector('.dietary-preferences-button');
+            const dropdownMenu = document.createElement('div');
+            dropdownMenu.className = 'dropdown-menu';
+            
+            const options = ['Option 1', 'Option 2', 'Option 3'];
+            
+            options.forEach(function(option) {
+                const checkbox = document.createElement('span');
+                checkbox.className = 'checkbox';
+                
+                const label = document.createElement('label');
+                label.textContent = option;
+                label.appendChild(checkbox);
+                
+                const menuItem = document.createElement('a');
+                menuItem.appendChild(label);
+                
+                menuItem.addEventListener('click', function() {
+                menuItem.classList.toggle('checked');
+                });
+                
+                dropdownMenu.appendChild(menuItem);
+            });
+            
+            document.body.appendChild(dropdownMenu);
+            
+            dietaryPreferencesButton.addEventListener('click', toggleDropdownMenu);
         }
 
         window.addEventListener('DOMContentLoaded', addEmojis);
-
-        window.addEventListener('DOMContentLoaded', removeEmojis);
-
     </script>
 </head>
 <body>
     <div class="container">
-        <h1>Compare Prices</h1>
+        <h1>Choose a Recipe:</h1>
         <div class="search-container">
             <form action="{% url 'comparison' %}" method="get">
                 {% csrf_token %}
                 <input type="text" name="query" class="search-input" placeholder="E.g: https://www.bbcgoodfood.com/recipes/basic-omelette">
-                <button type="submit" class="search-button">Enter</button>
+                <form action="{% url 'diet' %}" method="post">
+                    {% csrf_token %}
+                    {{form.as_p}}
+                    <button type="submit" class="search-button">Enter</button>
+                </form>
             </form>
         </div>
         <div class="action-buttons">
-            <a href="{% url 'diet' %}" class="dietary-preferences-button">Dietary Preferences</a>
-            <a href="{% url 'recommendations' %}" class="recipe-recommendations-button">Recipe Recommendations</a>
+            <!--<a href="{% url 'diet' %}" class="dietary-preferences-button">Dietary Preferences</a>--> 
+            <!---->
+            <a href="#" class="dietary-preferences-button" onclick="toggleDropdown()">Dietary Preferences</a>
+            <div class="dropdown-menu" id="dropdownMenu">
+                <a href="#" onclick="toggleOption(this)">
+                    Vegan
+                    <span class="checkbox"></span>
+                </a>
+                <a href="#" onclick="toggleOption(this)">
+                    Vegetarian
+                    <span class="checkbox"></span>
+                </a>
+                <a href="#" onclick="toggleOption(this)">
+                    Gluten free
+                    <span class="checkbox"></span>
+                </a>
+            </div>
+            <a href="{% url 'recommendations' %}" class="recipe-recommendations-button">Give Me Some Ideas</a>
         </div>
     </div>
 </body>
