@@ -143,6 +143,7 @@
             max = Math.floor(max);
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
+
         function addEmojis() {
             const emojis = ['🍔', '🍛', '🌮', '🍣', '🧆', '🥘', '🥧', '🍲', '🥞', '🫔', '🥙', '🍕', '🥮', '🍰'];
             const body = document.querySelector('body');
@@ -185,21 +186,6 @@
             }
         }
 
-        function removeEmojis() {
-            const container = document.querySelector('.container');
-            const comparePricesText = container.querySelector('h1');
-            const emojis = comparePricesText.nextSibling;
-            
-            if (emojis && emojis.nodeType === Node.TEXT_NODE && emojis.textContent.trim() === 'Compare Prices') {
-                emojis.remove();
-            }
-        }
-
-        function toggleDropdown() {
-            const dropdownMenu = document.getElementById('dropdownMenu');
-            dropdownMenu.classList.toggle('show');
-        }
-
         function toggleDropdown() {
             const dropdownMenu = document.getElementById('dropdownMenu');
             dropdownMenu.classList.toggle('show');
@@ -210,59 +196,56 @@
         }
 
         document.addEventListener('click', function(event) {
-  const dropdownMenu = document.querySelector('.dropdown-menu');
-  const dietaryPreferencesButton = document.querySelector('.dietary-preferences-button');
-  const isClickedInsideDropdown = dropdownMenu.contains(event.target) || dietaryPreferencesButton.contains(event.target);
-  
-  if (!isClickedInsideDropdown) {
-    dropdownMenu.classList.remove('show');
-  }
-});
+            const dropdownMenu = document.querySelector('.dropdown-menu');
+            const dietaryPreferencesButton = document.querySelector('.dietary-preferences-button');
+            const isClickedInsideDropdown = dropdownMenu.contains(event.target) || dietaryPreferencesButton.contains(event.target);
+            
+            if (!isClickedInsideDropdown) {
+                dropdownMenu.classList.remove('show');
+            }
+        });
 
-function toggleDropdownMenu() {
-  const dropdownMenu = document.querySelector('.dropdown-menu');
-  dropdownMenu.classList.toggle('show');
-}
+        function toggleDropdownMenu() {
+            const dropdownMenu = document.querySelector('.dropdown-menu');
+            dropdownMenu.classList.toggle('show');
+        }
 
-function addDietaryPreferencesDropdown() {
-  const dietaryPreferencesButton = document.querySelector('.dietary-preferences-button');
-  const dropdownMenu = document.createElement('div');
-  dropdownMenu.className = 'dropdown-menu';
-  
-  const options = ['Option 1', 'Option 2', 'Option 3'];
-  
-  options.forEach(function(option) {
-    const checkbox = document.createElement('span');
-    checkbox.className = 'checkbox';
-    
-    const label = document.createElement('label');
-    label.textContent = option;
-    label.appendChild(checkbox);
-    
-    const menuItem = document.createElement('a');
-    menuItem.appendChild(label);
-    
-    menuItem.addEventListener('click', function() {
-      menuItem.classList.toggle('checked');
-    });
-    
-    dropdownMenu.appendChild(menuItem);
-  });
-  
-  document.body.appendChild(dropdownMenu);
-  
-  dietaryPreferencesButton.addEventListener('click', toggleDropdownMenu);
-}
+        function addDietaryPreferencesDropdown() {
+            const dietaryPreferencesButton = document.querySelector('.dietary-preferences-button');
+            const dropdownMenu = document.createElement('div');
+            dropdownMenu.className = 'dropdown-menu';
+            
+            const options = ['Option 1', 'Option 2', 'Option 3'];
+            
+            options.forEach(function(option) {
+                const checkbox = document.createElement('span');
+                checkbox.className = 'checkbox';
+                
+                const label = document.createElement('label');
+                label.textContent = option;
+                label.appendChild(checkbox);
+                
+                const menuItem = document.createElement('a');
+                menuItem.appendChild(label);
+                
+                menuItem.addEventListener('click', function() {
+                menuItem.classList.toggle('checked');
+                });
+                
+                dropdownMenu.appendChild(menuItem);
+            });
+            
+            document.body.appendChild(dropdownMenu);
+            
+            dietaryPreferencesButton.addEventListener('click', toggleDropdownMenu);
+        }
 
         window.addEventListener('DOMContentLoaded', addEmojis);
-
-        window.addEventListener('DOMContentLoaded', removeEmojis);
-
     </script>
 </head>
 <body>
     <div class="container">
-        <h1>Choose a recipe:</h1>
+        <h1>Choose a Recipe:</h1>
         <div class="search-container">
             <form action="{% url 'comparison' %}" method="get">
                 {% csrf_token %}
@@ -292,7 +275,7 @@ function addDietaryPreferencesDropdown() {
                     <span class="checkbox"></span>
                 </a>
             </div>
-            <a href="{% url 'recommendations' %}" class="recipe-recommendations-button">Give me some ideas</a>
+            <a href="{% url 'recommendations' %}" class="recipe-recommendations-button">Give Me Some Ideas</a>
         </div>
     </div>
 </body>
