@@ -148,7 +148,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Compare Prices</h1>
+        <h1>Choose a recipe:</h1>
         <div class="search-container">
             <form action="{% url 'comparison' %}" method="get">
                 {% csrf_token %}
@@ -158,7 +158,7 @@
         </div>
         <div class="action-buttons">
             <a href="{% url 'diet' %}" class="dietary-preferences-button">Dietary Preferences</a>
-            <a href="{% url 'recommendations' %}" class="recipe-recommendations-button">Recipe Recommendations</a>
+            <a href="{% url 'recommendations' %}" class="recipe-recommendations-button">Give me some ideas</a>
         </div>
     </div>
 </body>
