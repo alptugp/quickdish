@@ -222,7 +222,11 @@
             <form action="{% url 'comparison' %}" method="get">
                 {% csrf_token %}
                 <input type="text" name="query" class="search-input" placeholder="E.g: https://www.bbcgoodfood.com/recipes/basic-omelette">
-                <button type="submit" class="search-button">Enter</button>
+                <form action="{% url 'diet' %}" method="post">
+                    {% csrf_token %}
+                    {{form.as_p}}
+                    <button type="submit" class="search-button">Enter</button>
+                </form>
             </form>
         </div>
         <div class="action-buttons">
