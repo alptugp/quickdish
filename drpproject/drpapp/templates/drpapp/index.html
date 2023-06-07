@@ -92,7 +92,7 @@
             border-radius: 5px;
             padding: 10px;
             top: calc(100% + 5px);
-            left: 81px;
+            left: 69px;
             flex-direction: column;
             align-items: flex-start;
         }
@@ -101,7 +101,7 @@
             display: flex;
             align-items: center;
             margin-bottom: 5px;
-            color: #333;
+            color: white;
             text-decoration: none;
             cursor: pointer;
         }
@@ -110,7 +110,7 @@
             display: inline-block;
             width: 12px;
             height: 12px;
-            border: 1px solid #333;
+            border: 1px solid white;
             border-radius: 3px;
             margin-left: 5px; /* Adjust the margin as needed */
             margin-right: 5px;
@@ -121,7 +121,7 @@
             display: block;
             width: 100%;
             height: 100%;
-            background-color: #333;
+            background-color: white;
             border-radius: 2px;
             visibility: hidden;
             transform: scale(0); /* Initial scale */
@@ -143,6 +143,7 @@
             max = Math.floor(max);
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
+
         function addEmojis() {
             const emojis = ['🍔', '🍛', '🌮', '🍣', '🧆', '🥘', '🥧', '🍲', '🥞', '🫔', '🥙', '🍕', '🥮', '🍰'];
             const body = document.querySelector('body');
@@ -185,21 +186,6 @@
             }
         }
 
-        function removeEmojis() {
-            const container = document.querySelector('.container');
-            const comparePricesText = container.querySelector('h1');
-            const emojis = comparePricesText.nextSibling;
-            
-            if (emojis && emojis.nodeType === Node.TEXT_NODE && emojis.textContent.trim() === 'Compare Prices') {
-                emojis.remove();
-            }
-        }
-
-        function toggleDropdown() {
-            const dropdownMenu = document.getElementById('dropdownMenu');
-            dropdownMenu.classList.toggle('show');
-        }
-
         function toggleDropdown() {
             const dropdownMenu = document.getElementById('dropdownMenu');
             dropdownMenu.classList.toggle('show');
@@ -209,20 +195,66 @@
             option.classList.toggle('checked');
         }
 
+        document.addEventListener('click', function(event) {
+            const dropdownMenu = document.querySelector('.dropdown-menu');
+            const dietaryPreferencesButton = document.querySelector('.dietary-preferences-button');
+            const isClickedInsideDropdown = dropdownMenu.contains(event.target) || dietaryPreferencesButton.contains(event.target);
+            
+            if (!isClickedInsideDropdown) {
+                dropdownMenu.classList.remove('show');
+            }
+        });
+
+        function toggleDropdownMenu() {
+            const dropdownMenu = document.querySelector('.dropdown-menu');
+            dropdownMenu.classList.toggle('show');
+        }
+
+        function addDietaryPreferencesDropdown() {
+            const dietaryPreferencesButton = document.querySelector('.dietary-preferences-button');
+            const dropdownMenu = document.createElement('div');
+            dropdownMenu.className = 'dropdown-menu';
+            
+            const options = ['Option 1', 'Option 2', 'Option 3'];
+            
+            options.forEach(function(option) {
+                const checkbox = document.createElement('span');
+                checkbox.className = 'checkbox';
+                
+                const label = document.createElement('label');
+                label.textContent = option;
+                label.appendChild(checkbox);
+                
+                const menuItem = document.createElement('a');
+                menuItem.appendChild(label);
+                
+                menuItem.addEventListener('click', function() {
+                menuItem.classList.toggle('checked');
+                });
+                
+                dropdownMenu.appendChild(menuItem);
+            });
+            
+            document.body.appendChild(dropdownMenu);
+            
+            dietaryPreferencesButton.addEventListener('click', toggleDropdownMenu);
+        }
+
         window.addEventListener('DOMContentLoaded', addEmojis);
-
-        window.addEventListener('DOMContentLoaded', removeEmojis);
-
     </script>
 </head>
 <body>
     <div class="container">
-        <h1>Choose a recipe:</h1>
+        <h1>Choose a Recipe:</h1>
         <div class="search-container">
             <form action="{% url 'comparison' %}" method="get">
                 {% csrf_token %}
                 <input type="text" name="query" class="search-input" placeholder="E.g: https://www.bbcgoodfood.com/recipes/basic-omelette">
-                <button type="submit" class="search-button">Enter</button>
+                <form action="{% url 'diet' %}" method="post">
+                    {% csrf_token %}
+                    {{form.as_p}}
+                    <button type="submit" class="search-button">Enter</button>
+                </form>
             </form>
         </div>
         <div class="action-buttons">
@@ -243,7 +275,7 @@
                     <span class="checkbox"></span>
                 </a>
             </div>
-            <a href="{% url 'recommendations' %}" class="recipe-recommendations-button">Give me some ideas</a>
+            <a href="{% url 'recommendations' %}" class="recipe-recommendations-button">Give Me Some Ideas</a>
         </div>
     </div>
 </body>
