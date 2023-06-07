@@ -54,11 +54,6 @@ def searchTesco(item, form_instance):
         product_price_element = first_list_item.find('p', {'class': product_price_element_key})
         product_price = product_price_element.contents[0]
 
-        if product_price:
-            print(f"Found first result for {item}: {product_name} ({product_price})")
-        else:
-            print(f"CANNOT find first result for {item}")
-
         result = {
             'name' : product_name,
             'price' : product_price,

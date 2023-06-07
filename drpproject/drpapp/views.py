@@ -6,7 +6,7 @@ from .TescoSearch import searchTesco
 from .AsdaSearch import searchAsda
 from .SainsburysSearch import searchSainsburys
 from .MorrisonsSearch import search_morrisons
-from .models import DietForm, DietaryRestriction
+from .models import DietForm, DietaryRestriction, IngredientsForm
 import concurrent.futures
 import spacy
 
@@ -72,65 +72,82 @@ def cleanupIngredients(original_ingredients):
                 ingredient += token.text
         ingredients.append(ingredient)
 
-    return set(ingredient.lower() for ingredient in ingredients)
+    return list(set(ingredient.lower() for ingredient in ingredients))
 
-def comparison(request): 
-    # Get what the user typed in the search bar (the recipe url) after they press the enter button
-    query = request.GET.get('query', '')
-
+def comparison(request):
     instance_id = request.session.get('instance_id')
 
-    ingredients_start_time = timer()
-    original_ingredients = get_ingredients(query)
-    ingredients_end_time = timer()
+    original_ingredients_key = 'original_ingredients'
+    full_ingredients_key = 'full_ingredients'
+    original_ingredients = []
+    full_ingredients = []
+    ingredients = []
 
-    nlp_start_time = timer()
-    ingredients = cleanupIngredients(original_ingredients)
-    nlp_end_time = timer()
+    if request.method == 'POST':
+        original_ingredients = request.session.get(original_ingredients_key, [])
+        full_ingredients = request.session.get(full_ingredients_key, [])
+        for key in request.POST.keys():
+            if key != "csrfmiddlewaretoken":
+                ingredients.append(key)
 
-    sains_start_time = timer()
+    elif request.method == 'GET':
+        # Get what the user typed in the search bar (the recipe url) after they press the enter button
+        query = request.GET.get('query', '')
+
+        original_ingredients = get_ingredients(query)
+        full_ingredients = cleanupIngredients(original_ingredients)
+        ingredients = full_ingredients
+        request.session[original_ingredients_key] = original_ingredients
+        request.session[full_ingredients_key] = full_ingredients
+    
+    ingredients_form = IngredientsForm(full_ingredients=full_ingredients, ingredients=ingredients)
+
     print("Sainsbury start")
+    sains_start_time = timer()
     sainsburys_total_price, sainsburys_item_links = total_price_sainsburys(ingredients, instance_id)
-    print("Sainsbury end")
     sains_end_time = timer()
-    asda_start_time = timer()
+    print("Sainsbury end")
+
     print("Asda start")
+    asda_start_time = timer()
     asda_total_price, asda_item_links = total_price_asda(ingredients, instance_id)
-    print("Asda end")
     asda_end_time = timer()
-    tesco_start_time = timer()
+    print("Asda end")
+
     print("Tesco start")
+    tesco_start_time = timer()
     tesco_total_price, tesco_item_links = total_price_tesco(ingredients, instance_id)
-    print("Tesco end")
     tesco_end_time = timer()
+    print("Tesco end")
+    
+    print("Morrisons start")
     morrisons_start_time = timer()
     morrisons_total_price, morrisons_item_links = total_price_morrisons(ingredients, instance_id)
     morrisons_end_time = timer()
+    print("Morrisons end")
 
-    ingredients_elapsed = round((ingredients_end_time - ingredients_start_time) * 1000)
-    nlp_elapsed = round((nlp_end_time - nlp_start_time) * 1000)
     sains_elapsed = round((sains_end_time - sains_start_time) * 1000)
     asda_elapsed = round((asda_end_time - asda_start_time) * 1000)
     tesco_elapsed = round((tesco_end_time - tesco_start_time) * 1000)
     morrisons_elapsed = round((morrisons_end_time - morrisons_start_time) * 1000)
 
     context = {
-        'original_ingredients'   : original_ingredients,
+        original_ingredients_key : original_ingredients,
+        full_ingredients_key     : full_ingredients,
         'ingredients'            : ingredients,
         'sainsburys_total_price' : sainsburys_total_price,
         'asda_total_price'       : asda_total_price,
         'tesco_total_price'      : tesco_total_price,
+        'morrisons_total_price'  : morrisons_total_price,
         'sainsburys_item_links'  : sainsburys_item_links,
         'asda_item_links'        : asda_item_links,
         'tesco_item_links'       : tesco_item_links,
-        'ingredients_elapsed'    : ingredients_elapsed,
-        'nlp_elapsed'            : nlp_elapsed,
+        'morrisons_item_links'   : morrisons_item_links,
         'sains_elapsed'          : sains_elapsed,
         'asda_elapsed'           : asda_elapsed,
         'tesco_elapsed'          : tesco_elapsed,
-        'morrisons_item_links': morrisons_item_links,
-        'morrisons_total_price': morrisons_total_price,
-        'morrisons_elapsed': morrisons_elapsed
+        'morrisons_elapsed'      : morrisons_elapsed,
+        'ingredients_form'       : ingredients_form,
     }
     
     return render(request, "drpapp/comparison.html", context)
@@ -140,7 +157,7 @@ def diet(request):
         form = DietForm(request.POST)
         if form.is_valid():
             # save form data to the database
-            instance = form.save()  
+            instance = form.save()
             request.session['instance_id'] = instance.id
             # redirect to home page (index)
             return redirect('index')

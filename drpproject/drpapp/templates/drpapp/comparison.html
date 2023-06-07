@@ -73,12 +73,19 @@
     <h1>Ingredient Cost Comparison</h1>
 
     <div class="ingredient-list">
-        <h2>Ingredients</h2>
+        <h2>Ingredients stated in recipe</h2>
         <ul>
             {% for ingredient in original_ingredients %}
                 <li>{{ ingredient }}</li>
             {% endfor %}
         </ul>
+
+        <h2>Include/exclude ingredients</h2>
+        <form method="POST" action="{% url 'comparison' %}">
+            {% csrf_token %}
+            {{ ingredients_form.as_p }}
+            <button type="submit">Recalculate prices</button>
+        </form>
     </div>
 
     <table>
