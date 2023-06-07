@@ -209,6 +209,51 @@
             option.classList.toggle('checked');
         }
 
+        document.addEventListener('click', function(event) {
+  const dropdownMenu = document.querySelector('.dropdown-menu');
+  const dietaryPreferencesButton = document.querySelector('.dietary-preferences-button');
+  const isClickedInsideDropdown = dropdownMenu.contains(event.target) || dietaryPreferencesButton.contains(event.target);
+  
+  if (!isClickedInsideDropdown) {
+    dropdownMenu.classList.remove('show');
+  }
+});
+
+function toggleDropdownMenu() {
+  const dropdownMenu = document.querySelector('.dropdown-menu');
+  dropdownMenu.classList.toggle('show');
+}
+
+function addDietaryPreferencesDropdown() {
+  const dietaryPreferencesButton = document.querySelector('.dietary-preferences-button');
+  const dropdownMenu = document.createElement('div');
+  dropdownMenu.className = 'dropdown-menu';
+  
+  const options = ['Option 1', 'Option 2', 'Option 3'];
+  
+  options.forEach(function(option) {
+    const checkbox = document.createElement('span');
+    checkbox.className = 'checkbox';
+    
+    const label = document.createElement('label');
+    label.textContent = option;
+    label.appendChild(checkbox);
+    
+    const menuItem = document.createElement('a');
+    menuItem.appendChild(label);
+    
+    menuItem.addEventListener('click', function() {
+      menuItem.classList.toggle('checked');
+    });
+    
+    dropdownMenu.appendChild(menuItem);
+  });
+  
+  document.body.appendChild(dropdownMenu);
+  
+  dietaryPreferencesButton.addEventListener('click', toggleDropdownMenu);
+}
+
         window.addEventListener('DOMContentLoaded', addEmojis);
 
         window.addEventListener('DOMContentLoaded', removeEmojis);
