@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Recipe Recommendations</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .page-title {
+            font-size: 35px;
+            font-weight: bold;
+            margin-bottom: 0px;
+            margin-left: 15px
+        }
+        .category {
+            display: flex;
+            flex-wrap: nowrap; /* Prevent wrapping of recipe containers to keep them in a horizontal line */
+            overflow-x: auto; /* Enable horizontal scrolling for overflowing content */
+            scroll-snap-type: x mandatory; /* Enable snapping behavior for scrolling */
+            margin-left: 30px;
+        }
+        .recipe-container {
+            text-align: center;
+            width: 30%; /* Adjust the width as needed */
+            display: inline-block;
+            margin: 1%;
+            flex: 0 0 auto; /* Maintain the original width of each recipe container */
+            margin-right: 20px; /* Add some spacing between recipe containers */
+            scroll-snap-align: start; /* Snap each recipe container to the start of the viewport when scrolling */
+        }
+        .category-label {
+            font-size: 25px;
+            font-weight: bold;
+            margin-bottom: 0px;
+            margin-left: 15px
+        }
+        .recipe-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 0px;
+            margin-bottom: 0px;
+            color: #FF6B35;
+        }
+        .recipe-image {
+            width: 100%;
+            max-height: 150px; /* Adjust the max-height as needed */
+            object-fit: cover;
+            margin-bottom: 10px;
+            border: 2px solid black; /* Change the border color and thickness */
+        }
+        .recipe-link {
+            display: block;
+            margin-bottom: 5px;
+            color: #FF6B35;
+            text-decoration: none;
+        }
+        .compare-prices-button {
+            display: inline-block;
+            margin-right: 5px; /* Adjust the spacing between buttons */
+            padding: 8px 16px;
+            background-color: #FF6B35;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .prep-time {
+            font-size: 14px;
+            color: black;
+            margin-top: 0px;
+            margin-bottom: 6px;
+        }
+        .compare-prices-button:hover {
+            background-color: #FF6B35;
+        }
+        .main-page-button {
+            position: fixed;
+            top: 10px;
+            right: 22px;
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 20px; /* Updated padding values */
+            background-color: #FF6B35;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1.2em; /* Updated font-size value */
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .main-page-button:hover {
+            background-color: #FF6B35;
+        }
+        /* Additional styles for three recipes per row */
+        @media (max-width: 768px) {
+            .recipe-container {
+                width: 45%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .recipe-container {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="{% url 'index' %}" class="main-page-button">Back to Main Page</a>
+
+    <h1 class="page-title">Recipe Recommendations</h1>
+
+    <h2 class="category-label">Pasta Dishes</h2>
+    <div class="category">
+        <div class="recipe-container">
+            <h2 class="recipe-title">Mushroom Carbonara</h2>
+            <img src="https://images.immediate.co.uk/production/volatile/sites/30/2022/09/Crispy-Mushroom-Carbonara-1bbdb44.jpg?quality=90&webp=true&resize=600,545" alt="Recipe 3" class="recipe-image">
+            <a href="https://www.bbcgoodfood.com/recipes/mushroom-carbonara" class="recipe-link">View Recipe</a>
+            <p class="prep-time">Preparation Time: 10 minutes</p>
+            <p class="prep-time">Total Time: 30 minutes</p>
+            <form action="{% url 'comparison' %}" method="get">
+                <input type="hidden" name="query" value="https://www.bbcgoodfood.com/recipes/mushroom-carbonara">
+                <button type="submit" class="compare-prices-button">Compare Supermarket Prices</button>
+            </form>
+        </div>
+
+        <div class="recipe-container">
+            <h2 class="recipe-title">Lentil Bolognese</h2>
+            <img src="https://images.immediate.co.uk/production/volatile/sites/30/2020/08/recipe-image-legacy-id-563473_12-55e3d75.jpg?quality=90&webp=true&resize=440,400" alt="Recipe 4" class="recipe-image">
+            <a href="https://www.bbcgoodfood.com/recipes/lentil-ragu" class="recipe-link">View Recipe</a>
+            <p class="prep-time">Preparation Time: 15 minutes</p>
+            <p class="prep-time">Total Time: 75 minutes</p>
+            <form action="{% url 'comparison' %}" method="get">
+                <input type="hidden" name="query" value="https://www.bbcgoodfood.com/recipes/lentil-ragu">
+                <button type="submit" class="compare-prices-button">Compare Supermarket Prices</button>
+            </form>
+        </div>
+
+        <div class="recipe-container">
+            <h2 class="recipe-title">Caponata Pasta</h2>
+            <img src="https://images.immediate.co.uk/production/volatile/sites/30/2020/08/caponata-pasta-a0027c4.jpg?quality=90&webp=true&resize=440,400" alt="Recipe 6" class="recipe-image">
+            <a href="https://www.bbcgoodfood.com/recipes/caponata-pasta" class="recipe-link">View Recipe</a>
+            <p class="prep-time">Preparation Time: 2 minutes</p>
+            <p class="prep-time">Total Time: 20 minutes</p>
+            <form action="{% url 'comparison' %}" method="get">
+                <input type="hidden" name="query" value="https://www.bbcgoodfood.com/recipes/caponata-pasta">
+                <button type="submit" class="compare-prices-button">Compare Supermarket Prices</button>
+            </form>
+        </div>
+
+        <div class="recipe-container">
+            <h2 class="recipe-title">Spinach & Courgette Lasagne</h2>
+            <img src="https://images.immediate.co.uk/production/volatile/sites/30/2020/08/recipe-image-legacy-id-1001491_11-2e0fa5c.jpg?quality=90&webp=true&resize=440,400" alt="Recipe 6" class="recipe-image">
+            <a href="https://www.bbcgoodfood.com/recipes/spinach-courgette-lasagne" class="recipe-link">View Recipe</a>
+            <p class="prep-time">Preparation Time: 25 minutes</p>
+            <p class="prep-time">Total Time: 75 minutes</p>
+            <form action="{% url 'comparison' %}" method="get">
+                <input type="hidden" name="query" value="https://www.bbcgoodfood.com/recipes/spinach-courgette-lasagne">
+                <button type="submit" class="compare-prices-button">Compare Supermarket Prices</button>
+            </form>
+        </div>
+
+    </div>
+
+    <h2 class="category-label">Asian Food</h2>
+    <div class="category">
+        <div class="recipe-container">
+            <h2 class="recipe-title">Chilli Peanut Aubergine</h2>
+            <img src="https://images.immediate.co.uk/production/volatile/sites/30/2020/08/roasted-aubergine-with-chilli-peanut-dressing-9f2ded0.jpg?quality=90&webp=true&resize=440,400" alt="Recipe 5" class="recipe-image">
+            <a href="https://www.bbcgoodfood.com/recipes/roasted-aubergine-chilli-peanut-dressing" class="recipe-link">View Recipe</a>
+            <p class="prep-time">Preparation Time: 10 minutes</p>
+            <p class="prep-time">Total Time: 40 minutes</p>
+            <form action="{% url 'comparison' %}" method="get">
+                <input type="hidden" name="query" value="https://www.bbcgoodfood.com/recipes/roasted-aubergine-chilli-peanut-dressing">
+                <button type="submit" class="compare-prices-button">Compare Supermarket Prices</button>
+            </form>
+        </div>
+
+        <div class="recipe-container">
+            <h2 class="recipe-title">Vegan Ramen</h2>
+            <img src="https://images.immediate.co.uk/production/volatile/sites/30/2020/08/vegan-ramen-c656140.jpg?quality=90&webp=true&resize=440,400" alt="Recipe 5" class="recipe-image">
+            <a href="https://www.bbcgoodfood.com/recipes/vegan-ramen" class="recipe-link">View Recipe</a>
+            <p class="prep-time">Preparation Time: 10 minutes</p>
+            <p class="prep-time">Total Time: 25 minutes</p>
+            <form action="{% url 'comparison' %}" method="get">
+                <input type="hidden" name="query" value="https://www.bbcgoodfood.com/recipes/vegan-ramen">
+                <button type="submit" class="compare-prices-button">Compare Supermarket Prices</button>
+            </form>
+        </div>
+
+        <div class="recipe-container">
+            <h2 class="recipe-title">Easy Egg Fried Rice</h2>
+            <img src="https://images.immediate.co.uk/production/volatile/sites/30/2020/08/egg-fried-rice-70b2cce.jpg?quality=90&webp=true&resize=440,400" alt="Recipe 5" class="recipe-image">
+            <a href="https://www.bbcgoodfood.com/recipes/egg-fried-rice" class="recipe-link">View Recipe</a>
+            <p class="prep-time">Preparation Time: 10 minutes</p>
+            <p class="prep-time">Total Time: 20 minutes</p>
+            <form action="{% url 'comparison' %}" method="get">
+                <input type="hidden" name="query" value="https://www.bbcgoodfood.com/recipes/egg-fried-rice">
+                <button type="submit" class="compare-prices-button">Compare Supermarket Prices</button>
+            </form>
+        </div>
+
+        <div class="recipe-container">
+            <h2 class="recipe-title">Noodles with Chilli Oil Eggs</h2>
+            <img src="https://images.immediate.co.uk/production/volatile/sites/30/2020/12/Noodles-with-chilli-oil-eggs-6ec34e9.jpg?quality=90&webp=true&resize=600,545" alt="Recipe 5" class="recipe-image">
+            <a href="https://www.bbcgoodfood.com/recipes/noodles-with-crispy-chilli-oil-eggs" class="recipe-link">View Recipe</a>
+            <p class="prep-time">Preparation Time: 25 minutes</p>
+            <p class="prep-time">Total Time: 75 minutes</p>
+            <form action="{% url 'comparison' %}" method="get">
+                <input type="hidden" name="query" value="https://www.bbcgoodfood.com/recipes/noodles-with-crispy-chilli-oil-eggs">
+                <button type="submit" class="compare-prices-button">Compare Supermarket Prices</button>
+            </form>
+        </div>
+    </div>
+
+    <h2 class="category-label">Curry Dishes</h2>
+    <div class="category">
+        <div class="recipe-container">
+            <h2 class="recipe-title">Easy Lentil Curry</h2>
+            <img src="https://images.immediate.co.uk/production/volatile/sites/30/2010/02/Easy-lentil-curry-15e688f.jpg?quality=90&webp=true&resize=600,545" alt="Recipe 5" class="recipe-image">
+            <a href="https://www.bbcgoodfood.com/recipes/easy-peasy-lentil-curry" class="recipe-link">View Recipe</a>
+            <p class="prep-time">Preparation Time: 5 minutes</p>
+            <p class="prep-time">Total Time: 50 minutes</p>
+            <form action="{% url 'comparison' %}" method="get">
+                <input type="hidden" name="query" value="https://www.bbcgoodfood.com/recipes/easy-peasy-lentil-curry">
+                <button type="submit" class="compare-prices-button">Compare Supermarket Prices</button>
+            </form>
+        </div>
+
+        <div class="recipe-container">
+            <h2 class="recipe-title">Spiced Aubergine Curry</h2>
+            <img src="https://images.immediate.co.uk/production/volatile/sites/30/2020/08/west-indian-spiced-aubergine-curry-791a3aa.jpg?quality=90&webp=true&resize=440,400" alt="Recipe 5" class="recipe-image">
+            <a href="https://www.bbcgoodfood.com/recipes/west-indian-spiced-aubergine-curry" class="recipe-link">View Recipe</a>
+            <p class="prep-time">Preparation Time: 30 minutes</p>
+            <p class="prep-time">Total Time: 45 minutes</p>
+            <form action="{% url 'comparison' %}" method="get">
+                <input type="hidden" name="query" value="https://www.bbcgoodfood.com/recipes/west-indian-spiced-aubergine-curry">
+                <button type="submit" class="compare-prices-button">Compare Supermarket Prices</button>
+            </form>
+        </div>
+
+        <div class="recipe-container">
+            <h2 class="recipe-title">Chickpea Curry</h2>
+            <img src="https://images.immediate.co.uk/production/volatile/sites/30/2020/08/kadala-curry-fad4df3.jpg?quality=90&webp=true&resize=440,400" alt="Recipe 5" class="recipe-image">
+            <a href="https://www.bbcgoodfood.com/recipes/kadala-curry" class="recipe-link">View Recipe</a>
+            <p class="prep-time">Preparation Time: 5 minutes</p>
+            <p class="prep-time">Total Time: 50 minutes</p>
+            <form action="{% url 'comparison' %}" method="get">
+                <input type="hidden" name="query" value="https://www.bbcgoodfood.com/recipes/kadala-curry">
+                <button type="submit" class="compare-prices-button">Compare Supermarket Prices</button>
+            </form>
+        </div>
+
+        <div class="recipe-container">
+            <h2 class="recipe-title">Thai Green Curry</h2>
+            <img src="https://images.immediate.co.uk/production/volatile/sites/30/2020/08/vegetarian-thai-curry-12b120a.jpg?quality=90&webp=true&resize=440,400" alt="Recipe 5" class="recipe-image">
+            <a href="https://www.bbcgoodfood.com/recipes/vegetarian-thai-green-curry" class="recipe-link">View Recipe</a>
+            <p class="prep-time">Preparation Time: 15 minutes</p>
+            <p class="prep-time">Total Time: 55 minutes</p>
+            <form action="{% url 'comparison' %}" method="get">
+                <input type="hidden" name="query" value="https://www.bbcgoodfood.com/recipes/vegetarian-thai-green-curry">
+                <button type="submit" class="compare-prices-button">Compare Supermarket Prices</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- <h2 class="category-label">Pasta Dishes</h2>
+    <div class="category"></div>
+        <div class="recipe-container">
+            <h2 class="recipe-title">Basic Omelette</h2>
+            <img src="https://images.immediate.co.uk/production/volatile/sites/30/2020/08/omelette-3cba9f8.jpg?quality=90&webp=true&resize=440,400" alt="Recipe 1" class="recipe-image">
+            <a href="https://www.bbcgoodfood.com/recipes/basic-omelette" class="recipe-link">View Recipe</a>
+            <p class="prep-time">Preparation Time: 30 minutes</p>
+            <form action="{% url 'comparison' %}" method="get">
+                <input type="hidden" name="query" value="https://www.bbcgoodfood.com/recipes/basic-omelette">
+                <button type="submit" class="compare-prices-button">Compare Supermarket Prices</button>
+            </form>
+        </div>
+
+        <div class="recipe-container">
+            <h2 class="recipe-title">Other Food</h2>
+            <img src="https://images.immediate.co.uk/production/volatile/sites/30/2020/08/cake-f7d9f31.jpg?quality=90&webp=true&resize=440,400" alt="Recipe 2" class="recipe-image">
+            <a href="https://www.bbcgoodfood.com/recipes/sponge-cake" class="recipe-link">View Recipe</a>
+            <p class="prep-time">Preparation Time: 30 minutes</p>
+            <form action="{% url 'comparison' %}" method="get">
+                <input type="hidden" name="query" value="https://www.bbcgoodfood.com/recipes/sponge-cake">
+                <button type="submit" class="compare-prices-button">Compare Supermarket Prices</button>
+            </form>
+        </div>
+    </div> -->
+</body>
+</html>
