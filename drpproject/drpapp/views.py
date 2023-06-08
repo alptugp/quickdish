@@ -77,10 +77,12 @@ def comparison(request):
     return render(request, "drpapp/comparison.html", context)
 
 def diet(request):
+    print("diet called")
     if request.method == 'POST':
         form = DietForm(request.POST)
         if form.is_valid():
             # save form data to the database
+            print("Form valid:", form)
             instance = form.save()
             request.session['instance_id'] = instance.id
             # redirect to home page (index)
@@ -106,8 +108,8 @@ def get_tesco_product_links(items):
     # A Tesco link looks like this: https://www.tesco.com/groceries/en-GB/products/<product-id>
     base_url = "https://www.tesco.com/groceries/en-GB/products/"
     for ingredient in items:
-        if items[ingredient] != "INVALID":
-            items[ingredient] = base_url + items[ingredient]
+        if items[ingredient][0] != "INVALID":
+            items[ingredient] = base_url + items[ingredient][0], items[ingredient][1]
     return items
 
 def get_morrisons_product_links(items):
@@ -125,8 +127,8 @@ def get_asda_product_links(items):
     # An ASDA link looks like this: https://groceries.asda.com/product/<product-id>
     base_url = "https://groceries.asda.com/product/"
     for ingredient in items:
-        if items[ingredient] != "INVALID":
-            items[ingredient] = base_url + items[ingredient]
+        if items[ingredient][0] != "INVALID":
+            items[ingredient] = base_url + items[ingredient][0], items[ingredient][1]
     return items
    
 def money_value(price):
@@ -143,10 +145,10 @@ def tesco_worker(ingredient, items, form_instance):
         price = most_relevant_item['price']
         price = money_value(price)
         item_id = most_relevant_item['id']
-        items[ingredient] = item_id
+        items[ingredient] = item_id, '£' + str(price)
         return price
     else:
-        items[ingredient] = "INVALID"
+        items[ingredient] = "INVALID", "0"
         return 0
 
 def sainsburys_worker(ingredient, items, form_instance):
@@ -154,10 +156,10 @@ def sainsburys_worker(ingredient, items, form_instance):
     if most_relevant_item is not None:
         price = most_relevant_item['retail_price']['price']
         price = money_value(price)
-        items[ingredient] = most_relevant_item['full_url']
+        items[ingredient] = most_relevant_item['full_url'], '£' + str(price)
         return price
     else:
-        items[ingredient] = "INVALID"
+        items[ingredient] = "INVALID", "0"
         return 0
 
 def asda_worker(ingredient, items, form_instance):
@@ -167,10 +169,10 @@ def asda_worker(ingredient, items, form_instance):
         price_str = most_relevant_item.get('price')
         price = money_value(price_str)
         item_id = most_relevant_item['id']
-        items[ingredient] = item_id
+        items[ingredient] = item_id, '£' + str(price)
         return price
     else:
-        items[ingredient] = "INVALID"
+        items[ingredient] = "INVALID", "0"
         return 0 
 
 def morrisons_worker(ingredient, items, form_instance):
