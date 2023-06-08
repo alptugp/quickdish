@@ -1,78 +1,18 @@
-import re
-from timeit import default_timer as timer
 from django.shortcuts import render, redirect
 from .RecipeParser import get_ingredients
 from .TescoSearch import searchTesco
 from .AsdaSearch import searchAsda
 from .SainsburysSearch import searchSainsburys
 from .MorrisonsSearch import search_morrisons
+from .NLP import *
 from .models import DietForm, DietaryRestriction, IngredientsForm
 import concurrent.futures
-import spacy
-
-nlp = spacy.load("en_core_web_sm")
 
 def index(request):
     return render(request, "drpapp/index.html")
 
 def recommendations(request):
     return render(request, "drpapp/recommendations.html")
-
-def token_good(token):
-    units = ["tbsp", "tsp",
-             "g", "kg",
-             "oz", "ml", "l",
-             "pack", "tub", "bag", "jar",
-             "1/2", "1/4", "½",
-             "handful", "large handful"]
-    if not (token.pos_ == "NOUN" or token.pos_ == "ADJ" or token.pos_ == "PROPN"):
-        return False
-    if token.text in units:
-        return False
-    if token.text[0].isdigit():
-        return False
-    return True
-
-def remove_bracketed_text(original):
-    pattern = r'\([^)]*\)'
-    modified_string = re.sub(pattern, '', original)
-    return modified_string
-
-def cleanupIngredients(original_ingredients):
-    toProcess = []
-
-    for ingredient in original_ingredients:
-        # Example: 500g of (soft) butter => 500g of butter
-        temp = remove_bracketed_text(ingredient)
-        
-        # Example: 500g of butter => butter
-        if " of " in temp:
-            temp = temp.split(" of ")[1]
-            # toProcess.append(temp.split(" of ")[1])
-        if "," in temp:
-            temp = temp.rsplit(",", 1)[0]
-        if " or " in temp:
-            temp = temp.split(" or ")[1]
-        if " and " in temp:
-            [l, r] = temp.split(" and ", 1)
-            toProcess.append(l)
-            toProcess.append(r)
-        else:
-            toProcess.append(temp)
-    
-    processed = list(nlp.pipe(toProcess))
-    
-    ingredients = []
-    for tokens in processed:
-        ingredient = ""
-        for token in tokens:
-            if token_good(token):
-                if ingredient:
-                    ingredient += " "
-                ingredient += token.text
-        ingredients.append(ingredient)
-
-    return list(set(ingredient.lower() for ingredient in ingredients))
 
 def comparison(request):
     instance_id = request.session.get('instance_id')
@@ -347,6 +287,3 @@ def total_price_morrisons(ingredients, instance_id):
     executor.shutdown()
     
     return total_price, item_links
-    
-    
-    

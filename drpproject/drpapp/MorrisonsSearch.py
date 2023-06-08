@@ -1,4 +1,5 @@
 import requests
+from .NLP import *
 
 # Sample GET request for "milk" search with vegan, vegetarian, gluten free tags
 # https://groceries.morrisons.com/webshop/api/v1/search?hideOOS=true&searchTerm=milk&tags=19993,19996,20011
@@ -38,7 +39,16 @@ def search_morrisons(item, form_instance):
     response = requests.get(request)
 
     try:
-        return response.json().get('mainFopCollection')['sections'][0]['fops'][0] # ['sku'], ['product']['price']['current']
+        return response.json().get('mainFopCollection')['sections'][0]['fops'][0]
     except:
-        print(f"Cannot find {item} in morrisons")
-        
+        categories = ["ADJ"]
+        item_retry = strip_words(item, categories=categories)
+        if item != item_retry:
+            retry = search_morrisons(item_retry, form_instance)
+            if retry:
+                print(f"MORRISONS: Cannot find \"{item}\", but found \"{item_retry}\"")
+                return retry
+            else:
+                print(f"MORRISONS: Cannot find \"{item}\"")
+        else:
+            return None

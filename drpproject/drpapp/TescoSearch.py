@@ -1,6 +1,7 @@
 import requests
 import json
 from bs4 import BeautifulSoup
+from .NLP import *
 
 def constructTescoGetRequest(item, diet_preferences):
     if diet_preferences is not None:
@@ -64,5 +65,14 @@ def searchTesco(item, form_instance):
         return result
     
     except:
-        print(f"Cannot find {item} in Tesco")
-        return None
+        categories = ["ADJ"]
+        item_retry = strip_words(item, categories=categories)
+        if item != item_retry:
+            retry = searchTesco(item_retry, form_instance)
+            if retry:
+                print(f"TESCO: Cannot find \"{item}\", but found \"{item_retry}\"")
+                return retry
+            else:
+                print(f"TESCO: Cannot find \"{item}\"")
+        else:
+            return None

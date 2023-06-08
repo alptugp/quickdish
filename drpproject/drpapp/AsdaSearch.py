@@ -1,4 +1,5 @@
 import requests
+from .NLP import *
 
 # Sample GET request for "egg" search
 # https://groceries.asda.com/p13nservice/recommendations?storeId=4565&shipDate=currentDate&amendFlag=false&limit=2&placement=search_page.search1_mab&searchTerm=egg&searchQuery=egg&includeSponsoredProducts=false&pageType=SEARCH
@@ -35,4 +36,14 @@ def searchAsda(item, form_instance):
     try:
         return response.json().get('results')[0].get('items')[0]
     except:
-        print(f"Cannot find {item} in Asda")
+        categories = ["ADJ"]
+        item_retry = strip_words(item, categories=categories)
+        if item != item_retry:
+            retry = searchAsda(item_retry, form_instance)
+            if retry:
+                print(f"ASDA: Cannot find \"{item}\", but found \"{item_retry}\"")
+                return retry
+            else:
+                print(f"ASDA: Cannot find \"{item}\"")
+        else:
+            return None
