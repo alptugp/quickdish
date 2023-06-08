@@ -100,10 +100,10 @@
         <caption>Price Comparison</caption>
         <thead>
             <tr>
-                <th>Sainsbury's</th>
-                <th>Asda</th>
-                <th>Morrison's</th>
-                <th>Tesco</th>
+                <th>Sainsbury's <br>(Total Price: £{{ sainsburys_total_price }})</br></th>
+                <th>Asda <br>(Total Price: £{{ asda_total_price }})</br></th>
+                <th>Morrison's <br>(Total Price: £{{ morrisons_total_price }})</br></th>
+                <th>Tesco <br>(Total Price: £{{ tesco_total_price }})</br></th>
             </tr>
         </thead>
         <tbody>
@@ -140,22 +140,6 @@
                 </tr>
             {% endfor %}
         </tbody>
-        <tfoot>
-            <tr>
-                <td class="total-price-column">
-                    Total Price: £{{ sainsburys_total_price }}
-                </td>
-                <td class="total-price-column">
-                    Total Price: £{{ asda_total_price }}
-                </td>
-                <td class="total-price-column">
-                    Total Price: £{{ morrisons_total_price }}
-                </td>
-                <td class="total-price-column">
-                    Total Price: £{{ tesco_total_price }}
-                </td>
-            </tr>
-        </tfoot>
     </table>
 </body>
 </html>
