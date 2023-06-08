@@ -2,6 +2,7 @@ from typing import Any, Mapping, Optional, Type, Union
 from django.db import models
 from django.forms import Form, ModelForm, BooleanField, CharField, HiddenInput
 from django.forms.utils import ErrorList
+from django import forms
 
 class DietaryRestriction(models.Model):
     vegan = models.BooleanField(default = False)
@@ -20,4 +21,8 @@ class IngredientsForm(Form):
             if ingredient != "csrfmiddlewaretoken":
                 field_name = ingredient
                 wanted = ingredient in ingredients
-                self.fields[field_name] = BooleanField(label=ingredient, initial=wanted, required=False)
+                self.fields[field_name] = BooleanField(
+                    label=ingredient, 
+                    initial=wanted, 
+                    required=False,
+                    widget=forms.CheckboxInput(attrs={'class': 'checkbox-left'}))
