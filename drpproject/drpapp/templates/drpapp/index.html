@@ -191,8 +191,18 @@
             dropdownMenu.classList.toggle('show');
         }
 
-        function toggleOption(option) {
-            option.classList.toggle('checked');
+        function selectOption(option) {
+            const dropdownMenu = document.getElementById('dropdownMenu');
+            const options = dropdownMenu.getElementsByTagName('a');
+
+            for (let i = 0; i < options.length; i++) {
+                const menuItem = options[i];
+                if (menuItem === option) {
+                    menuItem.classList.add('checked');
+                } else {
+                    menuItem.classList.remove('checked');
+                }
+            }
         }
 
         document.addEventListener('click', function(event) {
@@ -250,11 +260,7 @@
             <form action="{% url 'comparison' %}" method="get">
                 {% csrf_token %}
                 <input type="text" name="query" class="search-input" placeholder="E.g: https://www.bbcgoodfood.com/recipes/basic-omelette">
-                <form action="{% url 'diet' %}" method="post">
-                    {% csrf_token %}
-                    {{form.as_p}}
-                    <button type="submit" class="search-button">Enter</button>
-                </form>
+                <button type="submit" class="search-button">Enter</button>
             </form>
         </div>
         <div class="action-buttons">
@@ -262,15 +268,16 @@
             <!---->
             <a href="#" class="dietary-preferences-button" onclick="toggleDropdown()">Dietary Preferences</a>
             <div class="dropdown-menu" id="dropdownMenu">
-                <a href="#" onclick="toggleOption(this)">
+                <!---->
+                <a href="#" onclick="selectOption(this)">
                     Vegan
                     <span class="checkbox"></span>
                 </a>
-                <a href="#" onclick="toggleOption(this)">
+                <a href="#" onclick="selectOption(this)">
                     Vegetarian
                     <span class="checkbox"></span>
                 </a>
-                <a href="#" onclick="toggleOption(this)">
+                <a href="#" onclick="selectOption(this)">
                     Gluten free
                     <span class="checkbox"></span>
                 </a>
