@@ -48,7 +48,7 @@ def comparison(request):
         total_price_sainsburys,
         total_price_asda,
         total_price_tesco,
-        # total_price_morrisons,
+        total_price_morrisons,
     ]
     num_threads = len(supermarket_functions)
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
@@ -58,7 +58,7 @@ def comparison(request):
     sainsburys_total_price, sainsburys_item_links = results[0].result()
     asda_total_price, asda_item_links = results[1].result()
     tesco_total_price, tesco_item_links = results[2].result()
-    morrisons_total_price, morrisons_item_links = tesco_total_price, tesco_item_links #REPLACE THIS
+    morrisons_total_price, morrisons_item_links = results[3].result()
     executor.shutdown()
 
     print("ITEMSSSSS:", [sainsburys_total_price, asda_total_price, 
@@ -79,7 +79,10 @@ def comparison(request):
         'ingredients_form'       : ingredients_form,
         'recipe_title'           : title,
         'recipe_image'           : image,
-        'method'                 : instrs
+        'method'                 : instrs,
+        'lowest_total_price_market': get_cheapest_market([float(sainsburys_total_price), float(asda_total_price), 
+                                                         float(morrisons_total_price), float(tesco_total_price)]),
+
     }
     
     return render(request, "drpapp/comparison.html", context)
