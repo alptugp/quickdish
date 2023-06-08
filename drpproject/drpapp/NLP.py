@@ -69,6 +69,10 @@ def splitAndGetUseful(original):
           temp = temp.rsplit(",", 1)[0]
       if " or " in temp:
           temp = temp.split(" or ")[1]
+      if " such as " in temp:
+          temp = temp.split(" such as ")[1]
+      if " like " in temp:
+          temp = temp.split(" like ")[1]
       if " and " in temp:
           [l, r] = [remove_units(x) for x in temp.split(" and ", 1)]
           toProcess.append(l)
