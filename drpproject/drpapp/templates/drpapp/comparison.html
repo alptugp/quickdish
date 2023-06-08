@@ -20,22 +20,24 @@
         .ingredients-recipe {
             margin-bottom: 20px;
             background-color: #fff;
-            padding: 20px;
+            padding: 50px;
             border-radius: 8px;
             display: flex;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         .left-section{
             flex: 1;
+            padding-left:80px;
         }
         .right-section{
             flex: 1;
         }
         .far-right-section{
+            margin-top: 30px;
             flex: 1;
         }
         .image-box {
-            padding:20;
+            margin-left:20px;
             width: 300px; /* Adjust the width of the box */
             height: 200px; /* Adjust the height of the box */
             background-image: url('{{ recipe_image }}');
@@ -96,7 +98,8 @@
 </head>
 <body>
     {% load custom_tags %}
-    <h1>Ingredient Cost Comparison</h1>
+    <!-- <h1>Ingredient Cost Comparison</h1> -->
+    <a href="{% url 'index' %}" class="main-page-button">Back to Main Page</a>
 
     <div class="ingredients-recipe">
         <div class="left-section">
