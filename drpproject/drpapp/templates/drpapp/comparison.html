@@ -46,6 +46,7 @@
         }
         .btn {
             margin-top: 10px;
+            margin-left: -20px;
             padding: 10px 20px;
             background-color: #FF6B35;
             color: white;
@@ -55,11 +56,17 @@
             font-weight: bold;
             border-radius: 10px;
         }
-        .left-section{
+        .left-section {
             margin-top: 15px;
             margin-left: 15px;
         }
-        
+        .left-section li {
+            list-style-type: disc;
+            margin-bottom: 3px;
+        }
+        .left-section li::marker {
+            color: #FF6B35;
+        }
         .right-section{
             margin-top: 15px;
             margin-left: 20px;
@@ -75,7 +82,7 @@
         .image-box {
             margin-top: 0px;
             margin-bottom: 15px;
-            margin-left:20px;
+            margin-left:2px;
             width: 300px; /* Adjust the width of the box */
             height: 200px; /* Adjust the height of the box */
             background-image: url('{{ recipe_image }}');
@@ -91,7 +98,7 @@
         }
         .right-section li {
             margin-bottom: 3px;
-            list-style-type: circle;
+            list-style-type: disc;
         }
         .right-section li::marker {
             color: #FF6B35;
@@ -102,6 +109,7 @@
         }
         .far-right-section li::marker {
             color: #FF6B35;
+            font-weight: bold;
         }
         table {
             border-collapse: collapse;
@@ -144,7 +152,7 @@
             pointer-events: none;
         }
         .checkable-ingredients {
-            margin-left: 15px;
+            margin-left: 0px;
         }
         .container {
             position: absolute;
@@ -170,12 +178,25 @@
             border-radius: 4px;
             outline: none;
             transition: border-color 0.1s ease-in-out;
-            background-color: #fff; /* Add a white background */
+            background-color: #fff;
+            position: relative;
         }
+
         input[type=checkbox]:checked {
             background-color: #FF6B35;
             border-color: black;
         }
+
+        input[type=checkbox]:checked::before {
+            content: "\2713"; /* Unicode character for a checkmark */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 11px;
+            color: white;
+        }
+
     </style>
     <script>
         function getRandomInt(min, max) {
@@ -241,17 +262,21 @@
                 <div class="checkable-ingredients">
                     <form method="POST" action="{% url 'comparison' %}">
                         {% csrf_token %}
+                        <ul>
                         {% for ingredient in ingredients_form %}
+                            <li>
                             <div class="ingredient-row">
                                 <div class="checkbox-container">
                                     {{ingredient.label}}{{ingredient}}
                                     <br>
                                 </div>
                             </div>
+                            </li>
                         {% endfor %}
                         <div class="ingredient-row">
                             <button type="submit" class="btn">Recalculate Prices</button>
                         </div>
+                        </ul>
                     </form>
                 </div>            
             </div>
