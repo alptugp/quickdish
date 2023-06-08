@@ -77,6 +77,9 @@
         .lowest-price {
             color: green;
         }
+        .not-lowest-price {
+            color: red;
+        }
     </style>
 </head>
 <body>
@@ -107,26 +110,26 @@
                     {% if lowest_total_price_market == "Sainsbury's" %}
                         <th class="lowest-price">Sainsbury's<br>(Total Price: £{{ sainsburys_total_price }})</br></th>
                     {% else %}    
-                        <th>Sainsbury's<br>(Total Price: £{{ sainsburys_total_price }})</br></th>
+                        <th class="not-lowest-price">Sainsbury's<br>(Total Price: £{{ sainsburys_total_price }})</br></th>
                     {% endif %}
 
                     {% if lowest_total_price_market == "Asda" %}
                         <th class="lowest-price">Asda<br>(Total Price: £{{ asda_total_price }})</br></th>
                     {% else %}    
-                        <th>Asda<br>(Total Price: £{{ asda_total_price }})</br></th>
+                        <th class="not-lowest-price">Asda<br>(Total Price: £{{ asda_total_price }})</br></th>
                     {% endif %}
 
 
                     {% if lowest_total_price_market == "Morrisons" %}
                         <th class="lowest-price">Morrisons<br>(Total Price: £{{ morrisons_total_price }})</br></th>
                     {% else %}    
-                        <th>Morrisons<br>(Total Price: £{{ morrisons_total_price }})</br></th>
+                        <th class="not-lowest-price">Morrisons<br>(Total Price: £{{ morrisons_total_price }})</br></th>
                     {% endif %}
 
                     {% if lowest_total_price_market == "Tesco" %}
                         <th class="lowest-price">Tesco<br>(Total Price: £{{ tesco_total_price }})</br></th>
                     {% else %}    
-                        <th>Tesco<br>(Total Price: £{{ tesco_total_price }})</br></th>
+                        <th class="not-lowest-price">Tesco<br>(Total Price: £{{ tesco_total_price }})</br></th>
                     {% endif %}
             </tr>
         </thead>
