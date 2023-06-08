@@ -21,11 +21,11 @@
         }
         .ingredients-recipe {
             margin-bottom: 20px;
-            margin-right: 200px;
-            margin-left: 200px;
+            margin-right: 100px;
+            margin-left: 100px;
             margin-top: 80px;
             background-color: rgba(255, 255, 255, 0.93);
-            padding: 30px;
+            padding: 50px;
             border-radius: 20px;
             display: flex;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -33,14 +33,26 @@
         }
         h1 {
             margin-top: 0px;
-            margin-bottom: 0px;
+            margin-bottom: 2px;
             font-size: 20px;
             color: #FF6B35;
+        }
+        .btn {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #FF6B35;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 10px;
         }
         .left-section{
             margin-top: 15px;
             margin-left: 15px;
         }
+        
         .right-section{
             margin-top: 15px;
             margin-left: 20px;
@@ -55,7 +67,7 @@
         }
         .image-box {
             margin-top: 0px;
-            margin-bottom: 0px;
+            margin-bottom: 15px;
             margin-left:20px;
             width: 300px; /* Adjust the width of the box */
             height: 200px; /* Adjust the height of the box */
@@ -112,6 +124,9 @@
         }
         span {
             pointer-events: none;
+        }
+        .checkable-ingredients {
+            margin-left: 15px;
         }
         .container {
             position: absolute;
@@ -205,20 +220,22 @@
         <div class="ingredients-recipe">
             <div class="left-section"> 
                 <h1>Shopping List</h1>
-                <form method="POST" action="{% url 'comparison' %}">
-                    {% csrf_token %}
-                    {% for ingredient in ingredients_form %}
-                        <div class="ingredient-row">
-                            <div class="checkbox-container">
-                                {{ingredient.label}}{{ingredient}}
-                                <br>
+                <div class="checkable-ingredients">
+                    <form method="POST" action="{% url 'comparison' %}">
+                        {% csrf_token %}
+                        {% for ingredient in ingredients_form %}
+                            <div class="ingredient-row">
+                                <div class="checkbox-container">
+                                    {{ingredient.label}}{{ingredient}}
+                                    <br>
+                                </div>
                             </div>
+                        {% endfor %}
+                        <div class="ingredient-row">
+                            <button type="submit" class="btn">Recalculate Prices</button>
                         </div>
-                    {% endfor %}
-                    <div class="ingredient-row">
-                        <button type="submit" class="btn">Recalculate Prices</button>
-                    </div>
-                </form>
+                    </form>
+                </div>            
             </div>
 
             <div class="right-section">
