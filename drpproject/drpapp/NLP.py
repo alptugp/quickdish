@@ -50,8 +50,8 @@ def remove_units(original):
     return modified_string.strip()
 
 def split_3_a_comma_b_and_c(original):
-    # pattern = r"(.*?)\s*,\s*(.+?)\s+and\s+(.+)"
-    pattern = r"(.*?)\s*,\s*(.+?)((\s+)|(\s*,\s*))and\s+(.+)"
+    # pattern = r"([a-zA-Z_0-9]*?)\s*,\s*([a-zA-Z_0-9]+?)\s+and\s+([a-zA-Z_0-9]+)"
+    pattern = r"([a-zA-Z_0-9]*?)\s*,\s*([a-zA-Z_0-9]+?)((\s+)|(\s*,\s*))and\s+([a-zA-Z_0-9]+)"
     match = re.match(pattern, original)
     if match:
         return match.groups()
