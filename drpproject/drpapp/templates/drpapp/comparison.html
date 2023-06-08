@@ -130,11 +130,13 @@
                         {% endwith %}
                     </td>
                     <td>
-                        {% if morrisons_item_links|dict_lookup:ingredient != "INVALID" %}
-                        <a href="{{ morrisons_item_links|dict_lookup:ingredient }}">{{ ingredient }}</a>
-                        {% else %}
-                            {{ ingredient }} (not found)
-                        {% endif %}
+                        {% with morrisons_result=morrisons_item_links|dict_lookup:ingredient %}
+                            {% if morrisons_result.0 != "INVALID" %}
+                                <a href="{{ morrisons_result.0 }}">{{ morrisons_result.1 }}</a>
+                            {% else %}
+                                {{ ingredient }} (not found)
+                            {% endif %}
+                        {% endwith %}
                     </td>
                     <td>
                         {% with tesco_result=tesco_item_links|dict_lookup:ingredient %}

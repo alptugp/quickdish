@@ -116,8 +116,8 @@ def get_morrisons_product_links(items):
     # A Morrisons link looks like this: https://groceries.morrisons.com/products/<id>
     base_url = "https://groceries.morrisons.com/products/"
     for ingredient in items:
-        if items[ingredient] != "INVALID":
-            items[ingredient] = base_url + items[ingredient]
+        if items[ingredient][0] != "INVALID":
+            items[ingredient] = base_url + items[ingredient][0], items[ingredient][1]
     return items
 
 def get_sainsburys_product_links(items):
@@ -180,10 +180,10 @@ def morrisons_worker(ingredient, items, form_instance):
     if most_relevant_item is not None:
         price = most_relevant_item['product']['price']['current']
         item_id = most_relevant_item['sku']
-        items[ingredient] = item_id
+        items[ingredient] = item_id, '£' + str(price)
         return price
     else:
-        items[ingredient] = "INVALID"
+        items[ingredient] = "INVALID", "0"
         return 0
         
 
