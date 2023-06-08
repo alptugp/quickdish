@@ -14,7 +14,7 @@ deploy-job-vm:
   rules:
     - if: '$CI_COMMIT_REF_NAME == "main"'
   script:
-    - docker build . --tag drpapp:latest --label drpapplabel --file ./Dockerfile
+    - docker build . --tag drpapp:latest --label drpapplabel --file ./Dockerfile --build-arg DB_PASSWORD=${DB_PASSWORD}
     - docker stop $(docker ps -a -q)
     - docker rm $(docker ps -a -q)
     - docker image prune --force --filter='label=drpapplabel'
@@ -36,9 +36,9 @@ experiment-deploy-vm:
   tags:
     - experiment
   rules:
-    - if: '$CI_COMMIT_REF_NAME == "searchAccuracy"'
+    - if: '$CI_COMMIT_REF_NAME == "databaseSetup"'
   script:
-    - docker build . --tag drpapp:latest --label drpapplabel --file ./Dockerfile
+    - docker build . --tag drpapp:latest --label drpapplabel --file ./Dockerfile --build-arg DB_PASSWORD=${DB_PASSWORD}
     - docker stop $(docker ps -a -q)
     - docker rm $(docker ps -a -q)
     - docker image prune --force --filter='label=drpapplabel'

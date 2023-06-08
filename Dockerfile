@@ -21,7 +21,8 @@ FROM venv-stage AS dependency-stage
 # APT dependencies
 RUN apt update && \
     # GCC-related
-    apt install -y build-essential
+    apt install -y build-essential \
+                   postgresql-client
 
 COPY ./requirements.txt .
 # Install PIP dependencies
@@ -39,6 +40,9 @@ FROM venv-stage AS production-stage
 ENTRYPOINT ["./entrypoint.sh"]
 
 # Set environment variables
+ARG DB_PASSWORD
+ENV DB_PASSWORD=${DB_PASSWORD}
+ENV DOCKER_ENV 1
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 ENV DEBUG 0
