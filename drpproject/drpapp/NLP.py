@@ -24,6 +24,9 @@ def strip_words(original, categories):
             processed += token.text
     return processed
 
+def remove_empty_strings(words):
+    return [word for word in words if word]
+
 def token_good(token):
     if not (token.pos_ == "NOUN" or token.pos_ == "ADJ" or token.pos_ == "PROPN"):
         return False
@@ -50,10 +53,11 @@ def remove_units(original):
     return modified_string.strip()
 
 def split_3_a_comma_b_and_c(original):
-    pattern = r"([a-zA-Z_0-9]*?)\s*,\s*([a-zA-Z_0-9]+?)((\s+)|(\s*,\s*))and\s+([a-zA-Z_0-9]+)"
+    pattern = r"([\w\s]*?)\s*,\s*([\w\s]+?)((\s+)|(\s*,\s*))and\s+([\w\s]+)"
     match = re.match(pattern, original)
     if match:
-        return match.groups()
+        split = match.groups()
+        return remove_empty_strings(split)
     else:
         return [original]
 
@@ -103,6 +107,6 @@ def cleanupIngredients(original_ingredients):
                 ingredient += token.text
         ingredients.append(ingredient)
     
-    ingredients = [ingredient for ingredient in ingredients if ingredient]
+    ingredients = remove_empty_strings(ingredients)
 
     return list(set(ingredient.lower() for ingredient in ingredients))
