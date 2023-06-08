@@ -100,62 +100,56 @@
         <caption>Price Comparison</caption>
         <thead>
             <tr>
-                <th>Sainsbury's</th>
-                <th>Asda</th>
-                <th>Morrison's</th>
-                <th>Tesco</th>
+                <th>Ingredient</th> <!-- New column for row names -->
+                <th>Sainsbury's <br>(Total Price: £{{ sainsburys_total_price }})</br></th>
+                <th>Asda <br>(Total Price: £{{ asda_total_price }})</br></th>
+                <th>Morrison's <br>(Total Price: £{{ morrisons_total_price }})</br></th>
+                <th>Tesco <br>(Total Price: £{{ tesco_total_price }})</br></th>
             </tr>
         </thead>
         <tbody>
             {% for ingredient, link in sainsburys_item_links.items %}
                 <tr>
+                    <td>{{ ingredient }}</td> <!-- New column for row names -->
                     <td>
-                        {% if sainsburys_item_links|dict_lookup:ingredient != "INVALID" %}
-                            <a href="{{ sainsburys_item_links|dict_lookup:ingredient }}">{{ ingredient }}</a>
-                        {% else %}
-                            {{ ingredient }} (not found)
-                        {% endif %}
+                        {% with sainsburys_result=sainsburys_item_links|dict_lookup:ingredient %}
+                            {% if sainsburys_result.0 != "INVALID" %}
+                                <a href="{{ sainsburys_result.0 }}">{{ sainsburys_result.1 }}</a>
+                            {% else %}
+                                {{ ingredient }} (not found)
+                            {% endif %}
+                        {% endwith %}
                     </td>
                     <td>
-                        {% if asda_item_links|dict_lookup:ingredient != "INVALID" %}
-                            <a href="{{ asda_item_links|dict_lookup:ingredient }}">{{ ingredient }}</a>
-                        {% else %}
-                            {{ ingredient }} (not found)
-                        {% endif %}
+                        {% with asda_result=asda_item_links|dict_lookup:ingredient %}
+                            {% if asda_result.0 != "INVALID" %}
+                                <a href="{{ asda_result.0 }}">{{ asda_result.1 }}</a>
+                            {% else %}
+                                {{ ingredient }} (not found)
+                            {% endif %}
+                        {% endwith %}
                     </td>
                     <td>
-                        {% if morrisons_item_links|dict_lookup:ingredient != "INVALID" %}
-                        <a href="{{ morrisons_item_links|dict_lookup:ingredient }}">{{ ingredient }}</a>
-                        {% else %}
-                            {{ ingredient }} (not found)
-                        {% endif %}
+                        {% with morrisons_result=morrisons_item_links|dict_lookup:ingredient %}
+                            {% if morrisons_result.0 != "INVALID" %}
+                                <a href="{{ morrisons_result.0 }}">{{ morrisons_result.1 }}</a>
+                            {% else %}
+                                {{ ingredient }} (not found)
+                            {% endif %}
+                        {% endwith %}
                     </td>
                     <td>
-                        {% if tesco_item_links|dict_lookup:ingredient != "INVALID" %}
-                            <a href="{{ tesco_item_links|dict_lookup:ingredient }}">{{ ingredient }}</a>
-                        {% else %}
-                            {{ ingredient }} (not found)
-                        {% endif %}
+                        {% with tesco_result=tesco_item_links|dict_lookup:ingredient %}
+                            {% if tesco_result.0 != "INVALID" %}
+                                <a href="{{ tesco_result.0 }}">{{ tesco_result.1 }}</a>
+                            {% else %}
+                                {{ ingredient }} (not found)
+                            {% endif %}
+                        {% endwith %}
                     </td>
                 </tr>
             {% endfor %}
         </tbody>
-        <tfoot>
-            <tr>
-                <td class="total-price-column">
-                    Total Price: £{{ sainsburys_total_price }}
-                </td>
-                <td class="total-price-column">
-                    Total Price: £{{ asda_total_price }}
-                </td>
-                <td class="total-price-column">
-                    Total Price: £{{ morrisons_total_price }}
-                </td>
-                <td class="total-price-column">
-                    Total Price: £{{ tesco_total_price }}
-                </td>
-            </tr>
-        </tfoot>
     </table>
 </body>
 </html>
