@@ -25,7 +25,12 @@ def strip_words(original, categories):
     return processed
 
 def remove_empty_strings(words):
-    return [word for word in words if word]
+    result = []
+    for word in words:
+        if word:
+            if word.strip():
+                result.append(word)
+    return result
 
 def token_good(token):
     if not (token.pos_ == "NOUN" or token.pos_ == "ADJ" or token.pos_ == "PROPN"):
@@ -67,6 +72,7 @@ def splitAndGetUseful(original):
     temps = split_3_a_comma_b_and_c(original)
 
     for temp in temps:
+        print(temp)
         if " of " in temp:
             temp = temp.split(" of ")[1]
         if "," in temp:
@@ -86,15 +92,14 @@ def splitAndGetUseful(original):
         else:
             temp = remove_units(temp)
             toProcess.append(temp)
-        return toProcess
+    return toProcess
 
 def cleanupIngredients(original_ingredients):
     toProcess = []
 
     for ingredient in original_ingredients:
         temps = splitAndGetUseful(ingredient)
-        for temp in temps:
-          toProcess.append(temp)
+        toProcess.extend(temps)
     
     processed = list(nlp.pipe(toProcess))
     
