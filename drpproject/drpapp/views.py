@@ -40,6 +40,8 @@ def comparison(request):
         request.session[original_ingredients_key] = original_ingredients
         request.session[full_ingredients_key] = full_ingredients
     
+    ingredients = list(map(str.title, ingredients))
+    full_ingredients = list(map(str.title, full_ingredients)) 
     ingredients_form = IngredientsForm(full_ingredients=full_ingredients, ingredients=ingredients)
 
     supermarket_functions = [
