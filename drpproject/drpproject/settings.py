@@ -98,7 +98,7 @@ elif inDockerEnvironment:
             'NAME': 'drpapp',
             'USER': 'drp_group_01',
             'PASSWORD': os.environ.get('DB_PASSWORD'),
-            'HOST': 'localhost',
+            'HOST': 'cloud-vm-42-57.doc.ic.ac.uk',
             'PORT': '',
         }
     }
