@@ -49,22 +49,34 @@ def remove_units(original):
     modified_string = re.sub(pattern, '', original)
     return modified_string.strip()
 
-def splitAndGetUseful(temp):
-    toProcess = []
-    temp = remove_bracketed_text(temp)
-    if " of " in temp:
-        temp = temp.split(" of ")[1]
-    if "," in temp:
-        temp = temp.rsplit(",", 1)[0]
-    if " or " in temp:
-        temp = temp.split(" or ")[1]
-    if " and " in temp:
-        [l, r] = [remove_units(x) for x in temp.split(" and ", 1)]
-        toProcess.append(l)
-        toProcess.append(r)
+def split_3_a_comma_b_and_c(original):
+    # pattern = r"(.*?)\s*,\s*(.+?)\s+and\s+(.+)"
+    pattern = r"(.*?)\s*,\s*(.+?)((\s+)|(\s*,\s*))and\s+(.+)"
+    match = re.match(pattern, original)
+    if match:
+        return match.groups()
     else:
-        temp = remove_units(temp)
-        toProcess.append(temp)
+        return [original]
+
+def splitAndGetUseful(original):
+    toProcess = []
+    original = remove_bracketed_text(original)
+    temps = split_3_a_comma_b_and_c(original)
+
+    for temp in temps:
+      if " of " in temp:
+          temp = temp.split(" of ")[1]
+      if "," in temp:
+          temp = temp.rsplit(",", 1)[0]
+      if " or " in temp:
+          temp = temp.split(" or ")[1]
+      if " and " in temp:
+          [l, r] = [remove_units(x) for x in temp.split(" and ", 1)]
+          toProcess.append(l)
+          toProcess.append(r)
+      else:
+          temp = remove_units(temp)
+          toProcess.append(temp)
     return toProcess
 
 def cleanupIngredients(original_ingredients):
@@ -87,5 +99,7 @@ def cleanupIngredients(original_ingredients):
                     ingredient += " "
                 ingredient += token.text
         ingredients.append(ingredient)
+    
+    ingredients = [ingredient for ingredient in ingredients if ingredient]
 
     return list(set(ingredient.lower() for ingredient in ingredients))
