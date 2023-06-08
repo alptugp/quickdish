@@ -264,8 +264,6 @@
             </form>
         </div>
         <div class="action-buttons">
-            <!--<a href="{% url 'diet' %}" class="dietary-preferences-button">Dietary Preferences</a>--> 
-            <!---->
             <a href="#" class="dietary-preferences-button" onclick="toggleDropdown()">Dietary Preferences</a>
             <div class="dropdown-menu" id="dropdownMenu">
                 <form method="POST" action="{% url 'index' %}">
@@ -273,20 +271,16 @@
                     {{ diet_form.as_p }}
                     <button type="submit">Submit</button>
                 </form>
-                <!-- <a href="#" onclick="selectOption(this)">
-                    Vegan
-                    <span class="checkbox"></span>
-                </a>
-                <a href="#" onclick="selectOption(this)">
-                    Vegetarian
-                    <span class="checkbox"></span>
-                </a>
-                <a href="#" onclick="selectOption(this)">
-                    Gluten free
-                    <span class="checkbox"></span>
-                </a> -->
             </div>
-            <a href="{% url 'recommendations' %}" class="recipe-recommendations-button">Give Me Some Ideas</a>
+            {% if recommendation == "vegan" %}
+                <a href="{% url 'recommendations_ve' %}" class="recipe-recommendations-button">Give Me Some Ideas</a>
+            {% elif recommendation == "vegetarian" %}
+                <a href="{% url 'recommendations_v' %}" class="recipe-recommendations-button">Give Me Some Ideas</a>
+            {% elif recommendation == "gluten_free" %}
+                <a href="{% url 'recommendations_gf' %}" class="recipe-recommendations-button">Give Me Some Ideas</a>
+            {% else %}
+                <a href="{% url 'recommendations' %}" class="recipe-recommendations-button">Give Me Some Ideas</a>
+            {% endif %}
         </div>
     </div>
 </body>

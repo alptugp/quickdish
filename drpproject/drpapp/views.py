@@ -12,25 +12,38 @@ dietary_preferences = [
     "vegan",
     "vegetarian",
     "gluten_free",
+    "none",
 ]
 
 def index(request):
+    recommendation = "none"
     if request.method == 'POST':
         diet_form = DietForm(request.POST)
         if diet_form.is_valid():
             preferences = diet_form.cleaned_data
             request.session['dietary_preferences'] = preferences
+            for rec in dietary_preferences:
+                if preferences.get(rec):
+                    recommendation = rec
+                    break
     elif request.method == 'GET':
         diet_form = DietForm()
     
     context = {
         'diet_form': diet_form,
+        'recommendation': recommendation,
     }
     
     return render(request, "drpapp/index.html", context=context)
 
 def recommendations(request):
     return render(request, "drpapp/recommendations.html")
+def recommendations_vegan(request):
+    return render(request, "drpapp/recommendations_ve.html")
+def recommendations_vegetarian(request):
+    return render(request, "drpapp/recommendations_v.html")
+def recommendations_gluten_free(request):
+    return render(request, "drpapp/recommendations_gf.html")
 
 def comparison(request):
     original_ingredients_key = 'original_ingredients'

@@ -3,12 +3,13 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    # ex: /drpapp/ - the index page
+    # Homepage
     path("", views.index, name="index"),
-    # ex: /drpapp/comparison/ - the price comparison page
+    # Comparison
     path("comparison/", views.comparison, name="comparison"),
-    # ex: /drpapp/diet/ - the dietary preferences page
-    path("diet/", views.diet, name="diet"),
-    # ex: /drpapp/recommendations/ - the recipe recommendations page
+    # Recommendations
     path("recommendations/", views.recommendations, name="recommendations"),
+    path("recommendations_ve/", views.recommendations_vegan, name="recommendations_ve"),
+    path("recommendations_v/", views.recommendations_vegetarian, name="recommendations_v"),
+    path("recommendations_gf/", views.recommendations_gluten_free, name="recommendations_gf"),
 ]
