@@ -25,12 +25,7 @@ def strip_words(original, categories):
     return processed
 
 def remove_empty_strings(words):
-    result = []
-    for word in words:
-        if word:
-            if word.strip():
-                result.append(word)
-    return result
+    return [word for word in words if word and word.strip()]
 
 def token_good(token):
     if not (token.pos_ == "NOUN" or token.pos_ == "ADJ" or token.pos_ == "PROPN"):

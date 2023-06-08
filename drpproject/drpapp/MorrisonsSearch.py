@@ -5,18 +5,17 @@ from .NLP import *
 # https://groceries.morrisons.com/webshop/api/v1/search?hideOOS=true&searchTerm=milk&tags=19993,19996,20011
 # https://groceries.morrisons.com/webshop/api/v1/search?hideOOS=true&searchTerm=blue%20milk&tags=20011
         
-def construct_morrisons_get_request(item, diet_preferences):
-    vegan_tag = "20011"
-    gluten_free_tag = "19993"
-    vegetarian_tag = "19996"
+def construct_morrisons_get_request(item, preferences):
+    pref_tags = {
+        "vegan": "20011",
+        "vegetarian": "19996",
+        "gluten_free": "19993",
+    }
     tags = []
-    if diet_preferences is not None:
-        if diet_preferences.vegan:
-            tags.append(vegan_tag)
-        if diet_preferences.vegetarian:
-            tags.append(vegetarian_tag)
-        if diet_preferences.gluten_free:
-            tags.append(gluten_free_tag)
+    if preferences:
+        for pref in preferences.keys():
+            if preferences.get(pref):
+                tags.append(pref_tags.get(pref))
     
     if len(tags) > 0:
         tags = ",".join(tags)
@@ -34,8 +33,8 @@ def construct_morrisons_get_request(item, diet_preferences):
     url += delim.join(paramString)
     return url
 
-def search_morrisons(item, form_instance):
-    request = construct_morrisons_get_request(item, form_instance)
+def search_morrisons(item, preferences):
+    request = construct_morrisons_get_request(item, preferences)
     response = requests.get(request)
 
     try:
@@ -44,7 +43,7 @@ def search_morrisons(item, form_instance):
         categories = ["ADJ"]
         item_retry = strip_words(item, categories=categories)
         if item != item_retry:
-            retry = search_morrisons(item_retry, form_instance)
+            retry = search_morrisons(item_retry, preferences)
             if retry:
                 print(f"MORRISONS: Cannot find \"{item}\", but found \"{item_retry}\"")
                 return retry

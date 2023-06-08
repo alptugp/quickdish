@@ -268,8 +268,12 @@
             <!---->
             <a href="#" class="dietary-preferences-button" onclick="toggleDropdown()">Dietary Preferences</a>
             <div class="dropdown-menu" id="dropdownMenu">
-                <!---->
-                <a href="#" onclick="selectOption(this)">
+                <form method="POST" action="{% url 'index' %}">
+                    {% csrf_token %}
+                    {{ diet_form.as_p }}
+                    <button type="submit">Submit</button>
+                </form>
+                <!-- <a href="#" onclick="selectOption(this)">
                     Vegan
                     <span class="checkbox"></span>
                 </a>
@@ -280,7 +284,7 @@
                 <a href="#" onclick="selectOption(this)">
                     Gluten free
                     <span class="checkbox"></span>
-                </a>
+                </a> -->
             </div>
             <a href="{% url 'recommendations' %}" class="recipe-recommendations-button">Give Me Some Ideas</a>
         </div>

@@ -3,14 +3,11 @@ import json
 from bs4 import BeautifulSoup
 from .NLP import *
 
-def constructTescoGetRequest(item, diet_preferences):
-    if diet_preferences is not None:
-        if diet_preferences.vegan:
-            item = "vegan " + item
-        if diet_preferences.vegetarian:
-            item = "vegetarian " + item
-        if diet_preferences.gluten_free:
-            item = "gluten-free " + item
+def constructTescoGetRequest(item, preferences):
+    if preferences:
+        for pref in preferences.keys():
+            if preferences.get(pref):
+                item = pref + item
     params = {
         "query" : item,
         # "icid" : f"tescohp_sws-1_m-ft_in-{item}_out-{item}"
@@ -25,8 +22,8 @@ def constructTescoGetRequest(item, diet_preferences):
     }
     return url, headers
 
-def searchTesco(item, form_instance):
-    request, headers = constructTescoGetRequest(item, form_instance)
+def searchTesco(item, preferences):
+    request, headers = constructTescoGetRequest(item, preferences)
 
     # Tesco-specific class names
     script_type = 'application/ld+json'
@@ -68,7 +65,7 @@ def searchTesco(item, form_instance):
         categories = ["ADJ"]
         item_retry = strip_words(item, categories=categories)
         if item != item_retry:
-            retry = searchTesco(item_retry, form_instance)
+            retry = searchTesco(item_retry, preferences)
             if retry:
                 print(f"TESCO: Cannot find \"{item}\", but found \"{item_retry}\"")
                 return retry
