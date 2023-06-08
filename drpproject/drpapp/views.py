@@ -145,7 +145,7 @@ def tesco_worker(ingredient, items, form_instance):
         price = most_relevant_item['price']
         price = money_value(price)
         item_id = most_relevant_item['id']
-        items[ingredient] = item_id, '£' + str(price)
+        items[ingredient] = item_id, '£' + f'{price:.2f}'
         return price
     else:
         items[ingredient] = "INVALID", "0"
@@ -156,7 +156,7 @@ def sainsburys_worker(ingredient, items, form_instance):
     if most_relevant_item is not None:
         price = most_relevant_item['retail_price']['price']
         price = money_value(price)
-        items[ingredient] = most_relevant_item['full_url'], '£' + str(price)
+        items[ingredient] = most_relevant_item['full_url'], '£' + f'{price:.2f}'
         return price
     else:
         items[ingredient] = "INVALID", "0"
@@ -169,7 +169,7 @@ def asda_worker(ingredient, items, form_instance):
         price_str = most_relevant_item.get('price')
         price = money_value(price_str)
         item_id = most_relevant_item['id']
-        items[ingredient] = item_id, '£' + str(price)
+        items[ingredient] = item_id, '£' + f'{price:.2f}'
         return price
     else:
         items[ingredient] = "INVALID", "0"
@@ -180,7 +180,7 @@ def morrisons_worker(ingredient, items, form_instance):
     if most_relevant_item is not None:
         price = most_relevant_item['product']['price']['current']
         item_id = most_relevant_item['sku']
-        items[ingredient] = item_id, '£' + str(price)
+        items[ingredient] = item_id, '£' + f'{price:.2f}'
         return price
     else:
         items[ingredient] = "INVALID", "0"
