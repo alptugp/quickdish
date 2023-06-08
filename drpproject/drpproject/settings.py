@@ -60,6 +60,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+
 ROOT_URLCONF = 'drpproject.urls'
 
 TEMPLATES = [
@@ -84,11 +86,24 @@ WSGI_APPLICATION = 'drpproject.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 inHerokuEnvironment = 'DATABASE_URL' in os.environ
+inDockerEnvironment = os.environ.get('DOCKER_ENV')
 if inHerokuEnvironment:
     # Heroku Postgres
     DATABASES = {
         'default': dj_database_url.config(conn_health_checks=True, conn_max_age=600, ssl_require=True)
     }
+# elif inDockerEnvironment:
+#     # Dockerized version linking to PostgreSQL running on VM
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.postgresql',
+#             'NAME': 'drpapp',
+#             'USER': 'drp_group_01',
+#             'PASSWORD': os.environ.get('DB_PASSWORD'),
+#             'HOST': 'cloud-vm-42-57.doc.ic.ac.uk',
+#             'PORT': '',
+#         }
+#     }
 else:
     # Local version of SQLite
     DATABASES = {

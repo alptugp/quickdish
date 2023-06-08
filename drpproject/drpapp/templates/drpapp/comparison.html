@@ -17,22 +17,42 @@
             margin-top: 20px;
             color: #333;
         }
-        .ingredient-list {
+        .ingredients-recipe {
             margin-bottom: 20px;
             background-color: #fff;
-            padding: 20px;
+            padding: 50px;
             border-radius: 8px;
+            display: flex;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-        .ingredient-list h2 {
+        .left-section{
+            flex: 1;
+            padding-left:80px;
+        }
+        .right-section{
+            flex: 1;
+        }
+        .far-right-section{
+            margin-top: 30px;
+            flex: 1;
+        }
+        .image-box {
+            margin-left:20px;
+            width: 300px; /* Adjust the width of the box */
+            height: 200px; /* Adjust the height of the box */
+            background-image: url('{{ recipe_image }}');
+            background-size: cover;
+            background-position: center;
+        }
+        .ingredients-recipe h2 {
             margin-top: 0;
         }
-        .ingredient-list ul {
+        .ingredients-recipe ul {
             list-style-type: none;
             padding: 0;
             margin-left: 20px;
         }
-        .ingredient-list li {
+        .ingredients-recipe li {
             margin-bottom: 5px;
         }
         .checkbox-left {
@@ -84,22 +104,39 @@
 </head>
 <body>
     {% load custom_tags %}
-    <h1>Ingredient Cost Comparison</h1>
+    <!-- <h1>Ingredient Cost Comparison</h1> -->
+    <a href="{% url 'index' %}" class="main-page-button">Back to Main Page</a>
 
-    <div class="ingredient-list">
-        <h2>Ingredients stated in recipe</h2>
-        <ul>
-            {% for ingredient in original_ingredients %}
-                <li>{{ ingredient }}</li>
-            {% endfor %}
-        </ul>
+    <div class="ingredients-recipe">
+        <div class="left-section">
+            <h2>Shopping List</h2>
+            <form method="POST" action="{% url 'comparison' %}">
+                {% csrf_token %}
+                {{ ingredients_form.as_p }}
+                <button type="submit">Recalculate prices</button>
+            </form>
+        </div>
 
-        <h2>Include/exclude ingredients</h2>
-        <form method="POST" action="{% url 'comparison' %}">
-            {% csrf_token %}
-            {{ ingredients_form.as_p }}
-            <button type="submit">Recalculate prices</button>
-        </form>
+        <div class="right-section">
+            <h2>{{ recipe_title }}</h2>
+            <div class="image-box"></div>
+            <h3>Ingredients:</h3>
+            <ul>
+                {% for ingredient in original_ingredients %}
+                    <li>{{ ingredient }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="far-right-section">
+            <h3>Method:</h3>
+            <p></p>
+            <ol>
+                {% for instr in method %}
+                    <li>{{ instr }}</li>
+                {% endfor %}
+            </ol>
+        </div>
     </div>
 
     <table>

@@ -3,6 +3,17 @@ import spacy
 
 nlp = spacy.load("en_core_web_sm")
 
+units = ["teaspoon", "tablespoon",
+         "tsp", "tbsp",
+         "cup", "pack", "tub", "bag", "jar", "piece",
+         "pint", "gallon", "quart",
+         "gram", "kilogram", "pound", "ounce",
+         "g", "kg", "lb", "lb",
+         "cm", "m",
+         "pt", "gal", "qt", "oz", "ml", "l", "L",
+         "1/2", "1/4", "½",
+         "handful", "large handful"]
+
 def strip_words(original, categories):
     tokens = nlp(original)
     processed = ""
@@ -14,12 +25,6 @@ def strip_words(original, categories):
     return processed
 
 def token_good(token):
-    units = ["tbsp", "tsp",
-             "g", "kg",
-             "oz", "ml", "l",
-             "pack", "tub", "bag", "jar",
-             "1/2", "1/4", "½",
-             "handful", "large handful"]
     if not (token.pos_ == "NOUN" or token.pos_ == "ADJ" or token.pos_ == "PROPN"):
         return False
     if token.text in units:
@@ -31,29 +36,45 @@ def token_good(token):
 def remove_bracketed_text(original):
     pattern = r'\([^)]*\)'
     modified_string = re.sub(pattern, '', original)
-    return modified_string
+    return modified_string.strip()
+
+def unit_list_to_regex(strings):
+    disj = "|".join(re.escape(string) for string in strings)
+    disj += "s?"
+    return f"({disj})"
+
+def remove_units(original):
+    unit_pattern = unit_list_to_regex(units)
+    pattern = fr'\b\d+(\.\d+)?\s*{unit_pattern}\b'
+    modified_string = re.sub(pattern, '', original)
+    return modified_string.strip()
+
+def splitAndGetUseful(temp):
+    toProcess = []
+    temp = remove_bracketed_text(temp)
+    if " of " in temp:
+        temp = temp.split(" of ")[1]
+    if "," in temp:
+        temp = temp.rsplit(",", 1)[0]
+    if " or " in temp:
+        temp = temp.split(" or ")[1]
+    if " and " in temp:
+        [l, r] = [remove_units(x) for x in temp.split(" and ", 1)]
+        toProcess.append(l)
+        toProcess.append(r)
+    else:
+        temp = remove_units(temp)
+        toProcess.append(temp)
+    return toProcess
 
 def cleanupIngredients(original_ingredients):
     toProcess = []
 
     for ingredient in original_ingredients:
         # Example: 500g of (soft) butter => 500g of butter
-        temp = remove_bracketed_text(ingredient)
-        
-        # Example: 500g of butter => butter
-        if " of " in temp:
-            temp = temp.split(" of ")[1]
-            # toProcess.append(temp.split(" of ")[1])
-        if "," in temp:
-            temp = temp.rsplit(",", 1)[0]
-        if " or " in temp:
-            temp = temp.split(" or ")[1]
-        if " and " in temp:
-            [l, r] = temp.split(" and ", 1)
-            toProcess.append(l)
-            toProcess.append(r)
-        else:
-            toProcess.append(temp)
+        temps = splitAndGetUseful(ingredient)
+        for temp in temps:
+          toProcess.append(temp)
     
     processed = list(nlp.pipe(toProcess))
     

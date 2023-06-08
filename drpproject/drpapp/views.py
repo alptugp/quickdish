@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .RecipeParser import get_ingredients
+from .RecipeParser import get_recipe_details
 from .TescoSearch import searchTesco
 from .AsdaSearch import searchAsda
 from .SainsburysSearch import searchSainsburys
@@ -34,7 +34,7 @@ def comparison(request):
         # Get what the user typed in the search bar (the recipe url) after they press the enter button
         query = request.GET.get('query', '')
 
-        original_ingredients = get_ingredients(query)
+        original_ingredients, title, image, instrs = get_recipe_details(query)
         full_ingredients = cleanupIngredients(original_ingredients)
         ingredients = full_ingredients
         request.session[original_ingredients_key] = original_ingredients
@@ -77,8 +77,9 @@ def comparison(request):
         'tesco_item_links'       : tesco_item_links,
         'morrisons_item_links'   : morrisons_item_links,
         'ingredients_form'       : ingredients_form,
-        'lowest_total_price_market': get_cheapest_market([float(sainsburys_total_price), float(asda_total_price), 
-                                                         float(morrisons_total_price), float(tesco_total_price)])
+        'recipe_title'           : title,
+        'recipe_image'           : image,
+        'method'                 : instrs
     }
     
     return render(request, "drpapp/comparison.html", context)
