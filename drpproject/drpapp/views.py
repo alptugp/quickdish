@@ -40,13 +40,15 @@ def comparison(request):
         request.session[original_ingredients_key] = original_ingredients
         request.session[full_ingredients_key] = full_ingredients
     
+    ingredients = list(map(str.title, ingredients))
+    full_ingredients = list(map(str.title, full_ingredients)) 
     ingredients_form = IngredientsForm(full_ingredients=full_ingredients, ingredients=ingredients)
 
     supermarket_functions = [
         total_price_sainsburys,
         total_price_asda,
         total_price_tesco,
-        total_price_morrisons,
+        # total_price_morrisons,
     ]
     num_threads = len(supermarket_functions)
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
@@ -56,8 +58,11 @@ def comparison(request):
     sainsburys_total_price, sainsburys_item_links = results[0].result()
     asda_total_price, asda_item_links = results[1].result()
     tesco_total_price, tesco_item_links = results[2].result()
-    morrisons_total_price, morrisons_item_links = results[3].result()
+    morrisons_total_price, morrisons_item_links = tesco_total_price, tesco_item_links #REPLACE THIS
     executor.shutdown()
+
+    print("ITEMSSSSS:", [sainsburys_total_price, asda_total_price, 
+                                                         morrisons_total_price, tesco_total_price])
 
     context = {
         original_ingredients_key : original_ingredients,
@@ -292,3 +297,7 @@ def total_price_morrisons(ingredients, instance_id):
     executor.shutdown()
     
     return total_price, item_links
+
+def get_cheapest_market(prices):
+    market_names = ["Sainsbury's", "Asda", "Morrisons", "Tesco"] 
+    return market_names[prices.index(min(prices))]
