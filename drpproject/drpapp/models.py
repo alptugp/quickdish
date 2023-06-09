@@ -14,9 +14,14 @@ class DietForm(ModelForm):
 
 class IngredientsForm(Form):
     new_ingredient = forms.CharField(
-        label='Add an ingredient:',
-        required=False,
-        widget=forms.TextInput(attrs={'class': 'form-control'})
+        label = 'add_ingredient',
+        required = False,
+        widget = forms.TextInput(
+            attrs = {
+                'class': 'form-control',
+                'placeholder': 'Add an ingredient',
+            }
+        )
     )
     def __init__(self, full_ingredients, ingredients, *args, **kwargs):
         super(IngredientsForm, self).__init__(*args, **kwargs)
@@ -28,4 +33,5 @@ class IngredientsForm(Form):
                     label=ingredient, 
                     initial=wanted, 
                     required=False,
-                    widget=forms.CheckboxInput(attrs={'class': 'checkbox-left'}))
+                    widget=forms.CheckboxInput()
+                )

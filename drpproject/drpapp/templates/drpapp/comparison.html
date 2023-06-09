@@ -306,23 +306,24 @@
                     <form method="POST" action="{% url 'comparison' %}">
                         {% csrf_token %}
                         <!-- Checkboxes: Ingredient list -->
-                        {% for ingredient in ingredients_form %}
-                            {% if ingredient.field.widget.input_type == "checkbox" %}
-                                <div class="ingredient-row">
-                                    <div class="checkbox-container">
-                                        {{ingredient}}{{ingredient.label}}
-                                        <br>
+                        <div id="ingredient-list">
+                            {% for ingredient in ingredients_form %}
+                                {% if ingredient.field.widget.input_type == "checkbox" %}
+                                    <div class="ingredient-row">
+                                        <div class="checkbox-container">
+                                            {{ingredient}}{{ingredient.label}}
+                                            <br>
+                                        </div>
                                     </div>
-                                </div>
-                            {% endif %}
-                        {% endfor %}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
                         <!-- Textbox: Add ingredients -->
                         {% for ingredient in ingredients_form %}
                             {% if ingredient.field.widget.input_type == "text" %}
                                 <div class="add-ingredient-row">
-                                    {{ingredient.label}}
-                                    <br>
                                     {{ingredient}}
+                                    <button type="submit" id="add-ingredient-button">+</button>
                                 </div>
                             {% endif %}
                         {% endfor %}
