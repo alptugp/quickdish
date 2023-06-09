@@ -17,30 +17,6 @@ dietary_preferences = [
     "none",
 ]
 
-# def index(request):
-#     recommendation = "none"
-#     if request.method == 'POST':
-#         diet_form = DietForm(request.POST)
-#         if diet_form.is_valid():
-#             preferences = diet_form.cleaned_data
-#             request.session['dietary_preferences'] = preferences
-#             for rec in dietary_preferences:
-#                 if preferences.get(rec):
-#                     recommendation = rec
-#                     break
-#     elif request.method == 'GET':
-#         diet_form = DietForm()
-    
-#     context = {
-#         'diet_form': diet_form,
-#         'recommendation': recommendation,
-#     }
-    
-#     return render(request, "drpapp/index.html", context=context)
-
-
-from django.http import JsonResponse
-
 def index(request):
     recommendation = "none"
     if request.method == 'POST':
