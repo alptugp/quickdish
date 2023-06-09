@@ -59,6 +59,7 @@
         .left-section {
             margin-top: 15px;
             margin-left: 15px;
+            margin-right: 15px;
         }
         .left-section li {
             list-style-type: disc;
@@ -162,7 +163,7 @@
         .ingredient-row {
             margin-right: 0px;
             display: block;
-            width: 200px; /* Adjust the width as needed */
+            width: 250px; /* Adjust the width as needed */
         }   
         .checkbox-container {
             display: flex;
@@ -270,21 +271,21 @@
                 <div class="checkable-ingredients">
                     <form method="POST" action="{% url 'comparison' %}">
                         {% csrf_token %}
-                        <ul>
+                        <!-- <ul> -->
                         {% for ingredient in ingredients_form %}
-                            <li>
+                            <!-- <li> -->
                             <div class="ingredient-row">
                                 <div class="checkbox-container">
-                                    {{ingredient.label}}{{ingredient}}
+                                    {{ingredient}}{{ingredient.label}}
                                     <br>
                                 </div>
                             </div>
-                            </li>
+                            <!-- </li> -->
                         {% endfor %}
                         <div class="ingredient-row">
                             <button type="submit" class="btn">Recalculate Prices</button>
                         </div>
-                        </ul>
+                        <!-- </ul> -->
                     </form>
                 </div>            
             </div>
