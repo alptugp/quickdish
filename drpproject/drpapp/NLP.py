@@ -5,11 +5,11 @@ nlp = spacy.load("en_core_web_sm")
 
 units = ["teaspoon", "tablespoon",
          "tsp", "tbsp",
-         "cup", "pack", "tub", "bag", "jar", "piece",
+         "cup", "pack", "tub", "bag", "jar", "piece", "each", "ea",
          "pint", "gallon", "quart",
          "gram", "kilogram", "pound", "ounce",
          "g", "kg", "lb", "lb",
-         "cm", "m",
+         "cm", "m", "inch",
          "pt", "gal", "qt", "oz", "ml", "l", "L",
          "1/2", "1/4", "½", "¼",
          "handful", "large handful"]
