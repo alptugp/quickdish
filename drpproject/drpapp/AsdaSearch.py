@@ -5,10 +5,11 @@ from .NLP import *
 # https://groceries.asda.com/p13nservice/recommendations?storeId=4565&shipDate=currentDate&amendFlag=false&limit=2&placement=search_page.search1_mab&searchTerm=egg&searchQuery=egg&includeSponsoredProducts=false&pageType=SEARCH
 
 def constructAsdaGetRequest(item, preferences):
-    if preferences:
-        for pref in preferences.keys():
-            if preferences.get(pref):
-                item = pref + item
+    # # TODO: Fix searching with dietary preferences
+    # if preferences:
+    #     for pref in preferences.keys():
+    #         if preferences.get(pref):
+    #             item = pref + item
     params = {
         "storeId" : "4565",
         "shipDate" : "currentDate",

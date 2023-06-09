@@ -70,8 +70,6 @@ def comparison(request):
         query = request.GET.get('query', '')
         
         dietary_preferences = request.session.get('dietary_preferences')
-        print("JFKLSADJFKADJFKASJDF")
-        print(dietary_preferences)
         original_ingredients, title, image, instrs = get_recipe_details(query, dietary_preferences)
         title = title.title()
         full_ingredients = cleanupIngredients(original_ingredients)

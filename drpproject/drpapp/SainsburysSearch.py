@@ -5,10 +5,11 @@ from .NLP import *
 # https://www.sainsburys.co.uk/groceries-api/gol-services/product/v1/product?filter[keyword]=egg&page_number=1&page_size=5&sort_order=FAVOURITES_FIRST
 
 def constructSainsburysGetRequest(item, preferences):
-    if preferences:
-        for pref in preferences.keys():
-            if preferences.get(pref):
-                item = pref + item
+    # # TODO: Fix searching with dietary preferences
+    # if preferences:
+    #     for pref in preferences.keys():
+    #         if preferences.get(pref):
+    #             item = pref + item
     params = {
         "page_number" : "1",
         "page_size" : "1",

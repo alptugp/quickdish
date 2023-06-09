@@ -4,10 +4,11 @@ from bs4 import BeautifulSoup
 from .NLP import *
 
 def constructTescoGetRequest(item, preferences):
-    if preferences:
-        for pref in preferences.keys():
-            if preferences.get(pref):
-                item = pref + item
+    # # TODO: Fix searching with dietary preferences
+    # if preferences:
+    #     for pref in preferences.keys():
+    #         if preferences.get(pref):
+    #             item = pref + item
     params = {
         "query" : item,
         # "icid" : f"tescohp_sws-1_m-ft_in-{item}_out-{item}"
