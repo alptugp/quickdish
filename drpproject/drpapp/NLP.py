@@ -67,7 +67,6 @@ def splitAndGetUseful(original):
     temps = split_3_a_comma_b_and_c(original)
 
     for temp in temps:
-        print(temp)
         if " of " in temp:
             temp = temp.split(" of ")[1]
         if "," in temp:

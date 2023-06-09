@@ -305,21 +305,31 @@
                 <div class="checkable-ingredients">
                     <form method="POST" action="{% url 'comparison' %}">
                         {% csrf_token %}
-                        <!-- <ul> -->
+                        <!-- Checkboxes: Ingredient list -->
                         {% for ingredient in ingredients_form %}
-                            <!-- <li> -->
-                            <div class="ingredient-row">
-                                <div class="checkbox-container">
-                                    {{ingredient}}{{ingredient.label}}
-                                    <br>
+                            {% if ingredient.field.widget.input_type == "checkbox" %}
+                                <div class="ingredient-row">
+                                    <div class="checkbox-container">
+                                        {{ingredient}}{{ingredient.label}}
+                                        <br>
+                                    </div>
                                 </div>
-                            </div>
-                            <!-- </li> -->
+                            {% endif %}
                         {% endfor %}
+                        <!-- Textbox: Add ingredients -->
+                        {% for ingredient in ingredients_form %}
+                            {% if ingredient.field.widget.input_type == "text" %}
+                                <div class="add-ingredient-row">
+                                    {{ingredient.label}}
+                                    <br>
+                                    {{ingredient}}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                        <!-- Button: Recalculate prices -->
                         <div class="ingredient-row">
                             <button type="submit" class="btn">Recalculate Prices</button>
                         </div>
-                        <!-- </ul> -->
                     </form>
                 </div>            
             </div>

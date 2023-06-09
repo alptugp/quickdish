@@ -13,6 +13,11 @@ class DietForm(ModelForm):
         fields = ["vegan", "vegetarian", "gluten_free"]
 
 class IngredientsForm(Form):
+    new_ingredient = forms.CharField(
+        label='Add an ingredient:',
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
     def __init__(self, full_ingredients, ingredients, *args, **kwargs):
         super(IngredientsForm, self).__init__(*args, **kwargs)
         for ingredient in full_ingredients:
