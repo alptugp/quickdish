@@ -56,6 +56,9 @@ def comparison(request):
     if request.method == 'POST':
         original_ingredients = request.session.get(original_ingredients_key, [])
         full_ingredients = request.session.get(full_ingredients_key, [])
+        title = request.session.get('title', [])
+        image = request.session.get('image', [])
+        instrs = request.session.get('instrs', [])
         for key in request.POST.keys():
             if key != "csrfmiddlewaretoken":
                 ingredients.append(key)
@@ -65,10 +68,14 @@ def comparison(request):
         query = request.GET.get('query', '')
 
         original_ingredients, title, image, instrs = get_recipe_details(query)
+        title = title.title()
         full_ingredients = cleanupIngredients(original_ingredients)
         ingredients = full_ingredients
         request.session[original_ingredients_key] = original_ingredients
         request.session[full_ingredients_key] = full_ingredients
+        request.session['title'] = title
+        request.session['image'] = image
+        request.session['instrs'] = instrs
     
     preferences = request.session.get('dietary_preferences')
     ingredients = list(map(str.title, ingredients))
@@ -79,7 +86,7 @@ def comparison(request):
         total_price_sainsburys,
         total_price_asda,
         total_price_tesco,
-        total_price_morrisons,
+        #total_price_morrisons,
     ]
     num_threads = len(supermarket_functions)
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
@@ -90,7 +97,7 @@ def comparison(request):
     sainsburys_total_price, sainsburys_item_links = results[0].result()
     asda_total_price, asda_item_links = results[1].result()
     tesco_total_price, tesco_item_links = results[2].result()
-    morrisons_total_price, morrisons_item_links = results[3].result()
+    morrisons_total_price, morrisons_item_links = tesco_total_price, tesco_item_links #results[3].result()
     executor.shutdown()
 
     cheapest_total_market = get_cheapest_market([

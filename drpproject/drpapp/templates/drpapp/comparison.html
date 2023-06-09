@@ -8,65 +8,118 @@
         }
         body {
             font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
             margin: 0;
-            padding: 20px;
-        }
-        h1 {
-            text-align: center;
-            margin-top: 20px;
-            color: #333;
+            padding: 0;
+            height: 100vh;
+            background-color: #F6F6F6;
+            background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800"%3E%3Ctext x="50%" y="50%" font-size="120" text-anchor="middle" dominant-baseline="middle" fill="%23FF6B35"%3E%F0%9F%8D%94%3C/text%3E%3C/text%3E');
+            background-repeat: no-repeat;
+            background-size: contain;
+            background-position: center;
+            position: relative;
+            z-index: 1;
         }
         .ingredients-recipe {
             margin-bottom: 20px;
-            background-color: #fff;
+            margin-right: 100px;
+            margin-left: 100px;
+            margin-top: 80px;
+            background-color: rgba(255, 255, 255, 0.93);
             padding: 50px;
-            border-radius: 8px;
+            border-radius: 20px;
             display: flex;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 2;
         }
-        .left-section{
-            flex: 1;
-            padding-left:80px;
+        h1 {
+            margin-top: 0px;
+            margin-bottom: 2px;
+            font-size: 20px;
+            color: #FF6B35;
+        }
+        h2 {
+            margin-left: 15px;
+            margin-top: 0px;
+            margin-bottom: 2px;
+            font-size: 20px;
+            color: #FF6B35;
+        }
+        .btn {
+            margin-top: 10px;
+            margin-left: -20px;
+            padding: 10px 20px;
+            background-color: #FF6B35;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 10px;
+        }
+        .left-section {
+            margin-top: 15px;
+            margin-left: 15px;
+        }
+        .left-section li {
+            list-style-type: disc;
+            margin-bottom: 3px;
+        }
+        .left-section li::marker {
+            color: #FF6B35;
         }
         .right-section{
-            flex: 1;
+            margin-top: 15px;
+            margin-left: 20px;
         }
         .far-right-section{
-            margin-top: 30px;
-            flex: 1;
+            margin-top: 15px;
+            margin-left: 20px;
+            margin-right: 15px;
+        }
+        .far-right-section ol {
+            margin-top: 0px;
         }
         .image-box {
-            margin-left:20px;
+            margin-top: 0px;
+            margin-bottom: 15px;
+            margin-left:2px;
             width: 300px; /* Adjust the width of the box */
             height: 200px; /* Adjust the height of the box */
             background-image: url('{{ recipe_image }}');
             background-size: cover;
             background-position: center;
-        }
-        .ingredients-recipe h2 {
-            margin-top: 0;
+            border-radius: 20px;
         }
         .ingredients-recipe ul {
             list-style-type: none;
             padding: 0;
             margin-left: 20px;
+            margin-top: 0px;
         }
-        .ingredients-recipe li {
-            margin-bottom: 5px;
+        .right-section li {
+            margin-bottom: 3px;
+            list-style-type: disc;
         }
-        .checkbox-left {
-            float: left;
-            margin-right: 10px; /* Adjust this margin as needed */
+        .right-section li::marker {
+            color: #FF6B35;
+        }
+        .far-right-section li {
+            margin-bottom: 10px;
+            list-style-type: decimal;
+        }
+        .far-right-section li::marker {
+            color: #FF6B35;
+            font-weight: bold;
         }
         table {
             border-collapse: collapse;
             margin: 20px auto;
-            background-color: #fff;
+            background-color: rgba(255, 255, 255, 0.93);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
+            border-radius: 20px;
             table-layout: fixed;
-            width: 100%;
+            width: 60%;
+            padding: 50px; 
         }
         caption {
             font-weight: bold;
@@ -76,14 +129,10 @@
         }
         th, td {
             padding: 10px;
-            text-align: left;
+            text-align: center;
             width: 25%;
             border-bottom: 1px solid #ddd;
         }
-        /* th {
-            width: 25%;
-            background-color: #f2f2f2;
-        } */
         .total-price-column {
             width: 50%;
         }
@@ -91,7 +140,7 @@
             font-weight: bold;
         }
         a {
-            color: #007bff;
+            color: #FF6B35;
             text-decoration: none;
         }
         .lowest-price {
@@ -100,119 +149,243 @@
         .not-lowest-price {
             color: #990000;
         }
+        span {
+            pointer-events: none;
+        }
+        .checkable-ingredients {
+            margin-left: 0px;
+        }
+        .container {
+            position: absolute;
+            z-index: 2;
+        }
+        .ingredient-row {
+            margin-right: 0px;
+            display: block;
+            width: 200px; /* Adjust the width as needed */
+        }   
+        .checkbox-container {
+            display: flex;
+            align-items: center; /* Align items vertically */
+            gap: 5px; /* Add some spacing between the checkbox and the text */
+        }
+        input[type=checkbox] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border: 1px solid #FF6B35;
+            border-radius: 4px;
+            outline: none;
+            transition: border-color 0.1s ease-in-out;
+            background-color: #fff;
+            position: relative;
+        }
+
+        input[type=checkbox]:checked {
+            background-color: #FF6B35;
+            border-color: black;
+        }
+
+        input[type=checkbox]:checked::before {
+            content: "\2713"; /* Unicode character for a checkmark */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 11px;
+            color: white;
+        }
+
+        .table-title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+            color: #FF6B35;
+        }
+
     </style>
+    <script>
+        function getRandomInt(min, max) {
+            min = Math.ceil(min);
+            max = Math.floor(max);
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function addEmojis() {
+            const emojis = ['🍔', '🍛', '🌮', '🍣', '🧆', '🥘', '🥧', '🍲', '🥞', '🥙', '🍕', '🥮', '🍰'];
+            const body = document.querySelector('body');
+            const width = body.offsetWidth;
+            const height = body.offsetHeight;
+
+            const gridSize = 100; // Adjust this value to change the spacing between emojis
+            const numColumns = Math.floor(width / gridSize) + 1;
+            const numRows = Math.floor(height / gridSize) + 9;
+            const numEmojis = numColumns * numRows;
+            const emojiSizeRange = [20, 80]; // Range of font sizes for emojis
+
+            const emojiPositions = new Set();
+
+            for (let i = 0; i < numEmojis; i++) {
+                const emoji = emojis[getRandomInt(0, emojis.length - 1)];
+                const span = document.createElement('span');
+                span.style.fontSize = getRandomInt(emojiSizeRange[0], emojiSizeRange[1]) + 'px';
+                span.style.position = 'absolute';
+
+                let row, col, left, top;
+                do {
+                    row = getRandomInt(0, numRows - 1);
+                    col = getRandomInt(0, numColumns - 1);
+                    left = col * gridSize;
+                    top = row * gridSize;
+                } while (emojiPositions.has(`${row}-${col}`));
+
+                span.style.left = left + 'px';
+                span.style.top = top + 'px';
+                span.textContent = emoji;
+
+                // Check if the emoji is directly after the "Compare Prices" text
+                if (span.previousSibling && span.previousSibling.nodeType === Node.TEXT_NODE && span.previousSibling.textContent.trim() === 'Compare Prices') {
+                    span.previousSibling.remove(); // Remove the emoji's preceding text node
+                }
+
+                body.appendChild(span);
+                emojiPositions.add(`${row}-${col}`);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', addEmojis);
+    </script>
 </head>
 <body>
-    {% load custom_tags %}
-    <!-- <h1>Ingredient Cost Comparison</h1> -->
-    <a href="{% url 'index' %}" class="main-page-button">Back to Main Page</a>
+    <div class="container">
+        {% load custom_tags %}
+        <!-- <h1>Ingredient Cost Comparison</h1> -->
+        <!-- <a href="{% url 'index' %}" class="main-page-button">Back to Main Page</a> -->
 
-    <div class="ingredients-recipe">
-        <div class="left-section">
-            <h2>Shopping List</h2>
-            <form method="POST" action="{% url 'comparison' %}">
-                {% csrf_token %}
-                {{ ingredients_form.as_p }}
-                <button type="submit">Recalculate prices</button>
-            </form>
+        <div class="ingredients-recipe">
+            <div class="left-section"> 
+                <h1>Shopping List</h1>
+                <div class="checkable-ingredients">
+                    <form method="POST" action="{% url 'comparison' %}">
+                        {% csrf_token %}
+                        <ul>
+                        {% for ingredient in ingredients_form %}
+                            <li>
+                            <div class="ingredient-row">
+                                <div class="checkbox-container">
+                                    {{ingredient.label}}{{ingredient}}
+                                    <br>
+                                </div>
+                            </div>
+                            </li>
+                        {% endfor %}
+                        <div class="ingredient-row">
+                            <button type="submit" class="btn">Recalculate Prices</button>
+                        </div>
+                        </ul>
+                    </form>
+                </div>            
+            </div>
+
+            <div class="right-section">
+                <h1> {{ recipe_title }} </h1>
+                <div class="image-box"></div>
+                <h1>Ingredients</h1>
+                <ul>
+                    {% for ingredient in original_ingredients %}
+                        <li>{{ ingredient }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="far-right-section">
+                <h2>Method</h2>
+                <ol>
+                    {% for instr in method %}
+                        <li>{{ instr }}</li>
+                    {% endfor %}
+                </ol>
+            </div>
         </div>
-
-        <div class="right-section">
-            <h2>{{ recipe_title }}</h2>
-            <div class="image-box"></div>
-            <h3>Ingredients:</h3>
-            <ul>
-                {% for ingredient in original_ingredients %}
-                    <li>{{ ingredient }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-
-        <div class="far-right-section">
-            <h3>Method:</h3>
-            <p></p>
-            <ol>
-                {% for instr in method %}
-                    <li>{{ instr }}</li>
-                {% endfor %}
-            </ol>
-        </div>
-    </div>
-
-    <table>
-        <caption>Price Comparison</caption>
-        <thead>
-            <tr>
-                <th>Ingredient</th> <!-- New column for row names -->
-                    {% if lowest_total_price_market == "Sainsbury's" %}
-                        <th class="lowest-price">Sainsbury's<br>(Total Price: £{{ sainsburys_total_price }})</br></th>
-                    {% else %}    
-                        <th class="not-lowest-price">Sainsbury's<br>(Total Price: £{{ sainsburys_total_price }})</br></th>
-                    {% endif %}
-
-                    {% if lowest_total_price_market == "Asda" %}
-                        <th class="lowest-price">Asda<br>(Total Price: £{{ asda_total_price }})</br></th>
-                    {% else %}    
-                        <th class="not-lowest-price">Asda<br>(Total Price: £{{ asda_total_price }})</br></th>
-                    {% endif %}
-
-
-                    {% if lowest_total_price_market == "Morrisons" %}
-                        <th class="lowest-price">Morrisons<br>(Total Price: £{{ morrisons_total_price }})</br></th>
-                    {% else %}    
-                        <th class="not-lowest-price">Morrisons<br>(Total Price: £{{ morrisons_total_price }})</br></th>
-                    {% endif %}
-
-                    {% if lowest_total_price_market == "Tesco" %}
-                        <th class="lowest-price">Tesco<br>(Total Price: £{{ tesco_total_price }})</br></th>
-                    {% else %}    
-                        <th class="not-lowest-price">Tesco<br>(Total Price: £{{ tesco_total_price }})</br></th>
-                    {% endif %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for ingredient, link in sainsburys_item_links.items %}
+        <table>
+            <thead>
                 <tr>
-                    <td>{{ ingredient }}</td> <!-- New column for row names -->
-                    <td>
-                        {% with sainsburys_result=sainsburys_item_links|dict_lookup:ingredient %}
-                            {% if sainsburys_result.0 != "INVALID" %}
-                                <a href="{{ sainsburys_result.0 }}">{{ sainsburys_result.1 }}</a>
-                            {% else %}
-                                Not Found
-                            {% endif %}
-                        {% endwith %}
-                    </td>
-                    <td>
-                        {% with asda_result=asda_item_links|dict_lookup:ingredient %}
-                            {% if asda_result.0 != "INVALID" %}
-                                <a href="{{ asda_result.0 }}">{{ asda_result.1 }}</a>
-                            {% else %}
-                                Not Found
-                            {% endif %}
-                        {% endwith %}
-                    </td>
-                    <td>
-                        {% with morrisons_result=morrisons_item_links|dict_lookup:ingredient %}
-                            {% if morrisons_result.0 != "INVALID" %}
-                                <a href="{{ morrisons_result.0 }}">{{ morrisons_result.1 }}</a>
-                            {% else %}
-                                Not Found
-                            {% endif %}
-                        {% endwith %}
-                    </td>
-                    <td>
-                        {% with tesco_result=tesco_item_links|dict_lookup:ingredient %}
-                            {% if tesco_result.0 != "INVALID" %}
-                                <a href="{{ tesco_result.0 }}">{{ tesco_result.1 }}</a>
-                            {% else %}
-                                Not Found
-                            {% endif %}
-                        {% endwith %}
-                    </td>
+                    <th colspan="5" class="table-title">Price Comparison</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                <tr>
+                    <th>Ingredient</th> 
+                        {% if lowest_total_price_market == "Sainsbury's" %}
+                            <th class="lowest-price">Sainsbury's<br>(Total Price: £{{ sainsburys_total_price }})</br></th>
+                        {% else %}    
+                            <th class="not-lowest-price">Sainsbury's<br>(Total Price: £{{ sainsburys_total_price }})</br></th>
+                        {% endif %}
+
+                        {% if lowest_total_price_market == "Asda" %}
+                            <th class="lowest-price">Asda<br>(Total Price: £{{ asda_total_price }})</br></th>
+                        {% else %}    
+                            <th class="not-lowest-price">Asda<br>(Total Price: £{{ asda_total_price }})</br></th>
+                        {% endif %}
+
+
+                        {% if lowest_total_price_market == "Morrisons" %}
+                            <th class="lowest-price">Morrisons<br>(Total Price: £{{ morrisons_total_price }})</br></th>
+                        {% else %}    
+                            <th class="not-lowest-price">Morrisons<br>(Total Price: £{{ morrisons_total_price }})</br></th>
+                        {% endif %}
+
+                        {% if lowest_total_price_market == "Tesco" %}
+                            <th class="lowest-price">Tesco<br>(Total Price: £{{ tesco_total_price }})</br></th>
+                        {% else %}    
+                            <th class="not-lowest-price">Tesco<br>(Total Price: £{{ tesco_total_price }})</br></th>
+                        {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for ingredient, link in sainsburys_item_links.items %}
+                    <tr>
+                        <td>{{ ingredient }}</td> <!-- New column for row names -->
+                        <td>
+                            {% with sainsburys_result=sainsburys_item_links|dict_lookup:ingredient %}
+                                {% if sainsburys_result.0 != "INVALID" %}
+                                    <a href="{{ sainsburys_result.0 }}">{{ sainsburys_result.1 }}</a>
+                                {% else %}
+                                    Not Found
+                                {% endif %}
+                            {% endwith %}
+                        </td>
+                        <td>
+                            {% with asda_result=asda_item_links|dict_lookup:ingredient %}
+                                {% if asda_result.0 != "INVALID" %}
+                                    <a href="{{ asda_result.0 }}">{{ asda_result.1 }}</a>
+                                {% else %}
+                                    Not Found
+                                {% endif %}
+                            {% endwith %}
+                        </td>
+                        <td>
+                            {% with morrisons_result=morrisons_item_links|dict_lookup:ingredient %}
+                                {% if morrisons_result.0 != "INVALID" %}
+                                    <a href="{{ morrisons_result.0 }}">{{ morrisons_result.1 }}</a>
+                                {% else %}
+                                    Not Found
+                                {% endif %}
+                            {% endwith %}
+                        </td>
+                        <td>
+                            {% with tesco_result=tesco_item_links|dict_lookup:ingredient %}
+                                {% if tesco_result.0 != "INVALID" %}
+                                    <a href="{{ tesco_result.0 }}">{{ tesco_result.1 }}</a>
+                                {% else %}
+                                    Not Found
+                                {% endif %}
+                            {% endwith %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>
