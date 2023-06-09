@@ -155,13 +155,6 @@ def diet(request):
         instance = DietaryRestriction.objects.filter(id=instance_id).first()
         form = DietForm(instance=instance)
 
-        # initial_data = {
-        #     'vegan': request.GET.get('vegan', False), # request.session.get?
-        #     'vegetarian': request.GET.get('vegetarian', False),
-        #     'gluten_free': request.GET.get('gluten_free', False) 
-        # }
-        # form = DietForm(initial=initial_data)
-
     context = {'form': form }
 
     return render(request, 'drpapp/diet.html', context)
