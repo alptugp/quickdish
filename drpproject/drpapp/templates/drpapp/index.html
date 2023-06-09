@@ -251,6 +251,11 @@
         }
 
         window.addEventListener('DOMContentLoaded', addEmojis);
+        window.addEventListener('DOMContentLoaded', (event) => {
+            const input = document.getElementById('search-input');
+            const placeholderLength = input.placeholder.length;
+            input.style.width = `${placeholderLength}ch`;
+        });
     </script>
 </head>
 <body>
@@ -259,7 +264,7 @@
         <div class="search-container">
             <form action="{% url 'comparison' %}" method="get">
                 {% csrf_token %}
-                <input type="text" name="query" class="search-input" placeholder="E.g: https://www.bbcgoodfood.com/recipes/basic-omelette">
+                <input type="text" id="search-input" name="query" class="search-input" placeholder="Try 'beef tacos' or provide recipe link ">
                 <button type="submit" class="search-button">Enter</button>
             </form>
         </div>
