@@ -56,6 +56,7 @@ def recommendations_gluten_free(request):
 def comparison(request):
     original_ingredients_key = 'original_ingredients'
     full_ingredients_key = 'full_ingredients'
+    new_ingredient_key = 'new_ingredient'
     original_ingredients = []
     full_ingredients = []
     ingredients = []
@@ -69,7 +70,13 @@ def comparison(request):
         instrs = request.session.get('instrs', [])
         for key in request.POST.keys():
             if key != "csrfmiddlewaretoken":
-                ingredients.append(key)
+                if key == new_ingredient_key:
+                    new_ingredient = request.POST.get(new_ingredient_key)
+                    ingredients.append(new_ingredient)
+                    full_ingredients.append(new_ingredient)
+                    request.session[full_ingredients_key] = full_ingredients
+                else:
+                    ingredients.append(key)
 
     # User searches a recipe
     elif request.method == 'GET':
@@ -153,13 +160,6 @@ def diet(request):
         instance_id = request.session.get('instance_id')
         instance = DietaryRestriction.objects.filter(id=instance_id).first()
         form = DietForm(instance=instance)
-
-        # initial_data = {
-        #     'vegan': request.GET.get('vegan', False), # request.session.get?
-        #     'vegetarian': request.GET.get('vegetarian', False),
-        #     'gluten_free': request.GET.get('gluten_free', False) 
-        # }
-        # form = DietForm(initial=initial_data)
 
     context = {'form': form }
 
