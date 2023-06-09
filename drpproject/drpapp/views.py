@@ -75,8 +75,9 @@ def comparison(request):
     # User searches a recipe
     elif request.method == 'GET':
         query = request.GET.get('query', '')
-
-        original_ingredients, title, image, instrs = get_recipe_details(query)
+        
+        dietary_preferences = request.session.get('dietary_preferences')
+        original_ingredients, title, image, instrs = get_recipe_details(query, dietary_preferences)
         title = title.title()
         full_ingredients = cleanupIngredients(original_ingredients)
         ingredients = full_ingredients

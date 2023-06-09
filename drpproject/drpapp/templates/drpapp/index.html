@@ -82,59 +82,85 @@
 
         span {
             pointer-events: none;
+            /* opacity: 0.4; */
         }
 
         .dropdown-menu {
             display: none;
             position: absolute;
-            background-color: #FFF;
+            background-color: rgba(255, 255, 255, 0.93);
             box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
             border-radius: 5px;
             padding: 10px;
             top: calc(100% + 5px);
-            left: 69px;
+            left: 115px;
             flex-direction: column;
             align-items: flex-start;
-        }
-
-        .dropdown-menu a {
-            display: flex;
-            align-items: center;
-            margin-bottom: 5px;
-            color: white;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .dropdown-menu a .checkbox {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border: 1px solid white;
-            border-radius: 3px;
-            margin-left: 5px; /* Adjust the margin as needed */
-            margin-right: 5px;
-        }
-
-        .dropdown-menu a .checkbox::after {
-            content: '';
-            display: block;
-            width: 100%;
-            height: 100%;
-            background-color: white;
-            border-radius: 2px;
-            visibility: hidden;
-            transform: scale(0); /* Initial scale */
-            transition: transform 0.2s;
-        }
-
-        .dropdown-menu a.checked .checkbox::after {
-            visibility: visible;
-            transform: scale(1); /* Fully fill the checkbox */
+            animation-duration: 0.6s;
+            animation-fill-mode: both;
         }
 
         .dropdown-menu.show {
             display: block;
+            animation-name: slideDown;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .checkbox-container {
+            display: flex;
+            align-items: center; /* Align items vertically */
+            gap: 5px; /* Add some spacing between the checkbox and the text */
+            font-weight: bold;
+            color: #FF6B35;
+        }
+        input[type=checkbox] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border: 1px solid #FF6B35;
+            border-radius: 4px;
+            outline: none;
+            transition: border-color 0.3s ease-in-out;
+            background-color: #fff;
+            position: relative;
+        }
+
+        input[type=checkbox]:checked {
+            background-color: #FF6B35;
+            border-color: black;
+        }
+
+        input[type=checkbox]:checked::before {
+            content: "\2713"; /* Unicode character for a checkmark */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 11px;
+            color: white;
+        }
+        .btn {
+            margin-top: 5px;
+            padding: 7px 14px;
+            background-color: #FF6B35;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
         }
     </style>
     <script>
@@ -145,7 +171,7 @@
         }
 
         function addEmojis() {
-            const emojis = ['🍔', '🍛', '🌮', '🍣', '🧆', '🥘', '🥧', '🍲', '🥞', '🫔', '🥙', '🍕', '🥮', '🍰'];
+            const emojis = ['🍔', '🍛', '🌮', '🍣', '🧆', '🥘', '🥧', '🍲', '🥞', '🥗', '🥙', '🍕', '🌯', '🍮', '🍪'];
             const body = document.querySelector('body');
             const width = body.offsetWidth;
             const height = body.offsetHeight;
@@ -269,12 +295,17 @@
             </form>
         </div>
         <div class="action-buttons">
-            <a href="#" class="dietary-preferences-button" onclick="toggleDropdown()">Dietary Preferences</a>
+            <a href="#" class="dietary-preferences-button" onmouseover="toggleDropdown()">Dietary Preferences</a>
             <div class="dropdown-menu" id="dropdownMenu">
                 <form method="POST" action="{% url 'index' %}">
                     {% csrf_token %}
-                    {{ diet_form.as_p }}
-                    <button type="submit">Submit</button>
+                    {% for option in diet_form %}
+                        <div class="checkbox-container">
+                            {{option}}{{option.label}}
+                            <br>
+                        </div>
+                    {% endfor %}
+                    <button type="submit" class="btn">Save</button>
                 </form>
             </div>
             {% if recommendation == "vegan" %}
