@@ -4,14 +4,11 @@ from .NLP import *
 # Sample GET request for "egg" search
 # https://groceries.asda.com/p13nservice/recommendations?storeId=4565&shipDate=currentDate&amendFlag=false&limit=2&placement=search_page.search1_mab&searchTerm=egg&searchQuery=egg&includeSponsoredProducts=false&pageType=SEARCH
 
-def constructAsdaGetRequest(item, diet_preferences):
-    if diet_preferences is not None:
-        if diet_preferences.vegan:
-            item = "vegan " + item
-        if diet_preferences.vegetarian:
-            item = "vegetarian " + item
-        if diet_preferences.gluten_free:
-            item = "gluten-free " + item
+def constructAsdaGetRequest(item, preferences):
+    if preferences:
+        for pref in preferences.keys():
+            if preferences.get(pref):
+                item = pref + item
     params = {
         "storeId" : "4565",
         "shipDate" : "currentDate",
@@ -29,8 +26,8 @@ def constructAsdaGetRequest(item, diet_preferences):
     url += delim.join(paramString)
     return url
 
-def searchAsda(item, form_instance):
-    request = constructAsdaGetRequest(item, form_instance)
+def searchAsda(item, preferences):
+    request = constructAsdaGetRequest(item, preferences)
     response = requests.get(request)
 
     try:
@@ -39,7 +36,7 @@ def searchAsda(item, form_instance):
         categories = ["ADJ"]
         item_retry = strip_words(item, categories=categories)
         if item != item_retry:
-            retry = searchAsda(item_retry, form_instance)
+            retry = searchAsda(item_retry, preferences)
             if retry:
                 print(f"ASDA: Cannot find \"{item}\", but found \"{item_retry}\"")
                 return retry

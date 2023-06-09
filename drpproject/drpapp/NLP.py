@@ -24,6 +24,9 @@ def strip_words(original, categories):
             processed += token.text
     return processed
 
+def remove_empty_strings(words):
+    return [word for word in words if word and word.strip()]
+
 def token_good(token):
     if not (token.pos_ == "NOUN" or token.pos_ == "ADJ" or token.pos_ == "PROPN"):
         return False
@@ -49,32 +52,49 @@ def remove_units(original):
     modified_string = re.sub(pattern, '', original)
     return modified_string.strip()
 
-def splitAndGetUseful(temp):
-    toProcess = []
-    temp = remove_bracketed_text(temp)
-    if " of " in temp:
-        temp = temp.split(" of ")[1]
-    if "," in temp:
-        temp = temp.rsplit(",", 1)[0]
-    if " or " in temp:
-        temp = temp.split(" or ")[1]
-    if " and " in temp:
-        [l, r] = [remove_units(x) for x in temp.split(" and ", 1)]
-        toProcess.append(l)
-        toProcess.append(r)
+def split_3_a_comma_b_and_c(original):
+    pattern = r"([\w\s]*?)\s*,\s*([\w\s]+?)((\s+)|(\s*,\s*))and\s+([\w\s]+)"
+    match = re.match(pattern, original)
+    if match:
+        split = match.groups()
+        return remove_empty_strings(split)
     else:
-        temp = remove_units(temp)
-        toProcess.append(temp)
+        return [original]
+
+def splitAndGetUseful(original):
+    toProcess = []
+    original = remove_bracketed_text(original)
+    temps = split_3_a_comma_b_and_c(original)
+
+    for temp in temps:
+        print(temp)
+        if " of " in temp:
+            temp = temp.split(" of ")[1]
+        if "," in temp:
+            temp = temp.rsplit(",", 1)[0]
+        if " or " in temp:
+            temp = temp.split(" or ")[1]
+        if " such as " in temp:
+            temp = temp.split(" such as ")[1]
+        if " like " in temp:
+            temp = temp.split(" like ")[1]
+        if "sized " in temp:
+            temp = temp.split("sized ")[1]
+        if " and " in temp:
+            [l, r] = [remove_units(x) for x in temp.split(" and ", 1)]
+            toProcess.append(l)
+            toProcess.append(r)
+        else:
+            temp = remove_units(temp)
+            toProcess.append(temp)
     return toProcess
 
 def cleanupIngredients(original_ingredients):
     toProcess = []
 
     for ingredient in original_ingredients:
-        # Example: 500g of (soft) butter => 500g of butter
         temps = splitAndGetUseful(ingredient)
-        for temp in temps:
-          toProcess.append(temp)
+        toProcess.extend(temps)
     
     processed = list(nlp.pipe(toProcess))
     
@@ -87,5 +107,7 @@ def cleanupIngredients(original_ingredients):
                     ingredient += " "
                 ingredient += token.text
         ingredients.append(ingredient)
+    
+    ingredients = remove_empty_strings(ingredients)
 
     return list(set(ingredient.lower() for ingredient in ingredients))

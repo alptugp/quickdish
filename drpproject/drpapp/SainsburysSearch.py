@@ -4,14 +4,11 @@ from .NLP import *
 # Sample GET request for "egg" search
 # https://www.sainsburys.co.uk/groceries-api/gol-services/product/v1/product?filter[keyword]=egg&page_number=1&page_size=5&sort_order=FAVOURITES_FIRST
 
-def constructSainsburysGetRequest(item, diet_preferences):
-    if diet_preferences is not None:
-        if diet_preferences.vegan:
-            item = "vegan " + item
-        if diet_preferences.vegetarian:
-            item = "vegetarian " + item
-        if diet_preferences.gluten_free:
-            item = "gluten-free " + item
+def constructSainsburysGetRequest(item, preferences):
+    if preferences:
+        for pref in preferences.keys():
+            if preferences.get(pref):
+                item = pref + item
     params = {
         "page_number" : "1",
         "page_size" : "1",
@@ -24,8 +21,8 @@ def constructSainsburysGetRequest(item, diet_preferences):
     url += delim.join(paramString)
     return url
 
-def searchSainsburys(item, form_instance):
-    request = constructSainsburysGetRequest(item, form_instance)
+def searchSainsburys(item, preferences):
+    request = constructSainsburysGetRequest(item, preferences)
     response = requests.get(request)
 
     try:
@@ -34,7 +31,7 @@ def searchSainsburys(item, form_instance):
         categories = ["ADJ"]
         item_retry = strip_words(item, categories=categories)
         if item != item_retry:
-            retry = searchSainsburys(item_retry, form_instance)
+            retry = searchSainsburys(item_retry, preferences)
             if retry:
                 print(f"SAINSBURYS: Cannot find \"{item}\", but found \"{item_retry}\"")
                 return retry

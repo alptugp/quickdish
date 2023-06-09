@@ -8,21 +8,51 @@ from .NLP import *
 from .models import DietForm, DietaryRestriction, IngredientsForm
 import concurrent.futures
 
+dietary_preferences = [
+    "vegan",
+    "vegetarian",
+    "gluten_free",
+    "none",
+]
+
 def index(request):
-    return render(request, "drpapp/index.html")
+    recommendation = "none"
+    if request.method == 'POST':
+        diet_form = DietForm(request.POST)
+        if diet_form.is_valid():
+            preferences = diet_form.cleaned_data
+            request.session['dietary_preferences'] = preferences
+            for rec in dietary_preferences:
+                if preferences.get(rec):
+                    recommendation = rec
+                    break
+    elif request.method == 'GET':
+        diet_form = DietForm()
+    
+    context = {
+        'diet_form': diet_form,
+        'recommendation': recommendation,
+    }
+    
+    return render(request, "drpapp/index.html", context=context)
 
 def recommendations(request):
     return render(request, "drpapp/recommendations.html")
+def recommendations_vegan(request):
+    return render(request, "drpapp/recommendations_ve.html")
+def recommendations_vegetarian(request):
+    return render(request, "drpapp/recommendations_v.html")
+def recommendations_gluten_free(request):
+    return render(request, "drpapp/recommendations_gf.html")
 
 def comparison(request):
-    instance_id = request.session.get('instance_id')
-
     original_ingredients_key = 'original_ingredients'
     full_ingredients_key = 'full_ingredients'
     original_ingredients = []
     full_ingredients = []
     ingredients = []
 
+    # User updates the dietary preferences
     if request.method == 'POST':
         original_ingredients = request.session.get(original_ingredients_key, [])
         full_ingredients = request.session.get(full_ingredients_key, [])
@@ -33,8 +63,8 @@ def comparison(request):
             if key != "csrfmiddlewaretoken":
                 ingredients.append(key)
 
+    # User searches a recipe
     elif request.method == 'GET':
-        # Get what the user typed in the search bar (the recipe url) after they press the enter button
         query = request.GET.get('query', '')
 
         original_ingredients, title, image, instrs = get_recipe_details(query)
@@ -47,8 +77,9 @@ def comparison(request):
         request.session['image'] = image
         request.session['instrs'] = instrs
     
-    ingredients = list(filter(None, list(map(lambda s: s.strip().title(), ingredients))))
-    full_ingredients = list(filter(None, list(map(lambda s: s.strip().title(), full_ingredients)))) 
+    preferences = request.session.get('dietary_preferences')
+    ingredients = list(map(str.title, ingredients))
+    full_ingredients = list(map(str.title, full_ingredients)) 
     ingredients_form = IngredientsForm(full_ingredients=full_ingredients, ingredients=ingredients)
 
     supermarket_functions = [
@@ -59,7 +90,8 @@ def comparison(request):
     ]
     num_threads = len(supermarket_functions)
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
-    results = [executor.submit(fun, ingredients, instance_id) for fun in supermarket_functions]
+
+    results = [executor.submit(fun, ingredients, preferences) for fun in supermarket_functions]
     concurrent.futures.wait(results)
     
     sainsburys_total_price, sainsburys_item_links = results[0].result()
@@ -67,6 +99,13 @@ def comparison(request):
     tesco_total_price, tesco_item_links = results[2].result()
     morrisons_total_price, morrisons_item_links = tesco_total_price, tesco_item_links #results[3].result()
     executor.shutdown()
+
+    cheapest_total_market = get_cheapest_market([
+        float(sainsburys_total_price),
+        float(asda_total_price),
+        float(morrisons_total_price),
+        float(tesco_total_price)
+    ])
 
     context = {
         original_ingredients_key : original_ingredients,
@@ -84,12 +123,10 @@ def comparison(request):
         'recipe_title'           : title,
         'recipe_image'           : image,
         'method'                 : instrs,
-        'lowest_total_price_market': get_cheapest_market([float(sainsburys_total_price), float(asda_total_price), 
-                                                         float(morrisons_total_price), float(tesco_total_price)]),
-
+        'cheapest_total_market'  : cheapest_total_market,
     }
     
-    return render(request, "drpapp/comparison.html", context)
+    return render(request, "drpapp/comparison.html", context=context)
 
 def diet(request):
     print("diet called")
@@ -154,8 +191,8 @@ def money_value(price):
         val = price[1:]
     return round(float(val), 2)
 
-def tesco_worker(ingredient, items, form_instance):
-    most_relevant_item = searchTesco(ingredient, form_instance)
+def tesco_worker(ingredient, items, preferences):
+    most_relevant_item = searchTesco(ingredient, preferences)
     if most_relevant_item is not None:
         price = most_relevant_item['price']
         price = money_value(price)
@@ -166,8 +203,8 @@ def tesco_worker(ingredient, items, form_instance):
         items[ingredient] = "INVALID", "0"
         return 0
 
-def sainsburys_worker(ingredient, items, form_instance):
-    most_relevant_item = searchSainsburys(ingredient, form_instance)
+def sainsburys_worker(ingredient, items, preferences):
+    most_relevant_item = searchSainsburys(ingredient, preferences)
     if most_relevant_item is not None:
         price = most_relevant_item['retail_price']['price']
         price = money_value(price)
@@ -177,8 +214,8 @@ def sainsburys_worker(ingredient, items, form_instance):
         items[ingredient] = "INVALID", "0"
         return 0
 
-def asda_worker(ingredient, items, form_instance):
-    most_relevant_item = searchAsda(ingredient, form_instance)
+def asda_worker(ingredient, items, preferences):
+    most_relevant_item = searchAsda(ingredient, preferences)
     if most_relevant_item is not None:
         # price is a string of the form £<price> (not a string for the tesco api though)
         price_str = most_relevant_item.get('price')
@@ -190,8 +227,8 @@ def asda_worker(ingredient, items, form_instance):
         items[ingredient] = "INVALID", "0"
         return 0 
 
-def morrisons_worker(ingredient, items, form_instance):
-    most_relevant_item = search_morrisons(ingredient, form_instance)
+def morrisons_worker(ingredient, items, preferences):
+    most_relevant_item = search_morrisons(ingredient, preferences)
     if most_relevant_item is not None:
         price = most_relevant_item['product']['price']['current']
         item_id = most_relevant_item['sku']
@@ -200,19 +237,13 @@ def morrisons_worker(ingredient, items, form_instance):
     else:
         items[ingredient] = "INVALID", "0"
         return 0
-        
 
-def total_price_tesco(ingredients, instance_id):
+def total_price_tesco(ingredients, preferences):
     items = {}
     num_threads = 2
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
 
-    if instance_id is None:
-        form_instance = None
-    else:
-        form_instance = DietaryRestriction.objects.get(id = instance_id)
-
-    results = [executor.submit(tesco_worker, ingredient, items, form_instance) for ingredient in ingredients]
+    results = [executor.submit(tesco_worker, ingredient, items, preferences) for ingredient in ingredients]
 
     concurrent.futures.wait(results)
 
@@ -227,17 +258,12 @@ def total_price_tesco(ingredients, instance_id):
 
     return total_price, item_links
 
-def total_price_asda(ingredients, instance_id):
+def total_price_asda(ingredients, preferences):
     items = {}
     num_threads = 10
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
 
-    if instance_id is None:
-        form_instance = None
-    else:
-        form_instance = DietaryRestriction.objects.get(id = instance_id)
-
-    results = [executor.submit(asda_worker, ingredient, items, form_instance) for ingredient in ingredients]
+    results = [executor.submit(asda_worker, ingredient, items, preferences) for ingredient in ingredients]
 
     concurrent.futures.wait(results)
 
@@ -253,17 +279,12 @@ def total_price_asda(ingredients, instance_id):
 
     return total_price, item_links
 
-def total_price_sainsburys(ingredients, instance_id):
+def total_price_sainsburys(ingredients, preferences):
     items = {}
     num_threads = 10
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
 
-    if instance_id is None:
-        form_instance = None
-    else:
-        form_instance = DietaryRestriction.objects.get(id = instance_id)
-
-    results = [executor.submit(sainsburys_worker, ingredient, items, form_instance) for ingredient in ingredients]
+    results = [executor.submit(sainsburys_worker, ingredient, items, preferences) for ingredient in ingredients]
 
     concurrent.futures.wait(results)
 
@@ -279,17 +300,12 @@ def total_price_sainsburys(ingredients, instance_id):
 
     return total_price, item_links
 
-def total_price_morrisons(ingredients, instance_id):
+def total_price_morrisons(ingredients, preferences):
     items = {}
     num_threads = 3
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
     
-    if instance_id is None:
-        form_instance = None
-    else: 
-        form_instance = DietaryRestriction.objects.get(id = instance_id)
-    
-    results = [executor.submit(morrisons_worker, ingredient, items, form_instance) for ingredient in ingredients]
+    results = [executor.submit(morrisons_worker, ingredient, items, preferences) for ingredient in ingredients]
     
     concurrent.futures.wait(results)
     
@@ -306,5 +322,5 @@ def total_price_morrisons(ingredients, instance_id):
     return total_price, item_links
 
 def get_cheapest_market(prices):
-    market_names = ["Sainsbury's", "Asda", "Morrisons", "Tesco"] 
-    return market_names[prices.index(min(prices))]
+    supermarket_names = ["Sainsbury's", "Asda", "Morrisons", "Tesco"] 
+    return supermarket_names[prices.index(min(prices))]

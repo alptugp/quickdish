@@ -1,7 +1,5 @@
-from typing import Any, Mapping, Optional, Type, Union
 from django.db import models
 from django.forms import Form, ModelForm, BooleanField, CharField, HiddenInput
-from django.forms.utils import ErrorList
 from django import forms
 
 class DietaryRestriction(models.Model):
