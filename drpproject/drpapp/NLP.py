@@ -11,7 +11,7 @@ units = ["teaspoon", "tablespoon",
          "g", "kg", "lb", "lb",
          "cm", "m",
          "pt", "gal", "qt", "oz", "ml", "l", "L",
-         "1/2", "1/4", "½",
+         "1/2", "1/4", "½", "¼",
          "handful", "large handful"]
 
 def strip_words(original, categories):
@@ -91,7 +91,8 @@ def splitAndGetUseful(original):
 
 def cleanupIngredients(original_ingredients):
     toProcess = []
-
+    original_ingredients = [ingredient.lower() for ingredient in original_ingredients]
+    
     for ingredient in original_ingredients:
         temps = splitAndGetUseful(ingredient)
         toProcess.extend(temps)
