@@ -26,17 +26,19 @@ def searchSainsburys(item, preferences):
     request = constructSainsburysGetRequest(item, preferences)
     response = requests.get(request)
 
-    try:
-        return response.json().get('products')[0]
-    except:
-        categories = ["ADJ"]
-        item_retry = strip_words(item, categories=categories)
-        if item != item_retry:
-            retry = searchSainsburys(item_retry, preferences)
-            if retry:
-                print(f"SAINSBURYS: Cannot find \"{item}\", but found \"{item_retry}\"")
-                return retry
+    attempts = 3
+    for _ in range(attempts):
+        try:
+            return response.json().get('products')[0]
+        except:
+            categories = ["ADJ"]
+            item_retry = strip_words(item, categories=categories)
+            if item != item_retry:
+                retry = searchSainsburys(item_retry, preferences)
+                if retry:
+                    print(f"SAINSBURYS: Cannot find \"{item}\", but found \"{item_retry}\"")
+                    return retry
+                else:
+                    print(f"SAINSBURYS: Cannot find \"{item}\"")
             else:
-                print(f"SAINSBURYS: Cannot find \"{item}\"")
-        else:
-            return None
+                return None
