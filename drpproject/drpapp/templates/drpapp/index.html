@@ -332,6 +332,13 @@
                 <a href="{% url 'recommendations' %}" class="recipe-recommendations-button">Give Me Some Ideas</a>
             {% endif %}
         </div>
+
+        <!-- Display successful update of dietary preferences -->
+        <div style="float:left; height:20px;">
+            {% if saved_preferences %}
+                <p style="color:green;">Your dietary preferences have been saved.</p>
+            {% endif %}
+        </div>
     </div>
     <!-- TODO: Stop reloading
     <script>
@@ -368,6 +375,5 @@
             });
         });
     </script> -->
-
 </body>
 </html>
