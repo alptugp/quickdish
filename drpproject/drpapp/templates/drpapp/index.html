@@ -291,6 +291,11 @@
         }
 
         window.addEventListener('DOMContentLoaded', addEmojis);
+        window.addEventListener('DOMContentLoaded', (event) => {
+            const input = document.getElementById('search-input');
+            const placeholderLength = input.placeholder.length;
+            input.style.width = `${placeholderLength}ch`;
+        });
     </script>
 </head>
 <body>
@@ -299,14 +304,14 @@
         <div class="search-container">
             <form action="{% url 'comparison' %}" method="get">
                 {% csrf_token %}
-                <input type="text" name="query" class="search-input" placeholder="E.g: https://www.bbcgoodfood.com/recipes/basic-omelette">
+                <input type="text" id="search-input" name="query" class="search-input" placeholder="Try 'beef tacos' or provide recipe link ">
                 <button type="submit" class="search-button">Enter</button>
             </form>
         </div>
         <div class="action-buttons">
             <a href="#" class="dietary-preferences-button" onmouseover="toggleDropdown()">Dietary Preferences</a>
             <div class="dropdown-menu" id="dropdownMenu">
-                <form method="POST" action="{% url 'index' %}">
+                <form method="POST" id="dietForm" action="{% url 'index' %}">
                     {% csrf_token %}
                     {% for option in diet_form %}
                         <div class="checkbox-container">
@@ -328,5 +333,40 @@
             {% endif %}
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('dietForm');
+            form.addEventListener('submit', function(event) {
+                console.log("AAAA PAIN PAIN")
+                event.preventDefault();
+                const formData = new FormData(form);
+                const url = "{% url 'index' %}";
+                fetch(url, {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: new URLSearchParams(new FormData(form))
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // The form submission was successful, you can now close the form
+                    document.getElementById('dropdownMenu').classList.remove('show');
+                })
+                .catch(error => {
+                    // There was an error, handle it here
+                    console.log('Fetch Error :-S', error);
+                });
+            });
+        });
+    </script>
+
 </body>
 </html>

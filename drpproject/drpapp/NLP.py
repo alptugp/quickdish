@@ -5,13 +5,13 @@ nlp = spacy.load("en_core_web_sm")
 
 units = ["teaspoon", "tablespoon",
          "tsp", "tbsp",
-         "cup", "pack", "tub", "bag", "jar", "piece",
+         "cup", "pack", "tub", "bag", "jar", "piece", "each", "ea",
          "pint", "gallon", "quart",
          "gram", "kilogram", "pound", "ounce",
          "g", "kg", "lb", "lb",
-         "cm", "m",
+         "cm", "m", "inch",
          "pt", "gal", "qt", "oz", "ml", "l", "L",
-         "1/2", "1/4", "½",
+         "1/2", "1/4", "½", "¼",
          "handful", "large handful"]
 
 def strip_words(original, categories):
@@ -67,7 +67,6 @@ def splitAndGetUseful(original):
     temps = split_3_a_comma_b_and_c(original)
 
     for temp in temps:
-        print(temp)
         if " of " in temp:
             temp = temp.split(" of ")[1]
         if "," in temp:
@@ -91,7 +90,8 @@ def splitAndGetUseful(original):
 
 def cleanupIngredients(original_ingredients):
     toProcess = []
-
+    original_ingredients = [ingredient.lower() for ingredient in original_ingredients]
+    
     for ingredient in original_ingredients:
         temps = splitAndGetUseful(ingredient)
         toProcess.extend(temps)
