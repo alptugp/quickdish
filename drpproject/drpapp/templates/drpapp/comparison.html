@@ -149,6 +149,40 @@
         .not-lowest-price {
             color: #990000;
         }
+        .comparison-table-and-button-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        /* table {
+            width: 100%;
+        } */
+        .basket-button-wrapper {
+            width: 100%;
+            margin-top: 20px; /* space between table and button */
+            justify-content: space-between;
+            display: flex;
+        }
+        .basket-button-wrapper button {
+            width: 50%;
+            text-align: center;
+            padding: 10px 20px; /* Add some padding */
+            border: none; /* Remove the border */
+            border-radius: 5px; /* Add rounded corners */
+            background-color: #007bff; /* Add a background color */
+            color: white; /* Change the text color */
+            font-size: 14px; /* Adjust the font size */
+            transition: background-color 0.1s ease; /* Add a transition effect */
+        }
+        .basket-button-wrapper button:hover {
+            background-color: #0056b3; /* Add a hover effect */
+        }
+        .basket-button-wrapper div {
+            width: 20%; 
+            text-align: center;
+        }
+
         span {
             pointer-events: none;
         }
@@ -316,26 +350,26 @@
                 </tr>
                 <tr>
                     <th>Ingredient</th> 
-                        {% if lowest_total_price_market == "Sainsbury's" %}
+                        {% if cheapest_total_market == "Sainsbury's" %}
                             <th class="lowest-price">Sainsbury's<br>(Total Price: £{{ sainsburys_total_price }})</br></th>
                         {% else %}    
                             <th class="not-lowest-price">Sainsbury's<br>(Total Price: £{{ sainsburys_total_price }})</br></th>
                         {% endif %}
 
-                        {% if lowest_total_price_market == "Asda" %}
+                        {% if cheapest_total_market == "Asda" %}
                             <th class="lowest-price">Asda<br>(Total Price: £{{ asda_total_price }})</br></th>
                         {% else %}    
                             <th class="not-lowest-price">Asda<br>(Total Price: £{{ asda_total_price }})</br></th>
                         {% endif %}
 
 
-                        {% if lowest_total_price_market == "Morrisons" %}
+                        {% if cheapest_total_market == "Morrisons" %}
                             <th class="lowest-price">Morrisons<br>(Total Price: £{{ morrisons_total_price }})</br></th>
                         {% else %}    
                             <th class="not-lowest-price">Morrisons<br>(Total Price: £{{ morrisons_total_price }})</br></th>
                         {% endif %}
 
-                        {% if lowest_total_price_market == "Tesco" %}
+                        {% if cheapest_total_market == "Tesco" %}
                             <th class="lowest-price">Tesco<br>(Total Price: £{{ tesco_total_price }})</br></th>
                         {% else %}    
                             <th class="not-lowest-price">Tesco<br>(Total Price: £{{ tesco_total_price }})</br></th>
@@ -386,6 +420,109 @@
                 {% endfor %}
             </tbody>
         </table>
+           <!-- <div class="basket-button-wrapper">
+            <div></div> 
+            <div><button id="go-to-basket-button-sainsburys">Basket<br/>(Requires Account)</button></div>
+            <div><button id="go-to-basket-button-asda">Basket<br/>(Requires Account)</button></div>
+            <div><button id="go-to-basket-button-morrisons">Basket<br/>(Requires Account)</button></div>
+            <div><button id="go-to-basket-button-tesco">Basket<br/>(Requires Account)</button></div>
+        </div> -->
     </div>
+
+    {{ tesco_item_links|json_script:"tesco-item-links" }}
+    <script>
+        // Function to get the CSRF token from the cookie (https://docs.djangoproject.com/en/3.0/ref/csrf/#ajax)
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        // Function to handle the button click event
+        function addToTescoBasket() {
+            console.log("Hello from addToTescoBfdfdfasket()");
+
+            // Get tesco_item_links 
+            const tescoItemLinksElement = document.getElementById('tesco-item-links').textContent;
+
+            console.log(tescoItemLinksElement);
+
+            const tescoItemLinksUnsanitised = JSON.parse(document.getElementById('tesco-item-links').textContent);
+
+            // Remove any items that were not found (i.e. INVALID)
+            const tescoItemLinks = []; 
+            Object.entries(tescoItemLinksUnsanitised).forEach(([ingredient, item]) => {
+                if (item[0] != "INVALID") {
+                    tescoItemLinks.push(item[0]);
+                }
+            });
+
+            // Get the product IDs from the links (e.g. "https://www.tesco.com/groceries/en-GB/products/305837834" -> "305837834")
+            const productIds = tescoItemLinks.map(link => link.split('/').pop());
+
+            const payload = {
+                items: [],
+                returnUrl: '/groceries/en-GB/trolley',
+            };
+
+            // Iterate over the product IDs and add them to the payload
+            productIds.forEach(productId => {
+                const item = {
+                    id: productId,
+                    newUnitChoice: 'pcs',
+                    newValue: 1,
+                    oldUnitChoice: 'pcs',
+                    oldValue: 0,
+                };
+                payload.items.push(item);
+                }
+            );
+
+            // Get the CSRF token
+            var csrftoken = getCookie('csrftoken');
+            console.log(csrftoken);
+
+            // Send the PUT request to add the items to the basket
+            fetch('/drpapp/proxy_tesco_basket/', { //'https://www.tesco.com/groceries/en-GB/trolley/items?_method=PUT'
+                method: 'PUT',
+                headers: {
+                    'x-csrf-token': csrftoken,
+                },
+                body: JSON.stringify(payload),
+            })
+                .then(response => {
+                if (response.ok) {
+                    // Redirect to the basket page
+                    console.log('Items added to basket');
+                    window.open('https://www.tesco.com/groceries/en-GB/trolley', '_blank')
+                } else {
+                    // Handle the error
+                    console.log('Error adding items to basket1');
+                    console.log(response);
+                    window.open('https://www.tesco.com/groceries/en-GB/trolley', '_blank')
+                }
+                })
+                .catch(error => {
+                // Handle the error)
+                console.log('Error adding items to basket2');
+                console.log('Response Error:', error);
+                window.open('https://www.tesco.com/groceries/en-GB/trolley', '_blank')
+                });
+            console.log("Goodbye from addToTescoBasket()");
+        }
+    
+        // Add click event listener to the button
+        const button = document.getElementById("go-to-basket-button-tesco");
+        button.addEventListener('click', addToTescoBasket);
+    </script>
 </body>
 </html>

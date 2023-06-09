@@ -7,6 +7,8 @@ from .MorrisonsSearch import search_morrisons
 from .NLP import *
 from .models import DietForm, DietaryRestriction, IngredientsForm
 import concurrent.futures
+from django.http import JsonResponse
+import requests
 
 dietary_preferences = [
     "vegan",
@@ -155,6 +157,38 @@ def diet(request):
     context = {'form': form }
 
     return render(request, 'drpapp/diet.html', context)
+
+def proxy_tesco_basket(request):
+    print("proxy_tesco_basket called")
+    if request.method == 'PUT':
+        url = 'https://www.tesco.com/groceries/en-GB/trolley/items?_method=PUT'
+        payload = request.body
+        headers = {
+            'accept': 'application/json',
+            'accept-encoding': 'gzip, deflate, br',
+            'accept-language': 'en-GB,en;q=0.9',
+            'path': '/groceries/en-GB/trolley/items?_method=PUT',
+            'content-type': 'application/json',
+            # 'referer': 'https://www.tesco.com/groceries/en-GB/trolley',
+            # 'origin': 'https://www.tesco.com',
+        }
+        headers.update(request.headers)  # Include any other headers from the original request (CSRF)
+        print("Headers from proxy to Tesco:")
+        print(headers)
+        response = requests.put(url, data=payload, headers=headers)
+        
+        # Pass the response from Tesco back to the client-side JavaScript
+        print("Response from Tesco:", response.json())
+        return JsonResponse(response.json())
+    else:
+        # Handle other HTTP methods if needed
+        print("Invalid request method to proxy")
+        return JsonResponse({'error': 'Invalid request method'})
+
+
+
+
+
 
 def get_tesco_product_links(items):
     # A Tesco link looks like this: https://www.tesco.com/groceries/en-GB/products/<product-id>
