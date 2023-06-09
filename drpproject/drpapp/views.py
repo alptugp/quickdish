@@ -28,12 +28,19 @@ def index(request):
                 if preferences.get(rec):
                     recommendation = rec
                     break
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                # If the request is an AJAX request, return a JsonResponse
-                return JsonResponse({'status': 'ok'})
+            # ############### TODO: Fix reloading
+            # if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            #     # If the request is an AJAX request, return a JsonResponse
+            #     return JsonResponse({'status': 'ok'})
+            # ############### TODO: Fix reloading
     elif request.method == 'GET':
         if 'dietary_preferences' in request.session:
-            diet_form = DietForm(request.session['dietary_preferences'])
+            preferences = request.session['dietary_preferences']
+            diet_form = DietForm(preferences)
+            for rec in dietary_preferences:
+                if preferences.get(rec):
+                    recommendation = rec
+                    break
         else:
             diet_form = DietForm()
     
