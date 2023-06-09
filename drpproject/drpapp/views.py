@@ -10,7 +10,8 @@ import concurrent.futures
 from django.http import JsonResponse
 import requests
 
-dietary_preferences = [
+dietary_preferences_key = 'dietary_preferences'
+possible_preferences = [
     "vegan",
     "vegetarian",
     "gluten_free",
@@ -18,35 +19,39 @@ dietary_preferences = [
 ]
 
 def index(request):
+    saved_preferences = False
     recommendation = "none"
+    
+    # User has submitted new dietary preferences (arriving from index's form submission)
     if request.method == 'POST':
+        saved_preferences = True
         diet_form = DietForm(request.POST)
         if diet_form.is_valid():
             preferences = diet_form.cleaned_data
-            request.session['dietary_preferences'] = preferences
-            for rec in dietary_preferences:
+            request.session[dietary_preferences_key] = preferences
+            for rec in possible_preferences:
                 if preferences.get(rec):
                     recommendation = rec
                     break
-            # ############### TODO: Fix reloading
-            # if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            #     # If the request is an AJAX request, return a JsonResponse
-            #     return JsonResponse({'status': 'ok'})
-            # ############### TODO: Fix reloading
+    
+    # User is visiting the homepage (arriving from elsewhere)
     elif request.method == 'GET':
-        if 'dietary_preferences' in request.session:
-            preferences = request.session['dietary_preferences']
+        if dietary_preferences_key in request.session:
+            # Existing session
+            preferences = request.session[dietary_preferences_key]
             diet_form = DietForm(preferences)
-            for rec in dietary_preferences:
+            for rec in possible_preferences:
                 if preferences.get(rec):
                     recommendation = rec
                     break
         else:
+            # New session
             diet_form = DietForm()
     
     context = {
         'diet_form': diet_form,
         'recommendation': recommendation,
+        'saved_preferences': saved_preferences,
     }
     
     return render(request, "drpapp/index.html", context=context)
