@@ -114,11 +114,12 @@
         table {
             border-collapse: collapse;
             margin: 20px auto;
-            background-color: #fff;
+            background-color: rgba(255, 255, 255, 0.93);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             border-radius: 20px;
             table-layout: fixed;
-            width: 70%;
+            width: 60%;
+            padding: 50px; 
         }
         caption {
             font-weight: bold;
@@ -128,7 +129,7 @@
         }
         th, td {
             padding: 10px;
-            text-align: left;
+            text-align: center;
             width: 25%;
             border-bottom: 1px solid #ddd;
         }
@@ -139,7 +140,7 @@
             font-weight: bold;
         }
         a {
-            color: blue;
+            color: #FF6B35;
             text-decoration: none;
         }
         .lowest-price {
@@ -197,6 +198,13 @@
             color: white;
         }
 
+        .table-title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+            color: #FF6B35;
+        }
+
     </style>
     <script>
         function getRandomInt(min, max) {
@@ -212,8 +220,8 @@
             const height = body.offsetHeight;
 
             const gridSize = 100; // Adjust this value to change the spacing between emojis
-            const numColumns = Math.floor(width / gridSize) + 2
-            const numRows = Math.floor(height / gridSize) + 2;
+            const numColumns = Math.floor(width / gridSize) + 1;
+            const numRows = Math.floor(height / gridSize) + 9;
             const numEmojis = numColumns * numRows;
             const emojiSizeRange = [20, 80]; // Range of font sizes for emojis
 
@@ -301,12 +309,13 @@
                 </ol>
             </div>
         </div>
-
         <table>
-            <caption>Price Comparison</caption>
             <thead>
                 <tr>
-                    <th>Ingredient</th> <!-- New column for row names -->
+                    <th colspan="5" class="table-title">Price Comparison</th>
+                </tr>
+                <tr>
+                    <th>Ingredient</th> 
                         {% if lowest_total_price_market == "Sainsbury's" %}
                             <th class="lowest-price">Sainsbury's<br>(Total Price: £{{ sainsburys_total_price }})</br></th>
                         {% else %}    
