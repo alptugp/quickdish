@@ -55,6 +55,10 @@
             font-size: 15px;
             font-weight: bold;
             border-radius: 10px;
+            transition: background-color 0.3s ease;
+        }
+        .btn:hover {
+            background-color: #FF924A;
         }
         .left-section {
             margin-top: 15px;
@@ -199,6 +203,12 @@
             display: block;
             width: 250px; /* Adjust the width as needed */
         }   
+        .ingredient-row2 {
+            margin-top:15px;
+            margin-right: 0px;
+            display: block;
+            width: 250px; /* Adjust the width as needed */
+        }   
         .checkbox-container {
             display: flex;
             align-items: center; /* Align items vertically */
@@ -236,7 +246,7 @@
         .table-title {
             text-align: center;
             font-weight: bold;
-            font-size: 22px;
+            font-size: 20px;
             color: #FF6B35;
         }
 
@@ -318,6 +328,10 @@
                         {% endfor %}
                         <div class="ingredient-row">
                             <button type="submit" class="btn">Recalculate Prices</button>
+                        </div>
+
+                        <div class="ingredient-row2">
+                            <a href="{% url 'index' %}" class="btn">Back to Main Page</a>
                         </div>
                         <!-- </ul> -->
                     </form>
