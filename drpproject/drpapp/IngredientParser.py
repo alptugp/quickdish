@@ -1,4 +1,7 @@
+import nltk
 from ingredient_parser import parse_ingredient
+
+nltk.download('averaged_perceptron_tagger')
 
 def get_ingredient_name(ingredient):
     return get_ingredient_by_symbol(ingredient, property='name')
