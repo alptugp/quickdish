@@ -49,18 +49,14 @@ def splitAndGetUseful(original):
     temps = split_3_a_comma_b_and_c(original)
 
     for temp in temps:
-        if " of " in temp:
-            temp = temp.split(" of ")[1]
-        if "," in temp:
-            temp = temp.rsplit(",", 1)[0]
         if " or " in temp:
             temp = temp.split(" or ")[1]
         if " such as " in temp:
             temp = temp.split(" such as ")[1]
         if " like " in temp:
             temp = temp.split(" like ")[1]
-        if "sized " in temp:
-            temp = temp.split("sized ")[1]
+        # if "sized " in temp:
+        #     temp = temp.split("sized ")[1]
         if " and " in temp:
             [l, r] = [remove_units(x) for x in temp.split(" and ", 1)]
             toProcess.append(l)
