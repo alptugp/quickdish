@@ -80,6 +80,10 @@ def cleanup_ingredients(original_ingredients):
     # Step 3: Extract ingredient name using NLP library
     property = 'name'
     parsed = parse_multiple_ingredients(to_process)
+
+    for ingredient in parsed:
+        print(f"{ingredient['name']}\nComment: {ingredient['comment']}\nOther: {ingredient['other']}\n")
+
     ingredients = [ingredient[property] for ingredient in parsed]
     
     # Step 3: Remove empty strings
