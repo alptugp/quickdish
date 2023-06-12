@@ -410,7 +410,7 @@
                         <td>
                             {% with sainsburys_result=sainsburys_item_links|dict_lookup:ingredient %}
                                 {% if sainsburys_result.0 != "INVALID" %}
-                                    <b><a href="{{ sainsburys_result.0 }}">{{ sainsburys_result.1 }}</a></b>
+                                    <b><a href="{{ sainsburys_result.0 }}" target="_blank">{{ sainsburys_result.1 }}</a></b>
                                 {% else %}
                                     Not Found
                                 {% endif %}
@@ -419,7 +419,7 @@
                         <td>
                             {% with asda_result=asda_item_links|dict_lookup:ingredient %}
                                 {% if asda_result.0 != "INVALID" %}
-                                    <b><a href="{{ asda_result.0 }}">{{ asda_result.1 }}</a></b>
+                                    <b><a href="{{ asda_result.0 }}" target="_blank">{{ asda_result.1 }}</a></b>
                                 {% else %}
                                     Not Found
                                 {% endif %}
@@ -428,7 +428,7 @@
                         <td>
                             {% with morrisons_result=morrisons_item_links|dict_lookup:ingredient %}
                                 {% if morrisons_result.0 != "INVALID" %}
-                                    <b><a href="{{ morrisons_result.0 }}">{{ morrisons_result.1 }}</a></b>
+                                    <b><a href="{{ morrisons_result.0 }}" target="_blank">{{ morrisons_result.1 }}</a></b>
                                 {% else %}
                                     Not Found
                                 {% endif %}
@@ -437,7 +437,7 @@
                         <td>
                             {% with tesco_result=tesco_item_links|dict_lookup:ingredient %}
                                 {% if tesco_result.0 != "INVALID" %}
-                                    <b><a href="{{ tesco_result.0 }}">{{ tesco_result.1 }}</a></b>
+                                    <b><a href="{{ tesco_result.0 }}" target="_blank">{{ tesco_result.1 }}</a></b>
                                 {% else %}
                                     Not Found
                                 {% endif %}
