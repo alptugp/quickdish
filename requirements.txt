@@ -24,3 +24,5 @@ six==1.16.0
 recipe-scrapers==14.36.1
 apify-client==1.2.2
 spacy==3.5.3
+nltk==3.8.1
+ingredient-parser-nlp==0.1.0b1
