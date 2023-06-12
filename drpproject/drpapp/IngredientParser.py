@@ -1,16 +1,10 @@
 import nltk
-from ingredient_parser import parse_ingredient
+from ingredient_parser import parse_multiple_ingredients
 
 nltk.download('averaged_perceptron_tagger')
 
-def get_ingredient_name(ingredient):
-    return get_ingredient_by_symbol(ingredient, property='name')
-
-def get_ingredient_by_symbol(ingredient, property):
-    parsed = parse_ingredient(ingredient)
-    return parsed.get(ingredient, property)
-
 def cleanup_ingredients(original_ingredients):
     property = 'name'
-    ingredients = [get_ingredient_name(ingredient) for ingredient in original_ingredients]
+    parsed = parse_multiple_ingredients(original_ingredients)
+    ingredients = [ingredient[property] for ingredient in parsed]
     return ingredients
