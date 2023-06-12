@@ -5,6 +5,7 @@ from .AsdaSearch import searchAsda
 from .SainsburysSearch import searchSainsburys
 from .MorrisonsSearch import search_morrisons
 from .NLP import *
+from .IngredientParser import cleanup_ingredients
 from .models import DietForm, DietaryRestriction, IngredientsForm
 import concurrent.futures
 from django.http import JsonResponse
@@ -97,7 +98,8 @@ def comparison(request):
         dietary_preferences = request.session.get('dietary_preferences')
         original_ingredients, title, image, instrs = get_recipe_details(query, dietary_preferences)
         title = title.title()
-        full_ingredients = cleanupIngredients(original_ingredients)
+        # full_ingredients = cleanupIngredients(original_ingredients)
+        full_ingredients = cleanup_ingredients(original_ingredients)
         ingredients = full_ingredients
         request.session[original_ingredients_key] = original_ingredients
         request.session[full_ingredients_key] = full_ingredients

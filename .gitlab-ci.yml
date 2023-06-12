@@ -36,7 +36,7 @@ experiment-deploy-vm:
   tags:
     - experiment
   rules:
-    - if: '$CI_COMMIT_REF_NAME == "main"'
+    - if: '$CI_COMMIT_REF_NAME == "searchAccuracy"'
   script:
     - docker build . --tag drpapp:latest --label drpapplabel --file ./Dockerfile --build-arg DB_PASSWORD=${DB_PASSWORD}
     - docker stop $(docker ps -a -q)
