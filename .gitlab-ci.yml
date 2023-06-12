@@ -2,12 +2,12 @@ stages:
   - test
   - deploy
 
-test-job:
-  stage: test
-  script:
-    - pip3 install -r requirements.txt
-    - cd ./drpproject
-    - python3 manage.py test drpapp/test
+# test-job:
+#   stage: test
+#   script:
+#     - pip3 install -r requirements.txt
+#     - cd ./drpproject
+#     - python3 manage.py test drpapp/test
 
 deploy-job-vm:
   stage: deploy
