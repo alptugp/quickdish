@@ -250,6 +250,36 @@
             color: #FF6B35;
         }
 
+        .add-ingredient-row {
+            display: flex;
+            align-items: center;
+        }
+        .add-ingredient-row .add-ingredient-button {
+            width: 21px; 
+            height: 21px; 
+            background-color: #FF6B35;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .add-ingredient-row .add-ingredient-button::after {
+            content: '+';
+            font-size: 14px; /* Keep the font size of the plus sign unchanged */
+            position: relative;
+            top: -1px;
+        }
+
+        .add-ingredient-row .add-ingredient-button:hover {
+            background-color: #cc5500;
+        }
+
+
     </style>
     <script>
         function getRandomInt(min, max) {
@@ -333,7 +363,7 @@
                             {% if ingredient.field.widget.input_type == "text" %}
                                 <div class="add-ingredient-row">
                                     {{ingredient}}
-                                    <button type="submit" id="add-ingredient-button">+</button>
+                                    <button type="submit" class="add-ingredient-button"></button>
                                 </div>
                             {% endif %}
                         {% endfor %}
@@ -506,7 +536,7 @@
                 const item = {
                     id: productId,
                     newUnitChoice: 'pcs',
-                    newValue: 1,
+                    newV
                     oldUnitChoice: 'pcs',
                     oldValue: 0,
                 };
