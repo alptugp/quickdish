@@ -65,6 +65,16 @@ def recommendations_vegetarian(request):
 def recommendations_gluten_free(request):
     return render(request, "drpapp/recommendations_gf.html")
 
+def links_missing(links):
+    print(links.values())
+    return any(link[0] == 'INVALID' for link in links.values())
+
+def get_comp_price(total_price, links):
+    if links_missing(links):
+        return float('inf')
+    else:
+        return float(total_price)
+
 def comparison(request):
     original_ingredients_key = 'original_ingredients'
     full_ingredients_key = 'full_ingredients'
@@ -129,10 +139,10 @@ def comparison(request):
     executor.shutdown()
 
     cheapest_total_market = get_cheapest_market([
-        float(sainsburys_total_price),
-        float(asda_total_price),
-        float(morrisons_total_price),
-        float(tesco_total_price)
+        get_comp_price(sainsburys_total_price, sainsburys_item_links),
+        get_comp_price(asda_total_price, asda_item_links),
+        get_comp_price(morrisons_total_price, morrisons_item_links),
+        get_comp_price(tesco_total_price, tesco_item_links)
     ])
 
     context = {
