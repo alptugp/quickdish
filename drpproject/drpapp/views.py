@@ -102,7 +102,7 @@ def comparison(request):
         num_threads = len(supermarket_functions)
         executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
 
-        results = [executor.submit(fun, ingredients, preferences) for fun in supermarket_functions]
+        results = [executor.submit(fun, ingredients, preferences, request) for fun in supermarket_functions]
         concurrent.futures.wait(results)
         
         sainsburys_total_price, sainsburys_item_links = results[0].result()
@@ -222,9 +222,6 @@ def proxy_tesco_basket(request):
 
 
 
-
-
-
 def get_tesco_product_links(items):
     # A Tesco link looks like this: https://www.tesco.com/groceries/en-GB/products/<product-id>
     base_url = "https://www.tesco.com/groceries/en-GB/products/"
@@ -260,59 +257,109 @@ def money_value(price):
         val = price[1:]
     return round(float(val), 2)
 
-def tesco_worker(ingredient, items, preferences):
-    most_relevant_item = searchTesco(ingredient, preferences)
-    if most_relevant_item is not None:
-        price = most_relevant_item['price']
-        price = money_value(price)
-        item_id = most_relevant_item['id']
+def tesco_worker(ingredient, items, preferences, request):
+    ingredient_key = "-".join([ingredient, 't'] + ([] if preferences is None else list(filter(lambda k: preferences[k], preferences.keys()))))
+    print(ingredient_key)
+    if request.session.get(ingredient_key) is None:
+        most_relevant_item = searchTesco(ingredient, preferences)
+        if most_relevant_item is not None:
+            price = most_relevant_item['price']
+            price = money_value(price)
+            item_id = most_relevant_item['id']
+            items[ingredient] = item_id, '£' + f'{price:.2f}'
+            request.session[ingredient_key] = item_id, price 
+            return price
+        else:
+            items[ingredient] = "INVALID", "0"
+            request.session[ingredient_key] = "INVALID", "0" 
+            return 0
+    else:
+        item_id, price = request.session.get(ingredient_key)
+        if item_id == "INVALID":
+            items[ingredient] = "INVALID", "0"
+            return 0
         items[ingredient] = item_id, '£' + f'{price:.2f}'
         return price
+        
+def sainsburys_worker(ingredient, items, preferences, request):
+    ingredient_key = "-".join([ingredient, 's'] + ([] if preferences is None else list(filter(lambda k: preferences[k], preferences.keys()))))
+    print(ingredient_key)
+    if request.session.get(ingredient_key) is None:
+        most_relevant_item = searchSainsburys(ingredient, preferences)
+        if most_relevant_item is not None:
+            price = most_relevant_item['retail_price']['price']
+            price = money_value(price)
+            items[ingredient] = most_relevant_item['full_url'], '£' + f'{price:.2f}'
+            request.session[ingredient_key] = most_relevant_item['full_url'], price 
+            return price
+        else:
+            items[ingredient] = "INVALID", "0"
+            request.session[ingredient_key] = "INVALID", "0" 
+            return 0
     else:
-        items[ingredient] = "INVALID", "0"
-        return 0
-
-def sainsburys_worker(ingredient, items, preferences):
-    most_relevant_item = searchSainsburys(ingredient, preferences)
-    if most_relevant_item is not None:
-        price = most_relevant_item['retail_price']['price']
-        price = money_value(price)
-        items[ingredient] = most_relevant_item['full_url'], '£' + f'{price:.2f}'
+        full_url, price = request.session.get(ingredient_key)
+        if full_url == "INVALID":
+            items[ingredient] = "INVALID", "0"
+            return 0
+        items[ingredient] = full_url, '£' + f'{price:.2f}'
         return price
-    else:
-        items[ingredient] = "INVALID", "0"
-        return 0
 
-def asda_worker(ingredient, items, preferences):
-    most_relevant_item = searchAsda(ingredient, preferences)
-    if most_relevant_item is not None:
-        # price is a string of the form £<price> (not a string for the tesco api though)
-        price_str = most_relevant_item.get('price')
-        price = money_value(price_str)
-        item_id = most_relevant_item['id']
+def asda_worker(ingredient, items, preferences, request):
+    ingredient_key = "-".join([ingredient, 'a'] + ([] if preferences is None else list(filter(lambda k: preferences[k], preferences.keys()))))
+    print(ingredient_key)
+    if request.session.get(ingredient_key) is None:
+        most_relevant_item = searchAsda(ingredient, preferences)
+        if most_relevant_item is not None:
+            # price is a string of the form £<price> (not a string for the tesco api though)
+            price_str = most_relevant_item.get('price')
+            price = money_value(price_str)
+            item_id = most_relevant_item['id']
+            items[ingredient] = item_id, '£' + f'{price:.2f}'
+            request.session[ingredient_key] = item_id, price 
+            return price
+        else:
+            items[ingredient] = "INVALID", "0"
+            request.session[ingredient_key] = "INVALID", "0" 
+            return 0 
+    else: 
+        item_id, price = request.session.get(ingredient_key)
+        if item_id == "INVALID":
+            items[ingredient] = "INVALID", "0"
+            return 0
         items[ingredient] = item_id, '£' + f'{price:.2f}'
         return price
-    else:
-        items[ingredient] = "INVALID", "0"
-        return 0 
 
-def morrisons_worker(ingredient, items, preferences):
-    most_relevant_item = search_morrisons(ingredient, preferences)
-    if most_relevant_item is not None:
-        price = most_relevant_item['product']['price']['current']
-        item_id = most_relevant_item['sku']
+
+def morrisons_worker(ingredient, items, preferences, request):
+    ingredient_key = "-".join([ingredient, 'm'] + ([] if preferences is None else list(filter(lambda k: preferences[k], preferences.keys()))))
+    print(ingredient_key)
+    if request.session.get(ingredient_key) is None:
+        most_relevant_item = search_morrisons(ingredient, preferences)
+        if most_relevant_item is not None:
+            price = most_relevant_item['product']['price']['current']
+            item_id = most_relevant_item['sku']
+            items[ingredient] = item_id, '£' + f'{price:.2f}'
+            request.session[ingredient_key] = item_id, price 
+            return price
+        else:
+            items[ingredient] = "INVALID", "0"
+            request.session[ingredient_key] = "INVALID", "0" 
+            return 0
+    else: 
+        item_id, price = request.session.get(ingredient_key)
+        if item_id == "INVALID":
+            items[ingredient] = "INVALID", "0"
+            return 0
         items[ingredient] = item_id, '£' + f'{price:.2f}'
         return price
-    else:
-        items[ingredient] = "INVALID", "0"
-        return 0
 
-def total_price_tesco(ingredients, preferences):
+
+def total_price_tesco(ingredients, preferences, request):
     items = {}
     num_threads = 2
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
 
-    results = [executor.submit(tesco_worker, ingredient, items, preferences) for ingredient in ingredients]
+    results = [executor.submit(tesco_worker, ingredient, items, preferences, request) for ingredient in ingredients]
 
     concurrent.futures.wait(results)
 
@@ -327,12 +374,12 @@ def total_price_tesco(ingredients, preferences):
 
     return total_price, item_links
 
-def total_price_asda(ingredients, preferences):
+def total_price_asda(ingredients, preferences, request):
     items = {}
     num_threads = 10
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
 
-    results = [executor.submit(asda_worker, ingredient, items, preferences) for ingredient in ingredients]
+    results = [executor.submit(asda_worker, ingredient, items, preferences, request) for ingredient in ingredients]
 
     concurrent.futures.wait(results)
 
@@ -348,12 +395,12 @@ def total_price_asda(ingredients, preferences):
 
     return total_price, item_links
 
-def total_price_sainsburys(ingredients, preferences):
+def total_price_sainsburys(ingredients, preferences, request):
     items = {}
     num_threads = 10
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
 
-    results = [executor.submit(sainsburys_worker, ingredient, items, preferences) for ingredient in ingredients]
+    results = [executor.submit(sainsburys_worker, ingredient, items, preferences, request) for ingredient in ingredients]
 
     concurrent.futures.wait(results)
 
@@ -369,12 +416,12 @@ def total_price_sainsburys(ingredients, preferences):
 
     return total_price, item_links
 
-def total_price_morrisons(ingredients, preferences):
+def total_price_morrisons(ingredients, preferences, request):
     items = {}
     num_threads = 3
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
     
-    results = [executor.submit(morrisons_worker, ingredient, items, preferences) for ingredient in ingredients]
+    results = [executor.submit(morrisons_worker, ingredient, items, preferences, request) for ingredient in ingredients]
     
     concurrent.futures.wait(results)
     
