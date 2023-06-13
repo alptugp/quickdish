@@ -536,7 +536,7 @@
                 const item = {
                     id: productId,
                     newUnitChoice: 'pcs',
-                    newV
+                    newValue: 1,
                     oldUnitChoice: 'pcs',
                     oldValue: 0,
                 };
@@ -581,5 +581,9 @@
         const button = document.getElementById("go-to-basket-button-tesco");
         button.addEventListener('click', addToTescoBasket);
     </script>
+
+    <!-- Dead Clicks -->
+    {% load static %}
+    <script src = "{% static '/drpapp/dead_click_listener.js' %}"></script>
 </body>
 </html>

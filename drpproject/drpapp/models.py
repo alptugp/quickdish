@@ -35,3 +35,18 @@ class IngredientsForm(Form):
                     required=False,
                     widget=forms.CheckboxInput()
                 )
+
+class DeadClick(models.Model):
+    # All fields are nullable. 
+    
+    timestamp = models.DateTimeField(null=True) #auto_now_add=True ?
+    url = models.URLField(null=True)
+    
+    # x and y coordinates of the click
+    x = models.IntegerField(null=True)
+    y = models.IntegerField(null=True)
+    
+    # DOM element information of the where the click occurred
+    tag_name = models.CharField(max_length=255, null=True)
+    class_name = models.CharField(max_length=255, null=True)
+    element_id = models.CharField(max_length=255, null=True)

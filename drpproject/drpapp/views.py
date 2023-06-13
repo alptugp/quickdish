@@ -5,10 +5,11 @@ from .AsdaSearch import searchAsda
 from .SainsburysSearch import searchSainsburys
 from .MorrisonsSearch import search_morrisons
 from .IngredientParser import cleanup_ingredients
-from .models import DietForm, DietaryRestriction, IngredientsForm
+from .models import DietForm, DietaryRestriction, IngredientsForm, DeadClick
 import concurrent.futures
 from django.http import JsonResponse
 import requests
+import json
 
 dietary_preferences_key = 'dietary_preferences'
 possible_preferences = [
@@ -176,6 +177,51 @@ def diet(request):
     context = {'form': form }
 
     return render(request, 'drpapp/diet.html', context)
+
+# For logging dead clicks
+def log_dead_click(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        
+        # Get request data info
+        timestamp = data.get('timestamp')
+        url = data.get('url')
+        x = data.get('x') # x coordinate of click 
+        y = data.get('y') # y coordinate of click
+        tag_name = data.get('tag_name') 
+        class_name = data.get('class_name')
+        element_id = data.get('element_id')
+        
+        # Print all of the above: 
+        print("Timestamp: ", timestamp)
+        print("URL: ", url)
+        print("X: ", x)
+        print("Y: ", y)
+        print("Tag name: ", tag_name)
+        print("Class name: ", class_name)
+        print("Element ID: ", element_id)
+        
+        # Save the dead click to the database
+        DeadClick.objects.create(
+            timestamp=timestamp,
+            url = url,
+            x = x,
+            y = y,
+            tag_name = tag_name,
+            class_name = class_name,
+            element_id = element_id
+        )       
+        
+        # Not sure if response is needed. 
+        return JsonResponse({'message': 'Dead click logged successfully!'})
+
+def dead_clicks_list(request):
+    # Get all dead clicks from the database
+    dead_clicks = DeadClick.objects.all()
+    
+    context = {'dead_clicks': dead_clicks}
+    
+    return render(request, 'drpapp/dead_clicks_list.html', context)
 
 def proxy_tesco_basket(request):
     print("proxy_tesco_basket called")
