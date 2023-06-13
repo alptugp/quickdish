@@ -1,5 +1,4 @@
 from django.db import models
-from django.forms import Form, ModelForm, BooleanField, CharField, HiddenInput
 from django import forms
 
 class DietaryRestriction(models.Model):
@@ -7,12 +6,12 @@ class DietaryRestriction(models.Model):
     vegetarian = models.BooleanField(default = False)
     gluten_free = models.BooleanField(default = False)
 
-class DietForm(ModelForm):
+class DietForm(forms.ModelForm):
     class Meta:
         model = DietaryRestriction
         fields = ["vegan", "vegetarian", "gluten_free"]
 
-class IngredientsForm(Form):
+class IngredientsForm(forms.Form):
     new_ingredient = forms.CharField(
         label = 'add_ingredient',
         required = False,
@@ -29,7 +28,7 @@ class IngredientsForm(Form):
             if ingredient != "csrfmiddlewaretoken":
                 field_name = ingredient
                 wanted = ingredient in ingredients
-                self.fields[field_name] = BooleanField(
+                self.fields[field_name] = forms.BooleanField(
                     label=ingredient, 
                     initial=wanted, 
                     required=False,
