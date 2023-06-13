@@ -475,7 +475,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for ingredient in ingredients %}
+                {% for ingredient, link in sainsburys_item_links.items %}
                     <tr>
                         <td>{{ ingredient }}</td> <!-- New column for row names -->
                         <td>
