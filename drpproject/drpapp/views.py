@@ -192,15 +192,6 @@ def log_dead_click(request):
         class_name = data.get('class_name')
         element_id = data.get('element_id')
         
-        # Print all of the above: 
-        print("Timestamp: ", timestamp)
-        print("URL: ", url)
-        print("X: ", x)
-        print("Y: ", y)
-        print("Tag name: ", tag_name)
-        print("Class name: ", class_name)
-        print("Element ID: ", element_id)
-        
         # Save the dead click to the database
         DeadClick.objects.create(
             timestamp=timestamp,
@@ -212,9 +203,10 @@ def log_dead_click(request):
             element_id = element_id
         )       
         
-        # Not sure if response is needed. 
+        # Return a success message 
         return JsonResponse({'message': 'Dead click logged successfully!'})
 
+# For viewing all dead clicks
 def dead_clicks_list(request):
     # Get all dead clicks from the database
     dead_clicks = DeadClick.objects.all()

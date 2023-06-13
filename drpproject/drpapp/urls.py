@@ -18,7 +18,9 @@ urlpatterns = [
     # Proxy
     path("proxy_tesco_basket/", views.proxy_tesco_basket, name="proxy_tesco_basket"),
     
-    # Dead Clicks
+    # Dead Click logging
     path('log-dead-click/', views.log_dead_click, name='log_dead_click'),
+    
+    # Dead Clicks Dashboard
     path('dead-clicks/', views.dead_clicks_list, name='dead_clicks_list'),
 ]

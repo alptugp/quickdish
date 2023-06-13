@@ -36,10 +36,14 @@ class IngredientsForm(Form):
                     widget=forms.CheckboxInput()
                 )
 
+# For tracking dead clicks. 
 class DeadClick(models.Model):
-    # All fields are nullable. 
+    # All fields are optional, as we may not be able to get all the information (?)
     
+    # timestamp of the click
     timestamp = models.DateTimeField(null=True) #auto_now_add=True ?
+    
+    # url of the page where the click occurred
     url = models.URLField(null=True)
     
     # x and y coordinates of the click
