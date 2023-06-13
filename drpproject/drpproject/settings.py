@@ -92,18 +92,18 @@ if inHerokuEnvironment:
     DATABASES = {
         'default': dj_database_url.config(conn_health_checks=True, conn_max_age=600, ssl_require=True)
     }
-# elif inDockerEnvironment:
-#     # Dockerized version linking to PostgreSQL running on VM
-#     DATABASES = {
-#         'default': {
-#             'ENGINE': 'django.db.backends.postgresql',
-#             'NAME': 'drpapp',
-#             'USER': 'drp_group_01',
-#             'PASSWORD': os.environ.get('DB_PASSWORD'),
-#             'HOST': 'cloud-vm-42-57.doc.ic.ac.uk',
-#             'PORT': '',
-#         }
-#     }
+elif inDockerEnvironment:
+    # Dockerized version linking to AWS PostgreSQL instance
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'drp01_aws_postgres',
+            'USER': 'postgres',
+            'PASSWORD': os.environ.get('DB_PASSWORD'),
+            'HOST': 'icl-drp-group01-aws-postgres.cablrllsvtcp.eu-north-1.rds.amazonaws.com',
+            'PORT': '',
+        }
+    }
 else:
     # Local version of SQLite
     DATABASES = {
