@@ -118,7 +118,6 @@ def comparison(request):
     preferences = request.session.get('dietary_preferences')
     ingredients = list(filter(None, list(map(lambda s: s.strip().title(), ingredients))))
     full_ingredients = list(filter(None, list(map(lambda s: s.strip().title(), full_ingredients)))) 
-    ingredients_form = IngredientsForm(full_ingredients=full_ingredients, ingredients=ingredients)
 
     supermarket_functions = [
         total_price_sainsburys,
@@ -145,10 +144,33 @@ def comparison(request):
         get_comp_price(tesco_total_price, tesco_item_links)
     ])
 
+    full_ingredients_sorted = []
+    for ingredient in full_ingredients:
+        if any(link == 'INVALID' for link in [sainsburys_item_links[ingredient][0], 
+                                            asda_item_links[ingredient][0],
+                                            tesco_item_links[ingredient][0],
+                                            morrisons_item_links[ingredient][0]]):
+            full_ingredients_sorted.insert(0, ingredient)
+        else:
+            full_ingredients_sorted.append(ingredient)
+    
+    ingredients_sorted = []
+    for ingredient in ingredients:
+        if any(link == 'INVALID' for link in [sainsburys_item_links[ingredient][0], 
+                                            asda_item_links[ingredient][0],
+                                            tesco_item_links[ingredient][0],
+                                            morrisons_item_links[ingredient][0]]):
+            ingredients_sorted.insert(0, ingredient)
+        else:
+            ingredients_sorted.append(ingredient)
+
+    ingredients_form = IngredientsForm(full_ingredients=full_ingredients_sorted, ingredients=ingredients_sorted)
+    print(ingredients_form)
+
     context = {
         original_ingredients_key : original_ingredients,
         full_ingredients_key     : full_ingredients,
-        'ingredients'            : ingredients,
+        'ingredients'            : ingredients_sorted,
         'sainsburys_total_price' : sainsburys_total_price,
         'asda_total_price'       : asda_total_price,
         'tesco_total_price'      : tesco_total_price,
