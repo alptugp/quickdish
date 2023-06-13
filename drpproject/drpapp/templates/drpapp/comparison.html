@@ -331,6 +331,21 @@
         }
 
         window.addEventListener('DOMContentLoaded', addEmojis);
+
+        // Wait for the DOM to load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Find the table element by its ID
+            var table = document.getElementById('comparison-table');
+
+            // Calculate the offset of the table from the top of the page
+            var offsetTop = table.offsetTop;
+
+            // Scroll to the table
+            window.scrollTo({
+                top: offsetTop,
+                behavior: 'smooth'
+            });
+        });
     </script>
 </head>
 <body>
@@ -400,8 +415,8 @@
                 </ol>
             </div>
         </div>
-        {% if show_table %}
-        <table>
+         {% if show_table %}
+        <table id="comparison-table">
             <thead>
                 <tr>
                     <th colspan="5" class="table-title">Price Comparison</th>
@@ -479,6 +494,7 @@
             </tbody>
         </table>
         {% endif %}
+
            <!-- <div class="basket-button-wrapper">
             <div></div> 
             <div><button id="go-to-basket-button-sainsburys">Basket<br/>(Requires Account)</button></div>
