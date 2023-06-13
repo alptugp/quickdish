@@ -4,7 +4,8 @@ from .TescoSearch import searchTesco
 from .AsdaSearch import searchAsda
 from .SainsburysSearch import searchSainsburys
 from .MorrisonsSearch import search_morrisons
-from .IngredientParser import cleanup_ingredients
+from .NLP import cleanupIngredients
+#from .IngredientParser import cleanup_ingredients
 from .models import DietForm, DietaryRestriction, IngredientsForm
 import concurrent.futures
 from django.http import JsonResponse
@@ -90,6 +91,36 @@ def comparison(request):
                 else:
                     ingredients.append(key)
 
+        #STARTS HERE
+        preferences = request.session.get('dietary_preferences')
+        supermarket_functions = [
+            total_price_sainsburys,
+            total_price_asda,
+            total_price_tesco,
+            # total_price_morrisons,
+        ]
+        num_threads = len(supermarket_functions)
+        executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
+
+        results = [executor.submit(fun, ingredients, preferences) for fun in supermarket_functions]
+        concurrent.futures.wait(results)
+        
+        sainsburys_total_price, sainsburys_item_links = results[0].result()
+        asda_total_price, asda_item_links = results[1].result()
+        tesco_total_price, tesco_item_links = results[2].result()
+        morrisons_total_price, morrisons_item_links = tesco_total_price, tesco_item_links #results[3].result()
+        executor.shutdown()
+
+        cheapest_total_market = get_cheapest_market([
+            float(sainsburys_total_price),
+            float(asda_total_price),
+            float(morrisons_total_price),
+            float(tesco_total_price)
+        ])
+
+        show_table = True
+        #ENDS HERE
+
     # User searches a recipe
     elif request.method == 'GET':
         query = request.GET.get('query', '')
@@ -97,43 +128,27 @@ def comparison(request):
         dietary_preferences = request.session.get('dietary_preferences')
         original_ingredients, title, image, instrs = get_recipe_details(query, dietary_preferences)
         title = title.title()
-        full_ingredients = cleanup_ingredients(original_ingredients)
+        full_ingredients = cleanupIngredients(original_ingredients)
         ingredients = full_ingredients
         request.session[original_ingredients_key] = original_ingredients
         request.session[full_ingredients_key] = full_ingredients
         request.session['title'] = title
         request.session['image'] = image
         request.session['instrs'] = instrs
+
+        # STARTS HERE
+        sainsburys_total_price, sainsburys_item_links = 0, []
+        asda_total_price, asda_item_links = 0, []
+        tesco_total_price, tesco_item_links = 0, []
+        morrisons_total_price, morrisons_item_links = 0, [] #tesco_total_price, tesco_item_links 
+        cheapest_total_market = "Sainsbury's"
+        # ENDS HERE
+
+        show_table = False
     
-    preferences = request.session.get('dietary_preferences')
     ingredients = list(filter(None, list(map(lambda s: s.strip().title(), ingredients))))
     full_ingredients = list(filter(None, list(map(lambda s: s.strip().title(), full_ingredients)))) 
     ingredients_form = IngredientsForm(full_ingredients=full_ingredients, ingredients=ingredients)
-
-    supermarket_functions = [
-        total_price_sainsburys,
-        total_price_asda,
-        total_price_tesco,
-        total_price_morrisons,
-    ]
-    num_threads = len(supermarket_functions)
-    executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
-
-    results = [executor.submit(fun, ingredients, preferences) for fun in supermarket_functions]
-    concurrent.futures.wait(results)
-    
-    sainsburys_total_price, sainsburys_item_links = results[0].result()
-    asda_total_price, asda_item_links = results[1].result()
-    tesco_total_price, tesco_item_links = results[2].result()
-    morrisons_total_price, morrisons_item_links = results[3].result() #tesco_total_price, tesco_item_links 
-    executor.shutdown()
-
-    cheapest_total_market = get_cheapest_market([
-        float(sainsburys_total_price),
-        float(asda_total_price),
-        float(morrisons_total_price),
-        float(tesco_total_price)
-    ])
 
     context = {
         original_ingredients_key : original_ingredients,
@@ -152,6 +167,7 @@ def comparison(request):
         'recipe_image'           : image,
         'method'                 : instrs,
         'cheapest_total_market'  : cheapest_total_market,
+        'show_table': show_table,
     }
     
     return render(request, "drpapp/comparison.html", context=context)
