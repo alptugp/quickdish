@@ -46,7 +46,7 @@ def split_3_a_comma_b_and_c(original):
 def splitAndGetUseful(original):
     toProcess = []
     original = remove_bracketed_text(original)
-    temps = split_3_a_comma_b_and_c(original)
+    temps = [original] #split_3_a_comma_b_and_c(original)
 
     for temp in temps:
         if " or " in temp:
@@ -57,10 +57,10 @@ def splitAndGetUseful(original):
             temp = temp.split(" like ")[1]
         # if "sized " in temp:
         #     temp = temp.split("sized ")[1]
-        if " and " in temp:
-            [l, r] = [remove_units(x) for x in temp.split(" and ", 1)]
-            toProcess.append(l)
-            toProcess.append(r)
+        # if " and " in temp:
+        #     [l, r] = [remove_units(x) for x in temp.split(" and ", 1)]
+        #     toProcess.append(l)
+        #     toProcess.append(r)
         else:
             temp = remove_units(temp)
             toProcess.append(temp)
@@ -75,6 +75,7 @@ def cleanup_ingredients(original_ingredients):
     # Step 2: Remove bracketed text, split multiple, remove units
     for ingredient in original_ingredients:
         temps = splitAndGetUseful(ingredient)
+        print(temps)
         to_process.extend(temps)
     
     # Step 3: Extract ingredient name using NLP library
