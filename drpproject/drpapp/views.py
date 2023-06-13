@@ -66,6 +66,16 @@ def recommendations_vegetarian(request):
 def recommendations_gluten_free(request):
     return render(request, "drpapp/recommendations_gf.html")
 
+def links_missing(links):
+    print(links.values())
+    return any(link[0] == 'INVALID' for link in links.values())
+
+def get_comp_price(total_price, links):
+    if links_missing(links):
+        return float('inf')
+    else:
+        return float(total_price)
+
 def comparison(request):
     original_ingredients_key = 'original_ingredients'
     full_ingredients_key = 'full_ingredients'
@@ -97,7 +107,7 @@ def comparison(request):
             total_price_sainsburys,
             total_price_asda,
             total_price_tesco,
-            # total_price_morrisons,
+            total_price_morrisons,
         ]
         num_threads = len(supermarket_functions)
         executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
@@ -108,7 +118,7 @@ def comparison(request):
         sainsburys_total_price, sainsburys_item_links = results[0].result()
         asda_total_price, asda_item_links = results[1].result()
         tesco_total_price, tesco_item_links = results[2].result()
-        morrisons_total_price, morrisons_item_links = tesco_total_price, tesco_item_links #results[3].result()
+        morrisons_total_price, morrisons_item_links = results[3].result() #tesco_total_price, tesco_item_links 
         executor.shutdown()
 
         cheapest_total_market = get_cheapest_market([
@@ -117,6 +127,29 @@ def comparison(request):
             float(morrisons_total_price),
             float(tesco_total_price)
         ])
+
+        # full_ingredients_sorted = []
+        # for ingredient in full_ingredients:
+        #     if any(link == 'INVALID' for link in [sainsburys_item_links[ingredient][0], 
+        #                                         asda_item_links[ingredient][0],
+        #                                         tesco_item_links[ingredient][0],
+        #                                         morrisons_item_links[ingredient][0]]):
+        #         full_ingredients_sorted.insert(0, ingredient)
+        #     else:
+        #         full_ingredients_sorted.append(ingredient)
+        
+        # ingredients_sorted = []
+        # for ingredient in ingredients:
+        #     if any(link == 'INVALID' for link in [sainsburys_item_links[ingredient][0], 
+        #                                         asda_item_links[ingredient][0],
+        #                                         tesco_item_links[ingredient][0],
+        #                                         morrisons_item_links[ingredient][0]]):
+        #         ingredients_sorted.insert(0, ingredient)
+        #     else:
+        #         ingredients_sorted.append(ingredient)
+
+        # ingredients_form = IngredientsForm(full_ingredients=full_ingredients_sorted, ingredients=ingredients_sorted)
+        # print(ingredients_form)
 
         show_table = True
         #ENDS HERE
@@ -149,6 +182,7 @@ def comparison(request):
     ingredients = list(filter(None, list(map(lambda s: s.strip().title(), ingredients))))
     full_ingredients = list(filter(None, list(map(lambda s: s.strip().title(), full_ingredients)))) 
     ingredients_form = IngredientsForm(full_ingredients=full_ingredients, ingredients=ingredients)
+
 
     context = {
         original_ingredients_key : original_ingredients,
