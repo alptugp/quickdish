@@ -331,6 +331,10 @@
             {% else %}
                 <a href="{% url 'recommendations' %}" class="recipe-recommendations-button">Give Me Some Ideas</a>
             {% endif %}
+            <form action="{% url 'comparison' %}" method="get">
+                <input type="hidden" name="query" value={{random_recipe}}>
+                <button type="submit" class="search-button">Surprise Me!</button>
+            </form>
         </div>
 
         <!-- Display successful update of dietary preferences -->

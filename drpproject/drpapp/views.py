@@ -10,6 +10,7 @@ from .models import DietForm, DietaryRestriction, IngredientsForm
 import concurrent.futures
 from django.http import JsonResponse
 import requests
+import random
 
 dietary_preferences_key = 'dietary_preferences'
 possible_preferences = [
@@ -48,11 +49,16 @@ def index(request):
         else:
             # New session
             diet_form = DietForm()
+        
+    random_recipes = ["https://www.bbcgoodfood.com/recipes/vegan-jambalaya", "https://www.bbcgoodfood.com/recipes/asian-chicken-noodle-soup"
+                      , "https://www.bbcgoodfood.com/recipes/easy-chicken-curry", "https://www.bbcgoodfood.com/recipes/chow-mein"]
+    random_recipe = random_recipes[random.randint(0, len(random_recipes) - 1)]
     
     context = {
         'diet_form': diet_form,
         'recommendation': recommendation,
         'saved_preferences': saved_preferences,
+        'random_recipe': random_recipe,
     }
     
     return render(request, "drpapp/index.html", context=context)
