@@ -71,11 +71,11 @@ def links_missing(links):
     return any(link[0] == 'INVALID' for link in links.values())
 
 def get_comp_price(total_price, links):
-    # if links_missing(links):
-    #     print("missing   !!!!!!!!")
-    #     return float('inf')
-    # else:
-    return float(total_price)
+    if links_missing(links):
+        print("missing   !!!!!!!!")
+        return float('inf')
+    else:
+        return float(total_price)
 
 def comparison(request):
     original_ingredients_key = 'original_ingredients'
@@ -96,9 +96,10 @@ def comparison(request):
             if key != "csrfmiddlewaretoken":
                 if key == new_ingredient_key:
                     new_ingredient = request.POST.get(new_ingredient_key)
-                    ingredients.append(new_ingredient)
-                    full_ingredients.append(new_ingredient)
-                    request.session[full_ingredients_key] = full_ingredients
+                    if new_ingredient != "":
+                        ingredients.append(new_ingredient)
+                        full_ingredients.append(new_ingredient)
+                        request.session[full_ingredients_key] = full_ingredients
                 else:
                     ingredients.append(key)
 
