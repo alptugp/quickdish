@@ -332,19 +332,44 @@
 
         window.addEventListener('DOMContentLoaded', addEmojis);
 
-        // Wait for the DOM to load
-        document.addEventListener('DOMContentLoaded', function() {
-            // Find the table element by its ID
-            var table = document.getElementById('comparison-table');
+        function getRandomInt(min, max) {
+            min = Math.ceil(min);
+            max = Math.floor(max);
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
 
-            // Calculate the offset of the table from the top of the page
+        window.addEventListener('DOMContentLoaded', addEmojis);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var table = document.getElementById('comparison-table');
             var offsetTop = table.offsetTop;
 
-            // Scroll to the table
-            window.scrollTo({
-                top: offsetTop,
-                behavior: 'smooth'
-            });
+            // Calculate the scroll duration based on the distance to scroll
+            var distance = Math.abs(window.pageYOffset - offsetTop);
+            var duration = Math.min(2000, distance); // Adjust the duration as needed
+
+            // Smooth scroll function with reduced speed
+            function smoothScrollTo(element, targetOffset, duration) {
+                var startOffset = window.pageYOffset;
+                var startTime = performance.now();
+
+                function scrollStep(timestamp) {
+                    var timeElapsed = timestamp - startTime;
+                    var scrollProgress = Math.min(timeElapsed / duration, 1);
+                    var scrollOffset = Math.round(startOffset + scrollProgress * (targetOffset - startOffset));
+
+                    window.scrollTo(0, scrollOffset);
+
+                    if (timeElapsed < duration) {
+                        window.requestAnimationFrame(scrollStep);
+                    }
+                }
+
+                window.requestAnimationFrame(scrollStep);
+            }
+
+            // Scroll to the table using the smooth scroll function
+            smoothScrollTo(window, offsetTop, duration);
         });
     </script>
 </head>
