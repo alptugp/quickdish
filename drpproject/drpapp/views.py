@@ -10,6 +10,7 @@ from .models import DietForm, DietaryRestriction, IngredientsForm
 import concurrent.futures
 from django.http import JsonResponse
 import requests
+from collections import OrderedDict
 import random
 
 dietary_preferences_key = 'dietary_preferences'
@@ -115,7 +116,7 @@ def comparison(request):
             total_price_sainsburys,
             total_price_asda,
             total_price_tesco,
-            total_price_morrisons,
+            #total_price_morrisons,
         ]
         num_threads = len(supermarket_functions)
         executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
@@ -126,7 +127,7 @@ def comparison(request):
         sainsburys_total_price, sainsburys_item_links = results[0].result()
         asda_total_price, asda_item_links = results[1].result()
         tesco_total_price, tesco_item_links = results[2].result()
-        morrisons_total_price, morrisons_item_links = results[3].result() #tesco_total_price, tesco_item_links 
+        morrisons_total_price, morrisons_item_links = tesco_total_price, tesco_item_links #results[3].result()
         executor.shutdown()
 
         cheapest_total_market = get_cheapest_market([
@@ -158,6 +159,15 @@ def comparison(request):
 
         # ingredients_form = IngredientsForm(full_ingredients=full_ingredients_sorted, ingredients=ingredients_sorted)
         # print(ingredients_form)
+
+        for ingredient in ingredients:
+            if any(filter(lambda x: x == "INVALID", [sainsburys_item_links[ingredient][0], 
+                                                    asda_item_links[ingredient][0],
+                                                    tesco_item_links[ingredient][0],
+                                                    morrisons_item_links[ingredient][0]])): 
+                sainsburys_item_links.move_to_end(ingredient, last=False)
+                
+        print(sainsburys_item_links)
 
         show_table = True
         #ENDS HERE
@@ -191,6 +201,7 @@ def comparison(request):
     full_ingredients = list(filter(None, list(map(lambda s: s.strip().title(), full_ingredients)))) 
     ingredients_form = IngredientsForm(full_ingredients=full_ingredients, ingredients=ingredients)
 
+    
 
     context = {
         original_ingredients_key : original_ingredients,
@@ -200,7 +211,7 @@ def comparison(request):
         'asda_total_price'       : asda_total_price,
         'tesco_total_price'      : tesco_total_price,
         'morrisons_total_price'  : morrisons_total_price,
-        'sainsburys_item_links'  : sainsburys_item_links,
+        'sainsburys_item_links'  : dict(sainsburys_item_links),
         'asda_item_links'        : asda_item_links,
         'tesco_item_links'       : tesco_item_links,
         'morrisons_item_links'   : morrisons_item_links,
@@ -438,7 +449,7 @@ def total_price_asda(ingredients, preferences, request):
     return total_price, item_links
 
 def total_price_sainsburys(ingredients, preferences, request):
-    items = {}
+    items = OrderedDict()
     num_threads = 10
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
 
