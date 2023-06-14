@@ -450,55 +450,59 @@
                     <th colspan="5" class="table-title">Price Comparison</th>
                 </tr>
                 <tr>
-                    <th>Ingredient</th> 
-                        <th class="market-column-name">Sainsbury's</th>
-                        <th class="market-column-name">Asda</th>
-                        <th class="market-column-name">Morrisons</th>
-                        <th class="market-column-name">Tesco</th>
+                    {% if show_not_found_entries %}
+                        <th>Ingredient</th> 
+                            <th class="market-column-name">Sainsbury's</th>
+                            <th class="market-column-name">Asda</th>
+                            <th class="market-column-name">Morrisons</th>
+                            <th class="market-column-name">Tesco</th>   
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
-                {% for not_found_row_ingredient in not_found_row_ingredients %}
-                    <tr>
-                        <td>{{ not_found_row_ingredient }}</td> <!-- New column for row names -->
-                        <td>
-                            {% with sainsburys_result=sainsburys_item_links|dict_lookup:not_found_row_ingredient %}
-                                {% if sainsburys_result.0 != "INVALID" %}
-                                    <b><a href="{{ sainsburys_result.0 }}" target="_blank">{{ sainsburys_result.1 }}</a></b>
-                                {% else %}
-                                    Not Found
-                                {% endif %}
-                            {% endwith %}
-                        </td>
-                        <td>
-                            {% with asda_result=asda_item_links|dict_lookup:not_found_row_ingredient %}
-                                {% if asda_result.0 != "INVALID" %}
-                                    <b><a href="{{ asda_result.0 }}" target="_blank">{{ asda_result.1 }}</a></b>
-                                {% else %}
-                                    Not Found
-                                {% endif %}
-                            {% endwith %}
-                        </td>
-                        <td>
-                            {% with morrisons_result=morrisons_item_links|dict_lookup:not_found_row_ingredient %}
-                                {% if morrisons_result.0 != "INVALID" %}
-                                    <b><a href="{{ morrisons_result.0 }}" target="_blank">{{ morrisons_result.1 }}</a></b>
-                                {% else %}
-                                    Not Found
-                                {% endif %}
-                            {% endwith %}
-                        </td>
-                        <td>
-                            {% with tesco_result=tesco_item_links|dict_lookup:not_found_row_ingredient %}
-                                {% if tesco_result.0 != "INVALID" %}
-                                    <b><a href="{{ tesco_result.0 }}" target="_blank">{{ tesco_result.1 }}</a></b>
-                                {% else %}
-                                    Not Found
-                                {% endif %}
-                            {% endwith %}
-                        </td>
-                    </tr>
-                {% endfor %}
+                {% if show_not_found_entries %}
+                    {% for not_found_row_ingredient in not_found_row_ingredients %}
+                        <tr>
+                            <td>{{ not_found_row_ingredient }}</td> <!-- New column for row names -->
+                            <td>
+                                {% with sainsburys_result=sainsburys_item_links|dict_lookup:not_found_row_ingredient %}
+                                    {% if sainsburys_result.0 != "INVALID" %}
+                                        <b><a href="{{ sainsburys_result.0 }}" target="_blank">{{ sainsburys_result.1 }}</a></b>
+                                    {% else %}
+                                        Not Found
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with asda_result=asda_item_links|dict_lookup:not_found_row_ingredient %}
+                                    {% if asda_result.0 != "INVALID" %}
+                                        <b><a href="{{ asda_result.0 }}" target="_blank">{{ asda_result.1 }}</a></b>
+                                    {% else %}
+                                        Not Found
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with morrisons_result=morrisons_item_links|dict_lookup:not_found_row_ingredient %}
+                                    {% if morrisons_result.0 != "INVALID" %}
+                                        <b><a href="{{ morrisons_result.0 }}" target="_blank">{{ morrisons_result.1 }}</a></b>
+                                    {% else %}
+                                        Not Found
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with tesco_result=tesco_item_links|dict_lookup:not_found_row_ingredient %}
+                                    {% if tesco_result.0 != "INVALID" %}
+                                        <b><a href="{{ tesco_result.0 }}" target="_blank">{{ tesco_result.1 }}</a></b>
+                                    {% else %}
+                                        Not Found
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
 
                 <tr>
                     <th>Ingredient</th> 

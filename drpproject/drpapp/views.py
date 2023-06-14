@@ -10,7 +10,6 @@ from .models import DietForm, DietaryRestriction, IngredientsForm
 import concurrent.futures
 from django.http import JsonResponse
 import requests
-from collections import OrderedDict
 import random
 
 dietary_preferences_key = 'dietary_preferences'
@@ -214,7 +213,7 @@ def comparison(request):
         'asda_total_price'       : asda_total_price,
         'tesco_total_price'      : tesco_total_price,
         'morrisons_total_price'  : morrisons_total_price,
-        'sainsburys_item_links'  : dict(sainsburys_item_links),
+        'sainsburys_item_links'  : sainsburys_item_links,
         'asda_item_links'        : asda_item_links,
         'tesco_item_links'       : tesco_item_links,
         'morrisons_item_links'   : morrisons_item_links,
@@ -231,6 +230,7 @@ def comparison(request):
         'sainsburys_found_entries_total_price': sainsburys_found_entries_total_price,
         'morrisons_found_entries_total_price': morrisons_found_entries_total_price,
         'cheapest_found_entries_market': cheapest_found_entries_market,
+        'show_not_found_entries': not_found_row_ingredients != [],
     }
     
     return render(request, "drpapp/comparison.html", context=context)
@@ -459,7 +459,7 @@ def total_price_asda(ingredients, preferences, request):
     return total_price, item_links
 
 def total_price_sainsburys(ingredients, preferences, request):
-    items = OrderedDict()
+    items = {}
     num_threads = 4
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
 
