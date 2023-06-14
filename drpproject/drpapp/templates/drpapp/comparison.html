@@ -154,6 +154,9 @@
         .not-lowest-price {
             color: #990000;
         }
+        .market-column-name {
+            color: black;
+        }
         .comparison-table-and-button-wrapper {
             display: flex;
             flex-direction: column;
@@ -448,30 +451,10 @@
                 </tr>
                 <tr>
                     <th>Ingredient</th> 
-                        {% if cheapest_total_market == "Sainsbury's" %}
-                            <th class="lowest-price">Sainsbury's<br>(Total Price: £{{ sainsburys_total_price }})</br></th>
-                        {% else %}    
-                            <th class="not-lowest-price">Sainsbury's<br>(Total Price: £{{ sainsburys_total_price }})</br></th>
-                        {% endif %}
-
-                        {% if cheapest_total_market == "Asda" %}
-                            <th class="lowest-price">Asda<br>(Total Price: £{{ asda_total_price }})</br></th>
-                        {% else %}    
-                            <th class="not-lowest-price">Asda<br>(Total Price: £{{ asda_total_price }})</br></th>
-                        {% endif %}
-
-
-                        {% if cheapest_total_market == "Morrisons" %}
-                            <th class="lowest-price">Morrisons<br>(Total Price: £{{ morrisons_total_price }})</br></th>
-                        {% else %}    
-                            <th class="not-lowest-price">Morrisons<br>(Total Price: £{{ morrisons_total_price }})</br></th>
-                        {% endif %}
-
-                        {% if cheapest_total_market == "Tesco" %}
-                            <th class="lowest-price">Tesco<br>(Total Price: £{{ tesco_total_price }})</br></th>
-                        {% else %}    
-                            <th class="not-lowest-price">Tesco<br>(Total Price: £{{ tesco_total_price }})</br></th>
-                        {% endif %}
+                        <th class="market-column-name">Sainsbury's</th>
+                        <th class="market-column-name">Asda</th>
+                        <th class="market-column-name">Morrisons</th>
+                        <th class="market-column-name">Tesco</th>
                 </tr>
             </thead>
             <tbody>
