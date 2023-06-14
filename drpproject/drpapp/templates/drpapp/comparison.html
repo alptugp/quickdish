@@ -411,11 +411,14 @@
                         <div class="ingredient-row">
                             <button type="submit" class="btn">Compare Prices</button>
                         </div>
-<!-- 
-                        <div class="ingredient-row2">
-                            <a href="{% url 'index' %}" class="btn">Back to Main Page</a>
-                        </div> -->
-                        <!-- </ul> -->
+                    </form>
+
+                    <!-- Button: Save Recipe -->
+                    <form method="POST" action="{% url 'recipe_saved' %}">
+                        {% csrf_token %}
+                        <div class="ingredient-row">
+                            <button type="submit" class="btn">Save this recipe</button>
+                        </div>
                     </form>
                 </div>            
             </div>

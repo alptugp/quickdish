@@ -1,5 +1,23 @@
 from django.db import models
 from django import forms
+import json
+
+class SavedRecipe(models.Model):
+    recipe_url = models.URLField(max_length=255)
+    ingredients = models.JSONField()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.ingredients:
+            self.set_ingredients(self.ingredients)
+
+    def set_ingredients(self, ingredients):
+        self.ingredients = json.dumps(ingredients)
+    def get_ingredients(self):
+        return list(json.loads(self.ingredients))
+
+class SavedShoppingList(models.Model):
+    saved_recipes = models.ManyToManyField(SavedRecipe)
 
 class DietaryRestriction(models.Model):
     vegan = models.BooleanField(default = False)

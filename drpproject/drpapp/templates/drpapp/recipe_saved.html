@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+
+<head>
+    <title>Recipe Saved</title>
+</head>
+
+<body>
+    <p>Recipe (id={{ saved_recipe_id }}) has been saved to your account.</p>
+    <a href="{% url 'index' %}">Return to Home</a>
+
+    {% if saved_recipe %}
+        {% with recipe_url=saved_recipe.recipe_url %}
+        {% with ingredients=saved_recipe.get_ingredients %}
+            <p>URL: {{ recipe_url }}</p>
+            <p>Ingredients:</p>
+            <ul>
+                {% for ingredient in ingredients %}
+                    <li>{{ ingredient }}</li>
+                {% endfor %}
+            </ul>
+        {% endwith %}
+        {% endwith %}
+    {% endif %}
+</body>
+
+</html>

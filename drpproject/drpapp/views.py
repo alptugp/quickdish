@@ -1,13 +1,13 @@
 from django.shortcuts import render, redirect
+from django.http import JsonResponse
 from .RecipeParser import get_recipe_details
 from .TescoSearch import searchTesco
 from .AsdaSearch import searchAsda
 from .SainsburysSearch import searchSainsburys
 from .MorrisonsSearch import search_morrisons
 from .NLP import cleanupIngredients
-from .models import DietForm, DietaryRestriction, IngredientsForm, DeadClick
+from .models import SavedRecipe, DietForm, DietaryRestriction, IngredientsForm, DeadClick
 import concurrent.futures
-from django.http import JsonResponse
 import requests
 import random
 import json
@@ -82,6 +82,27 @@ def get_comp_price(total_price, links):
         return float(10000000) + float(total_price)
     else:
         return float(total_price)
+
+def save_recipe(request):
+    if request.method == 'POST':
+        # recipe_url = request.POST.get('recipe_url')
+        # ingredients = request.POST.get('ingredients')
+        recipe_url = "www.google.com"
+        ingredients = ["apple", "banana", "pear"]
+
+        saved_recipe = SavedRecipe.objects.create(recipe_url=recipe_url, ingredients=ingredients)
+        saved_recipe.save()
+        saved_recipe_id = saved_recipe.id
+
+        context = {
+            'saved_recipe_id': saved_recipe_id,
+            'saved_recipe': saved_recipe,
+        }
+
+        return render(request, 'drpapp/recipe_saved.html', context=context)
+    else:
+        return JsonResponse({'message': 'Invalid request'})
+
 
 def comparison(request):
     original_ingredients_key = 'original_ingredients'
