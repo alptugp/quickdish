@@ -79,7 +79,7 @@ def links_missing(links):
 def get_comp_price(total_price, links):
     if links_missing(links):
         print("missing   !!!!!!!!")
-        return float('inf')
+        return float(10000000) + float(total_price)
     else:
         return float(total_price)
 
@@ -283,8 +283,8 @@ def proxy_tesco_basket(request):
             'accept-language': 'en-GB,en;q=0.9',
             'path': '/groceries/en-GB/trolley/items?_method=PUT',
             'content-type': 'application/json',
-            # 'referer': 'https://www.tesco.com/groceries/en-GB/trolley',
-            # 'origin': 'https://www.tesco.com',
+            'referer': 'https://www.tesco.com/groceries/en-GB/trolley',
+            'origin': 'https://www.tesco.com',
         }
         headers.update(request.headers)  # Include any other headers from the original request (CSRF)
         print("Headers from proxy to Tesco:")
