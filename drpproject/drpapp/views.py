@@ -21,6 +21,8 @@ possible_preferences = [
     "none",
 ]
 
+number_of_supermarkets = 4
+
 def index(request):
     saved_preferences = False
     recommendation = "none"
@@ -137,37 +139,14 @@ def comparison(request):
             get_comp_price(tesco_total_price, tesco_item_links)
         ])
 
-        # full_ingredients_sorted = []
-        # for ingredient in full_ingredients:
-        #     if any(link == 'INVALID' for link in [sainsburys_item_links[ingredient][0], 
-        #                                         asda_item_links[ingredient][0],
-        #                                         tesco_item_links[ingredient][0],
-        #                                         morrisons_item_links[ingredient][0]]):
-        #         full_ingredients_sorted.insert(0, ingredient)
-        #     else:
-        #         full_ingredients_sorted.append(ingredient)
-        
-        # ingredients_sorted = []
-        # for ingredient in ingredients:
-        #     if any(link == 'INVALID' for link in [sainsburys_item_links[ingredient][0], 
-        #                                         asda_item_links[ingredient][0],
-        #                                         tesco_item_links[ingredient][0],
-        #                                         morrisons_item_links[ingredient][0]]):
-        #         ingredients_sorted.insert(0, ingredient)
-        #     else:
-        #         ingredients_sorted.append(ingredient)
-
-        # ingredients_form = IngredientsForm(full_ingredients=full_ingredients_sorted, ingredients=ingredients_sorted)
-        # print(ingredients_form)
-
-        for ingredient in ingredients:
-            if any(filter(lambda x: x == "INVALID", [sainsburys_item_links[ingredient][0], 
-                                                    asda_item_links[ingredient][0],
-                                                    tesco_item_links[ingredient][0],
-                                                    morrisons_item_links[ingredient][0]])): 
-                sainsburys_item_links.move_to_end(ingredient, last=False)
+        for i in range(1, number_of_supermarkets + 1): 
+            for ingredient in ingredients:
+                if len(list(filter(lambda x: x == "INVALID", [sainsburys_item_links[ingredient][0], 
+                                                        asda_item_links[ingredient][0],
+                                                        tesco_item_links[ingredient][0],
+                                                        morrisons_item_links[ingredient][0]]))) == i: 
+                    sainsburys_item_links.move_to_end(ingredient, last=False)
                 
-        print(sainsburys_item_links)
 
         show_table = True
         #ENDS HERE
@@ -409,7 +388,7 @@ def morrisons_worker(ingredient, items, preferences, request):
 
 def total_price_tesco(ingredients, preferences, request):
     items = {}
-    num_threads = 2
+    num_threads = 5
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
 
     results = [executor.submit(tesco_worker, ingredient, items, preferences, request) for ingredient in ingredients]
@@ -429,7 +408,7 @@ def total_price_tesco(ingredients, preferences, request):
 
 def total_price_asda(ingredients, preferences, request):
     items = {}
-    num_threads = 10
+    num_threads = 5
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
 
     results = [executor.submit(asda_worker, ingredient, items, preferences, request) for ingredient in ingredients]
@@ -450,7 +429,7 @@ def total_price_asda(ingredients, preferences, request):
 
 def total_price_sainsburys(ingredients, preferences, request):
     items = OrderedDict()
-    num_threads = 10
+    num_threads = 4
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
 
     results = [executor.submit(sainsburys_worker, ingredient, items, preferences, request) for ingredient in ingredients]
