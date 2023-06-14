@@ -139,14 +139,19 @@ def comparison(request):
             get_comp_price(tesco_total_price, tesco_item_links)
         ])
 
+        not_found_row_ingredients = []
+
         for i in range(1, number_of_supermarkets + 1): 
             for ingredient in ingredients:
                 if len(list(filter(lambda x: x == "INVALID", [sainsburys_item_links[ingredient][0], 
                                                         asda_item_links[ingredient][0],
                                                         tesco_item_links[ingredient][0],
                                                         morrisons_item_links[ingredient][0]]))) == i: 
-                    sainsburys_item_links.move_to_end(ingredient, last=False)
-                
+                    not_found_row_ingredients.insert(0, ingredient)
+
+                    #invalid_item_links.update({ingredient: sainsburys_item_links[ingredient]})
+        
+        found_row_ingredients = [ingredient for ingredient in ingredients if ingredient not in not_found_row_ingredients] 
 
         show_table = True
         #ENDS HERE
@@ -175,13 +180,15 @@ def comparison(request):
         # ENDS HERE
 
         show_table = False
+        found_row_ingredients = []
+        not_found_row_ingredients = []
+
     
     ingredients = list(filter(None, list(map(lambda s: s.strip().title(), ingredients))))
     full_ingredients = list(filter(None, list(map(lambda s: s.strip().title(), full_ingredients)))) 
     ingredients_form = IngredientsForm(full_ingredients=full_ingredients, ingredients=ingredients)
 
     
-
     context = {
         original_ingredients_key : original_ingredients,
         full_ingredients_key     : full_ingredients,
@@ -200,6 +207,8 @@ def comparison(request):
         'method'                 : instrs,
         'cheapest_total_market'  : cheapest_total_market,
         'show_table': show_table,
+        'found_row_ingredients': found_row_ingredients, 
+        'not_found_row_ingredients': not_found_row_ingredients,
     }
     
     return render(request, "drpapp/comparison.html", context=context)
