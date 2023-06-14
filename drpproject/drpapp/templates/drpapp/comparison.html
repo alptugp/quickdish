@@ -516,6 +516,36 @@
                         </td>
                     </tr>
                 {% endfor %}
+
+                <tr>
+                    <th>Ingredient</th> 
+                        {% if cheapest_found_entries_market == "Sainsbury's" %}
+                            <th class="lowest-price">Sainsbury's<br>(Total Price: £{{ sainsburys_found_entries_total_price }})</br></th>
+                        {% else %}    
+                            <th class="not-lowest-price">Sainsbury's<br>(Total Price: £{{ sainsburys_found_entries_total_price }})</br></th>
+                        {% endif %}
+
+                        {% if cheapest_found_entries_market == "Asda" %}
+                            <th class="lowest-price">Asda<br>(Total Price: £{{ asda_found_entries_total_price }})</br></th>
+                        {% else %}    
+                            <th class="not-lowest-price">Asda<br>(Total Price: £{{ asda_found_entries_total_price }})</br></th>
+                        {% endif %}
+
+
+                        {% if cheapest_found_entries_market == "Morrisons" %}
+                            <th class="lowest-price">Morrisons<br>(Total Price: £{{ morrisons_found_entries_total_price }})</br></th>
+                        {% else %}    
+                            <th class="not-lowest-price">Morrisons<br>(Total Price: £{{ morrisons_found_entries_total_price }})</br></th>
+                        {% endif %}
+
+                        {% if cheapest_found_entries_market == "Tesco" %}
+                            <th class="lowest-price">Tesco<br>(Total Price: £{{ tesco_found_entries_total_price }})</br></th>
+                        {% else %}    
+                            <th class="not-lowest-price">Tesco<br>(Total Price: £{{ tesco_found_entries_total_price }})</br></th>
+                        {% endif %}
+                </tr>
+                
+
                 {% for found_row_ingredient in found_row_ingredients %}
                     <tr>
                         <td>{{ found_row_ingredient }}</td> <!-- New column for row names -->

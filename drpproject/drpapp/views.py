@@ -153,6 +153,17 @@ def comparison(request):
         
         found_row_ingredients = [ingredient for ingredient in ingredients if ingredient not in not_found_row_ingredients] 
 
+        asda_found_entries_total_price = round(sum([float(asda_item_links[ingredient][1][1:]) for ingredient in found_row_ingredients]), 2)
+        tesco_found_entries_total_price = round(sum([float(tesco_item_links[ingredient][1][1:]) for ingredient in found_row_ingredients]), 2)
+        sainsburys_found_entries_total_price = round(sum([float(sainsburys_item_links[ingredient][1][1:]) for ingredient in found_row_ingredients]), 2)
+        morrisons_found_entries_total_price = round(sum([float(morrisons_item_links[ingredient][1][1:]) for ingredient in found_row_ingredients]), 2)
+        cheapest_found_entries_market = get_cheapest_market([
+                                                             sainsburys_found_entries_total_price, 
+                                                             asda_found_entries_total_price, 
+                                                             morrisons_found_entries_total_price, 
+                                                             tesco_found_entries_total_price
+                                                            ])
+
         show_table = True
         #ENDS HERE
 
@@ -176,12 +187,18 @@ def comparison(request):
         asda_total_price, asda_item_links = 0, []
         tesco_total_price, tesco_item_links = 0, []
         morrisons_total_price, morrisons_item_links = 0, [] #tesco_total_price, tesco_item_links 
-        cheapest_total_market = "Sainsbury's"
+        cheapest_total_market = ""
+        cheapest_found_entries_market = ""
         # ENDS HERE
 
         show_table = False
         found_row_ingredients = []
         not_found_row_ingredients = []
+        asda_found_entries_total_price = 0
+        tesco_found_entries_total_price = 0
+        sainsburys_found_entries_total_price = 0
+        morrisons_found_entries_total_price = 0
+
 
     
     ingredients = list(filter(None, list(map(lambda s: s.strip().title(), ingredients))))
@@ -209,6 +226,11 @@ def comparison(request):
         'show_table': show_table,
         'found_row_ingredients': found_row_ingredients, 
         'not_found_row_ingredients': not_found_row_ingredients,
+        'asda_found_entries_total_price': asda_found_entries_total_price,
+        'tesco_found_entries_total_price': tesco_found_entries_total_price,
+        'sainsburys_found_entries_total_price': sainsburys_found_entries_total_price,
+        'morrisons_found_entries_total_price': morrisons_found_entries_total_price,
+        'cheapest_found_entries_market': cheapest_found_entries_market,
     }
     
     return render(request, "drpapp/comparison.html", context=context)
