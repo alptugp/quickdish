@@ -5,3 +5,4 @@ __pycache__
 *.sqlite3
 drpproject/db.sqlite3
 *.sqlite3
+00*_*.py
