@@ -83,12 +83,20 @@ def get_comp_price(total_price, links):
     else:
         return float(total_price)
 
+def show_all_recipes(request):
+    context = {
+        'saved_recipes': SavedRecipe.objects.all()
+    }
+    return render(request, 'drpapp/all_saved_recipes.html', context=context)
+
 def save_recipe(request):
     if request.method == 'POST':
         # recipe_url = request.POST.get('recipe_url')
         # ingredients = request.POST.get('ingredients')
+
         recipe_url = "www.google.com"
-        ingredients = ["apple", "banana", "pear"]
+        ingredients = request.session.get('ingredients', [])
+        print(ingredients)
 
         saved_recipe = SavedRecipe.objects.create(recipe_url=recipe_url, ingredients=ingredients)
         saved_recipe.save()
@@ -107,6 +115,7 @@ def save_recipe(request):
 def comparison(request):
     original_ingredients_key = 'original_ingredients'
     full_ingredients_key = 'full_ingredients'
+    ingredients_key = 'ingredients'
     new_ingredient_key = 'new_ingredient'
     original_ingredients = []
     full_ingredients = []

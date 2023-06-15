@@ -6,7 +6,10 @@
 
 <body>
     <p>Recipe (id={{ saved_recipe_id }}) has been saved to your account.</p>
+    
     <a href="{% url 'index' %}">Return to Home</a>
+    <br>
+    <a href="{% url 'all_saved_recipes' %}">Show all my saved recipes</a>
 
     {% if saved_recipe %}
         {% with recipe_url=saved_recipe.recipe_url %}

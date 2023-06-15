@@ -15,8 +15,9 @@ urlpatterns = [
     path("recommendations_v/", views.recommendations_vegetarian, name="recommendations_v"),
     path("recommendations_gf/", views.recommendations_gluten_free, name="recommendations_gf"),
     
-    # Save recipe
+    # Recipe saving
     path("recipe_saved/", views.save_recipe, name="recipe_saved"),
+    path("all_saved_recipes/", views.show_all_recipes, name="all_saved_recipes"),
 
     # Proxy
     path("proxy_tesco_basket/", views.proxy_tesco_basket, name="proxy_tesco_basket"),

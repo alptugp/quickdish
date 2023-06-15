@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+
+<head>
+    <title>Recipe Saved</title>
+</head>
+
+<body>
+    <h1>Saved Recipes</h1>
+    <ul>
+    {% for saved_recipe in saved_recipes %}
+        <li>{{ saved_recipe.recipe_url }}</li>
+    {% empty %}
+        <li>No saved recipes available.</li>
+    {% endfor %}
+    </ul>
+</body>
+
+</html>
