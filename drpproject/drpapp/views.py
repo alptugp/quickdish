@@ -10,6 +10,7 @@ from .IngredientParser import cleanup_ingredients
 from .models import SavedRecipe, DietForm, DietaryRestriction, IngredientsForm, DeadClick
 import requests, random, json, concurrent.futures
 from typing import List, Dict
+from urllib.parse import urlencode, parse_qs
 
 # Session storage keys
 dietary_preferences_key = 'dietary_preferences'
@@ -80,12 +81,10 @@ def recommendations_gluten_free(request):
     return render(request, "drpapp/recommendations_gf.html")
 
 def links_missing(links):
-    print(links.values())
     return any(link[0] == 'INVALID' for link in links.values())
 
 def get_comp_price(total_price, links):
     if links_missing(links):
-        print("missing   !!!!!!!!")
         return float(10000000) + float(total_price)
     else:
         return float(total_price)
@@ -97,6 +96,10 @@ def show_all_recipes(request):
         'recipe_name': recipe[1],
         'recipe_url': recipe[2],
         'ingredients': recipe[3],
+        'comparison_args': urlencode({
+            'db_recipe_url' : recipe[2],
+            'db_ingredients' : "&".join([ingredient.lower() for ingredient in recipe[3]]),
+        }),
     } for recipe in saved_object_obj]
 
     context = {
@@ -139,12 +142,13 @@ def save_recipe(request):
         return JsonResponse({'message': 'Invalid request'})
 
 
-def comparison(request):
+def comparison(request, args=None):
+    dietary_preferences = request.session.get('dietary_preferences')
     original_ingredients = []
     full_ingredients = []
     ingredients = []
 
-    # User updates the dietary preferences
+    # User has submitted new ingredients
     if request.method == 'POST':
         original_ingredients = request.session.get(original_ingredients_key, [])
         full_ingredients = request.session.get(full_ingredients_key, [])
@@ -158,11 +162,14 @@ def comparison(request):
                     if new_ingredient != "":
                         ingredients.append(new_ingredient)
                         full_ingredients.append(new_ingredient)
-                        session_save(request, {full_ingredients_key : full_ingredients})
                 else:
                     ingredients.append(key)
-        
-        session_save(request, {ingredients_key : ingredients})
+
+        to_save = {
+            full_ingredients_key: full_ingredients,
+            ingredients_key: ingredients,
+        }
+        session_save(request, to_save)
 
         #STARTS HERE
         preferences = request.session.get('dietary_preferences')
@@ -201,8 +208,6 @@ def comparison(request):
                                                         morrisons_item_links[ingredient][0]]))) == i: 
                     not_found_row_ingredients.insert(0, ingredient)
 
-                    #invalid_item_links.update({ingredient: sainsburys_item_links[ingredient]})
-        
         found_row_ingredients = [ingredient for ingredient in ingredients if ingredient not in not_found_row_ingredients] 
 
         asda_found_entries_total_price = round(sum([float(asda_item_links[ingredient][1][1:]) for ingredient in found_row_ingredients]), 2)
@@ -219,25 +224,47 @@ def comparison(request):
         show_table = True
         #ENDS HERE
 
-    # User searches a recipe
-    elif request.method == 'GET':
-        query = request.GET.get('query', '')
-        
-        dietary_preferences = request.session.get('dietary_preferences')
-        original_ingredients, title, image, instrs = get_recipe_details(request, query, dietary_preferences)
-        title = title.title()
-        full_ingredients = cleanup_ingredients(original_ingredients)
-        ingredients = full_ingredients
+    else:
+        if args:
+            args_parsed = parse_qs(args)
+            db_recipe_url = args_parsed.get('db_recipe_url', [None])[0]
+            db_ingredients = args_parsed.get('db_ingredients', [None])[0].split("&")
 
-        to_save = {
-            original_ingredients_key : original_ingredients,
-            full_ingredients_key : full_ingredients,
-            ingredients_key : ingredients,
-            'title' : title,
-            'image' : image,
-            'instrs' : instrs,
-        }
-        session_save(request, to_save)
+            # User got here by direct link (retrieve from database)
+            if db_recipe_url:
+                # Extract recipe details
+                original_ingredients, title, image, instrs = get_recipe_details(request, db_recipe_url, dietary_preferences)
+                title = title.title()
+                full_ingredients = db_ingredients
+                ingredients = full_ingredients
+                to_save = {
+                    original_ingredients_key: original_ingredients,
+                    full_ingredients_key: full_ingredients,
+                    ingredients_key: ingredients,
+                    'title': title,
+                    'image': image,
+                    'instrs': instrs,
+                }
+                session_save(request, to_save)
+        # User searches a recipe
+        elif request.method == 'GET':
+            query = request.GET.get('query', '')
+            
+            dietary_preferences = request.session.get('dietary_preferences')
+            original_ingredients, title, image, instrs = get_recipe_details(request, query, dietary_preferences)
+            title = title.title()
+            full_ingredients = cleanup_ingredients(original_ingredients)
+            ingredients = full_ingredients
+
+            to_save = {
+                original_ingredients_key : original_ingredients,
+                full_ingredients_key : full_ingredients,
+                ingredients_key : ingredients,
+                'title' : title,
+                'image' : image,
+                'instrs' : instrs,
+            }
+            session_save(request, to_save)
 
         # STARTS HERE
         sainsburys_total_price, sainsburys_item_links = 0, []
@@ -256,15 +283,11 @@ def comparison(request):
         sainsburys_found_entries_total_price = 0
         morrisons_found_entries_total_price = 0
 
-
-    
     ingredients = list(filter(None, list(map(lambda s: s.strip().title(), ingredients))))
     full_ingredients = list(filter(None, list(map(lambda s: s.strip().title(), full_ingredients)))) 
     ingredients_form = IngredientsForm(full_ingredients=full_ingredients, ingredients=ingredients)
 
     recipe_json = generate_recipe_json(title, image, full_ingredients, instrs)
-    print("RECIPE JSON")
-    print(recipe_json)
 
     context = {
         original_ingredients_key : original_ingredients,
@@ -297,27 +320,6 @@ def comparison(request):
     }
     
     return render(request, "drpapp/comparison.html", context=context)
-
-def diet(request):
-    print("diet called")
-    if request.method == 'POST':
-        form = DietForm(request.POST)
-        if form.is_valid():
-            # save form data to the database
-            print("Form valid:", form)
-            instance = form.save()
-            session_save(request, {'instance_id': instance.id})
-            # redirect to home page (index)
-            return redirect('index')
-
-    else:
-        instance_id = request.session.get('instance_id')
-        instance = DietaryRestriction.objects.filter(id=instance_id).first()
-        form = DietForm(instance=instance)
-
-    context = {'form': form }
-
-    return render(request, 'drpapp/diet.html', context)
 
 # For logging dead clicks
 def log_dead_click(request):

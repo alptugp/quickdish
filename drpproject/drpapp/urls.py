@@ -8,6 +8,7 @@ urlpatterns = [
     
     # Comparison
     path("comparison/", views.comparison, name="comparison"),
+    path("comparison/<str:args>", views.comparison, name="comparison"),
     
     # Recommendations
     path("recommendations/", views.recommendations, name="recommendations"),

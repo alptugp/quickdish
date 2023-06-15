@@ -78,15 +78,11 @@ def cleanup_ingredients(original_ingredients):
     # Step 2: Remove bracketed text, split multiple, remove units
     for ingredient in original_ingredients:
         temps = splitAndGetUseful(ingredient)
-        print(temps)
         to_process.extend(temps)
     
     # Step 3: Extract ingredient name using NLP library
     property = 'name'
     parsed = parse_multiple_ingredients(to_process)
-
-    for ingredient in parsed:
-        print(f"{ingredient['name']}\nComment: {ingredient['comment']}\nOther: {ingredient['other']}\n")
 
     ingredients = [ingredient[property] for ingredient in parsed]
     

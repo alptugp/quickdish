@@ -29,8 +29,6 @@ def get_recipe_details(request, search_input, dietary_restrictions):
         request.session[current_url_key] = url
         response = requests.get(url)
         data = response.json()
-        print("DATATATA")
-        print(data)
         if data['totalResults'] > 0:
             recipe = data['results'][0]
             recipe_id = recipe['id']
