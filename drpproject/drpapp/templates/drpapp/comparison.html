@@ -600,7 +600,7 @@
             console.log("iframes found");
             for (var i = 0; i < iframes.length; i++) {
             var iframe = iframes[i];
-            if (iframe.src.match("/https:\/\/cdn\.whisk\.com\/sdk\/add-to-list-widget\.html/")) {
+            if (iframe.src.match(/https:\/\/cdn\.whisk\.com\/sdk\/add-to-list-widget\.html/)) {
                 console.log("desired iframe found");
                 var iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
                 var iframeBody = iframeDocument.querySelector("body");
