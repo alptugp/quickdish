@@ -84,17 +84,33 @@ def get_comp_price(total_price, links):
         return float(total_price)
 
 def show_all_recipes(request):
-    saved_object_obj = SavedRecipe.objects.values_list('recipe_name', 'recipe_url', 'ingredients')
+    saved_object_obj = SavedRecipe.objects.values_list('id', 'recipe_name', 'recipe_url', 'ingredients')
     saved_recipes = [{
-        'recipe_name': recipe[0],
-        'recipe_url': recipe[1],
-        'ingredients': recipe[2],
+        'id': recipe[0],
+        'recipe_name': recipe[1],
+        'recipe_url': recipe[2],
+        'ingredients': recipe[3],
     } for recipe in saved_object_obj]
 
     context = {
         'saved_recipes': saved_recipes,
     }
     return render(request, 'drpapp/all_saved_recipes.html', context=context)
+
+def show_recipe_details(request, recipe_id):
+    saved_object_obj = SavedRecipe.objects.values_list('id', 'recipe_name', 'recipe_url', 'ingredients')
+    saved_recipe = [{
+        'id': recipe[0],
+        'recipe_name': recipe[1],
+        'recipe_url': recipe[2],
+        'ingredients': recipe[3],
+    } for recipe in saved_object_obj if recipe[0] == recipe_id][0]
+
+    context = {
+        'saved_recipe': saved_recipe,
+    }
+
+    return render(request, 'drpapp/recipe_details.html', context=context)
 
 def save_recipe(request):
     if request.method == 'POST':

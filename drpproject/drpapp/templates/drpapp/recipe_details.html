@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+
+<head>
+    <title>{{ Sometitle }}</title>
+    <a href="{% url 'index' %}">Return to Home</a>
+</head>
+
+<body>
+    <h1>{{ saved_recipe.recipe_name }}</h1>
+    <a href="{{ saved_recipe.recipe_url }}">Link to Recipe</a>
+    <div class="ingredient-list">
+        <ul>
+            {% for ingredient in saved_recipe.ingredients %}
+                <li>{{ ingredient }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+
+</html>

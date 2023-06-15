@@ -9,7 +9,7 @@
     <h1>Saved Recipes</h1>
     <ul>
         {% for saved_recipe in saved_recipes %}
-            <li><a href="{{ saved_recipe.recipe_url }}">{{ saved_recipe.recipe_name }}</a></li>
+            <li><a href="{% url 'recipe_details' saved_recipe.id %}">{{ saved_recipe.recipe_name }}</a></li>
         {% endfor %}
     </ul>
 </body>
