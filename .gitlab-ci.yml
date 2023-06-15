@@ -21,12 +21,12 @@ deploy-job-vm:
     - fuser -k 8000/tcp || true
     - docker run --detach -p 8000:8000 drpapp
 
-# deploy-job-heroku:
-#   stage: deploy
-#   rules:
-#     - if: '$CI_COMMIT_REF_NAME == "main"'
-#   script:
-#     - dpl heroku api --app ${HEROKU_APP_NAME} --api_key ${HEROKU_API_KEY}
+deploy-job-heroku:
+  stage: deploy
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "main"'
+  script:
+    - dpl heroku api --app ${HEROKU_APP_NAME} --api_key ${HEROKU_API_KEY}
 
 ##############################
 # Experimental
