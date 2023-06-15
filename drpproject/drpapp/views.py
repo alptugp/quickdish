@@ -4,13 +4,11 @@ from .TescoSearch import searchTesco
 from .AsdaSearch import searchAsda
 from .SainsburysSearch import searchSainsburys
 from .MorrisonsSearch import search_morrisons
-from .NLP import cleanupIngredients
-#from .IngredientParser import cleanup_ingredients
-from .models import DietForm, DietaryRestriction, IngredientsForm
-import concurrent.futures
+from .IngredientParser import cleanup_ingredients
+from .models import DietForm, DietaryRestriction, IngredientsForm, DeadClick
 from django.http import JsonResponse
-import requests
-import random
+import requests, random, json, concurrent.futures
+from typing import List, Dict
 
 dietary_preferences_key = 'dietary_preferences'
 possible_preferences = [
@@ -81,7 +79,7 @@ def links_missing(links):
 def get_comp_price(total_price, links):
     if links_missing(links):
         print("missing   !!!!!!!!")
-        return float('inf')
+        return float(10000000) + float(total_price)
     else:
         return float(total_price)
 
@@ -173,7 +171,7 @@ def comparison(request):
         dietary_preferences = request.session.get('dietary_preferences')
         original_ingredients, title, image, instrs = get_recipe_details(query, dietary_preferences)
         title = title.title()
-        full_ingredients = cleanupIngredients(original_ingredients)
+        full_ingredients = cleanup_ingredients(original_ingredients)
         ingredients = full_ingredients
         request.session[original_ingredients_key] = original_ingredients
         request.session[full_ingredients_key] = full_ingredients
@@ -204,7 +202,10 @@ def comparison(request):
     full_ingredients = list(filter(None, list(map(lambda s: s.strip().title(), full_ingredients)))) 
     ingredients_form = IngredientsForm(full_ingredients=full_ingredients, ingredients=ingredients)
 
-    
+    recipe_json = generate_recipe_json(title, image, full_ingredients, instrs)
+    print("RECIPE JSON")
+    print(recipe_json)
+
     context = {
         original_ingredients_key : original_ingredients,
         full_ingredients_key     : full_ingredients,
@@ -256,6 +257,43 @@ def diet(request):
 
     return render(request, 'drpapp/diet.html', context)
 
+# For logging dead clicks
+def log_dead_click(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        
+        # Get request data info
+        timestamp = data.get('timestamp')
+        url = data.get('url')
+        x = data.get('x') # x coordinate of click 
+        y = data.get('y') # y coordinate of click
+        tag_name = data.get('tag_name') 
+        class_name = data.get('class_name')
+        element_id = data.get('element_id')
+        
+        # Save the dead click to the database
+        DeadClick.objects.create(
+            timestamp=timestamp,
+            url = url,
+            x = x,
+            y = y,
+            tag_name = tag_name,
+            class_name = class_name,
+            element_id = element_id
+        )       
+        
+        # Return a success message 
+        return JsonResponse({'message': 'Dead click logged successfully!'})
+
+# For viewing all dead clicks
+def dead_clicks_list(request):
+    # Get all dead clicks from the database
+    dead_clicks = DeadClick.objects.all()
+    
+    context = {'dead_clicks': dead_clicks}
+    
+    return render(request, 'drpapp/dead_clicks_list.html', context)
+
 def proxy_tesco_basket(request):
     print("proxy_tesco_basket called")
     if request.method == 'PUT':
@@ -267,8 +305,8 @@ def proxy_tesco_basket(request):
             'accept-language': 'en-GB,en;q=0.9',
             'path': '/groceries/en-GB/trolley/items?_method=PUT',
             'content-type': 'application/json',
-            # 'referer': 'https://www.tesco.com/groceries/en-GB/trolley',
-            # 'origin': 'https://www.tesco.com',
+            'referer': 'https://www.tesco.com/groceries/en-GB/trolley',
+            'origin': 'https://www.tesco.com',
         }
         headers.update(request.headers)  # Include any other headers from the original request (CSRF)
         print("Headers from proxy to Tesco:")
@@ -282,6 +320,32 @@ def proxy_tesco_basket(request):
         # Handle other HTTP methods if needed
         print("Invalid request method to proxy")
         return JsonResponse({'error': 'Invalid request method'})
+
+
+# Generates the json+ld for the recipe for Whisk to scrape
+def generate_recipe_json(name: str, image: str, ingredients: List[str], instructions: List[str]) -> str:
+    
+    # Each entry of instructions should be formatted as such: 
+    # { "@type": "HowToStep", "name": "", "text": <text from the instruction> }
+    instrs = []
+    for instr in instructions:
+        entry = {
+            "@type": "HowToStep",
+            "name": "",
+            "text": instr,
+        }
+        instrs.append(entry)
+    
+    recipe_data: Dict[str, any] = {
+        "@context": "http://schema.org",
+        "@type": "Recipe",
+        "name": name,
+        "image": image,
+        "recipeIngredient": ingredients,
+        "recipeInstructions": instrs
+    }
+    return json.dumps(recipe_data)
+
 
 
 

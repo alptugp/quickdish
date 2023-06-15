@@ -19,11 +19,17 @@
             position: relative;
             z-index: 1;
         }
+        .back-button {
+            padding-top:25px;
+            padding-left: 20px;
+            display: block;
+            width: 250px; /* Adjust the width as needed */
+        }   
         .ingredients-recipe {
             margin-bottom: 20px;
             margin-right: 100px;
             margin-left: 100px;
-            margin-top: 80px;
+            margin-top: 30px;
             background-color: rgba(255, 255, 255, 0.93);
             padding: 50px;
             border-radius: 20px;
@@ -311,100 +317,31 @@
 
 
     </style>
-    <script>
-        function getRandomInt(min, max) {
-            min = Math.ceil(min);
-            max = Math.floor(max);
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-        }
-
-        function addEmojis() {
-            const emojis = ['🍔', '🍛', '🌮', '🍣', '🧆', '🥘', '🥧', '🍲', '🥞', '🥗', '🥙', '🍕', '🌯', '🍮', '🍪'];
-            const body = document.querySelector('body');
-            const width = body.offsetWidth;
-            const height = body.offsetHeight;
-
-            const gridSize = 100; // Adjust this value to change the spacing between emojis
-            const numColumns = Math.floor(width / gridSize) + 1;
-            const numRows = Math.floor(height / gridSize) + 15;
-            const numEmojis = numColumns * numRows;
-            const emojiSizeRange = [20, 80]; // Range of font sizes for emojis
-
-            const emojiPositions = new Set();
-
-            for (let i = 0; i < numEmojis; i++) {
-                const emoji = emojis[getRandomInt(0, emojis.length - 1)];
-                const span = document.createElement('span');
-                span.style.fontSize = getRandomInt(emojiSizeRange[0], emojiSizeRange[1]) + 'px';
-                span.style.position = 'absolute';
-
-                let row, col, left, top;
-                do {
-                    row = getRandomInt(0, numRows - 1);
-                    col = getRandomInt(0, numColumns - 1);
-                    left = col * gridSize;
-                    top = row * gridSize;
-                } while (emojiPositions.has(`${row}-${col}`));
-
-                span.style.left = left + 'px';
-                span.style.top = top + 'px';
-                span.textContent = emoji;
-
-                // Check if the emoji is directly after the "Compare Prices" text
-                if (span.previousSibling && span.previousSibling.nodeType === Node.TEXT_NODE && span.previousSibling.textContent.trim() === 'Compare Prices') {
-                    span.previousSibling.remove(); // Remove the emoji's preceding text node
-                }
-
-                body.appendChild(span);
-                emojiPositions.add(`${row}-${col}`);
-            }
-        }
-
-        window.addEventListener('DOMContentLoaded', addEmojis);
-
-        function getRandomInt(min, max) {
-            min = Math.ceil(min);
-            max = Math.floor(max);
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-        }
-
-        window.addEventListener('DOMContentLoaded', addEmojis);
-
-        document.addEventListener('DOMContentLoaded', function() {
-            var table = document.getElementById('comparison-table');
-            var offsetTop = table.offsetTop;
-
-            // Calculate the scroll duration based on the distance to scroll
-            var distance = Math.abs(window.pageYOffset - offsetTop);
-            var duration = Math.min(2000, distance); // Adjust the duration as needed
-
-            // Smooth scroll function with reduced speed
-            function smoothScrollTo(element, targetOffset, duration) {
-                var startOffset = window.pageYOffset;
-                var startTime = performance.now();
-
-                function scrollStep(timestamp) {
-                    var timeElapsed = timestamp - startTime;
-                    var scrollProgress = Math.min(timeElapsed / duration, 1);
-                    var scrollOffset = Math.round(startOffset + scrollProgress * (targetOffset - startOffset));
-
-                    window.scrollTo(0, scrollOffset);
-
-                    if (timeElapsed < duration) {
-                        window.requestAnimationFrame(scrollStep);
-                    }
-                }
-
-                window.requestAnimationFrame(scrollStep);
-            }
-
-            // Scroll to the table using the smooth scroll function
-            smoothScrollTo(window, offsetTop, duration);
-        });
+     
+     <script type="application/ld+json">
+        {{ recipe_json|safe }}
     </script>
+
+     <!-- <script async="true" src="https://cdn.whisk.com/sdk/shopping-list.js" type="text/javascript"></script>
+     <script>
+        var whisk = whisk || {};
+        whisk.queue = whisk.queue || [];
+    
+        whisk.queue.push(function () {
+        whisk.shoppingList.defineFloatingWidget("MWEX-LOON-OVXM-NVIG", {
+            styles: {
+                type: "save-recipe"
+            }
+            })
+        });
+     </script> -->
+
 </head>
 <body>
-    <div class="container">
+    <div class="back-button">
+        <a href="{% url 'index' %}" class="btn">Back to Main Page</a>
+    </div> 
+    <div itemscope itemtype="http://schema.org/Recipe" class="container" >
         {% load custom_tags %}
         <!-- <h1>Ingredient Cost Comparison</h1> -->
         <!-- <a href="{% url 'index' %}" class="main-page-button">Back to Main Page</a> -->
@@ -451,19 +388,19 @@
             </div>
 
             <div class="right-section">
-                <h1> {{ recipe_title }} </h1>
-                <div class="image-box"></div>
+                <h1 itemprop="name"> {{ recipe_title }} </h1>
+                <div class="image-box" itemprop="image" content="{{ recipe_image }}"></div>
                 <h1>Ingredients</h1>
                 <ul>
                     {% for ingredient in original_ingredients %}
-                        <li>{{ ingredient }}</li>
+                        <li itemprop="recipeIngredient">{{ ingredient }}</li>
                     {% endfor %}
                 </ul>
             </div>
 
             <div class="far-right-section">
                 <h2>Method</h2>
-                <ol>
+                <ol itemprop="recipeInstructions">
                     {% for instr in method %}
                         <li>{{ instr }}</li>
                     {% endfor %}
@@ -621,12 +558,12 @@
         {% endif %}
         
 
-           <!-- <div class="basket-button-wrapper">
-            <div></div> 
-            <div><button id="go-to-basket-button-sainsburys">Basket<br/>(Requires Account)</button></div>
-            <div><button id="go-to-basket-button-asda">Basket<br/>(Requires Account)</button></div>
-            <div><button id="go-to-basket-button-morrisons">Basket<br/>(Requires Account)</button></div>
-            <div><button id="go-to-basket-button-tesco">Basket<br/>(Requires Account)</button></div>
+        <!-- <div id="MWEX-LOON-OVXM-NVIG">
+            <script>
+              whisk.queue.push(function () {
+                whisk.display("MWEX-LOON-OVXM-NVIG");
+              });
+            </script>
         </div> -->
     </div>
 

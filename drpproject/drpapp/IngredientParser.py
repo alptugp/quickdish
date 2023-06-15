@@ -1,7 +1,10 @@
+import os
+import certifi
 import re
 import nltk
 from ingredient_parser import parse_multiple_ingredients
 
+os.environ["SSL_CERT_FILE"] = certifi.where()
 nltk.download('averaged_perceptron_tagger')
 
 units = ["teaspoon", "tablespoon",

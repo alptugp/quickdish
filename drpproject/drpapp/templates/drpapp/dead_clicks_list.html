@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dead Clicks List</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Dead Clicks List</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Timestamp</th>
+                <th>URL</th>
+                <th>Coordinates</th>
+                <th>Tag Name</th>
+                <th>Class Name</th>
+                <th>Element ID</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for dead_click in dead_clicks %}
+            <tr>
+                <td>{{ dead_click.timestamp }}</td>
+                <td>{{ dead_click.url }}</td>
+                <td>{{ dead_click.x }}, {{ dead_click.y }}</td>
+                <td>{{ dead_click.tag_name }}</td>
+                <td>{{ dead_click.class_name }}</td>
+                <td>{{ dead_click.element_id }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
