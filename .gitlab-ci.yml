@@ -26,10 +26,15 @@ deploy-job-heroku:
   rules:
     - if: '$CI_COMMIT_REF_NAME == "main"'
   script:
+    # Login to Heroku's container registry
+    - echo "${HEROKU_API_KEY}" | docker login --username=_ --password-stdin registry.heroku.com
+    # Build the Docker image
     - docker build -t registry.heroku.com/${HEROKU_APP_NAME}/web --build-arg DB_PASSWORD=${DB_PASSWORD} .
+    # Push the image to Heroku's container registry
     - docker push registry.heroku.com/${HEROKU_APP_NAME}/web
+    # Release the image
     - heroku container:release web --app ${HEROKU_APP_NAME}
-    - dpl heroku api --app ${HEROKU_APP_NAME} --api_key ${HEROKU_API_KEY}
+
 
 ##############################
 # Experimental
