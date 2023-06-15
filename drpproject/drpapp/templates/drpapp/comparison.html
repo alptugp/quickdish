@@ -19,11 +19,17 @@
             position: relative;
             z-index: 1;
         }
+        .back-button {
+            padding-top:25px;
+            padding-left: 20px;
+            display: block;
+            width: 250px; /* Adjust the width as needed */
+        }   
         .ingredients-recipe {
             margin-bottom: 20px;
             margin-right: 100px;
             margin-left: 100px;
-            margin-top: 80px;
+            margin-top: 30px;
             background-color: rgba(255, 255, 255, 0.93);
             padding: 50px;
             border-radius: 20px;
@@ -281,7 +287,7 @@
 
 
     </style>
-    <script>
+    <!-- <script>
         function getRandomInt(min, max) {
             min = Math.ceil(min);
             max = Math.floor(max);
@@ -371,9 +377,12 @@
             // Scroll to the table using the smooth scroll function
             smoothScrollTo(window, offsetTop, duration);
         });
-    </script>
+    </script> -->
 </head>
 <body>
+    <div class="back-button">
+        <a href="{% url 'index' %}" class="btn">Back to Main Page</a>
+    </div> 
     <div class="container">
         {% load custom_tags %}
         <!-- <h1>Ingredient Cost Comparison</h1> -->
@@ -411,10 +420,6 @@
                         <div class="ingredient-row">
                             <button type="submit" class="btn">Compare Prices</button>
                         </div>
-<!-- 
-                        <div class="ingredient-row2">
-                            <a href="{% url 'index' %}" class="btn">Back to Main Page</a>
-                        </div> -->
                         <!-- </ul> -->
                     </form>
                 </div>            
