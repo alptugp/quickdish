@@ -12,9 +12,6 @@ class SavedRecipe(models.Model):
         self.recipe_url = str(recipe_url).strip()
         self.ingredients = ingredients
 
-class SavedShoppingList(models.Model):
-    saved_recipes = models.ManyToManyField(SavedRecipe)
-
 class DietaryRestriction(models.Model):
     vegan = models.BooleanField(default = False)
     vegetarian = models.BooleanField(default = False)
