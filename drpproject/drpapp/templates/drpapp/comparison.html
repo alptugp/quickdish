@@ -146,7 +146,7 @@
         }
         a {
             color: #FF6B35;
-            text-decoration: none;
+            text-underline-position: under;
         }
         .lowest-price {
             color: #00802b;
@@ -251,6 +251,7 @@
             font-weight: bold;
             font-size: 20px;
             color: #FF6B35;
+            margin-bottom: 0px;
         }
 
         .add-ingredient-row {
@@ -280,6 +281,14 @@
 
         .add-ingredient-row .add-ingredient-button:hover {
             background-color: #cc5500;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-weight: bold;
+            font-size: 15px;
+            color: #FF6B35;
+            margin-bottom: 0px;
         }
 
 
@@ -443,11 +452,13 @@
                 </ol>
             </div>
         </div>
-         {% if show_table %}
+        
+        {% if show_table %}
+        {% if show_not_found_entries %}
         <table id="comparison-table">
             <thead>
                 <tr>
-                    <th colspan="5" class="table-title">Price Comparison</th>
+                    <th colspan="5" class="table-title">Price Comparison<div class="subtitle">(Only Contains Ingredients Not Found in At Least One of the Markets)</div></th>
                 </tr>
                 <tr>
                     {% if show_not_found_entries %}
@@ -503,7 +514,15 @@
                         </tr>
                     {% endfor %}
                 {% endif %}
+            </tbody>
+        </table>
+        {% endif %}
 
+        <table id="comparison-table">
+            <thead>
+                <tr>
+                    <th colspan="5" class="table-title">Price Comparison {% if show_not_found_entries %}<div class="subtitle">(Only Contains Ingredients Found in All Four Markets)</div>{% endif %}</th>
+                </tr>
                 <tr>
                     <th>Ingredient</th> 
                         {% if cheapest_found_entries_market == "Sainsbury's" %}
@@ -531,8 +550,8 @@
                             <th class="not-lowest-price">Tesco<br>(Total Price: £{{ tesco_found_entries_total_price }})</br></th>
                         {% endif %}
                 </tr>
-                
-
+            </thead>
+            <tbody>
                 {% for found_row_ingredient in found_row_ingredients %}
                     <tr>
                         <td>{{ found_row_ingredient }}</td> <!-- New column for row names -->
@@ -577,6 +596,7 @@
             </tbody>
         </table>
         {% endif %}
+        
 
            <!-- <div class="basket-button-wrapper">
             <div></div> 
