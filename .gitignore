@@ -1,7 +1,6 @@
+drpproject/migrations
 __pycache__
 *.pyc
 .env
 .DS_Store
-*.sqlite3
-drpproject/db.sqlite3
 *.sqlite3
