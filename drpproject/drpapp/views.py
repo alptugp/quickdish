@@ -109,18 +109,21 @@ def show_all_recipes(request):
 
 def show_recipe_details(request, recipe_id):
     saved_object_obj = SavedRecipe.objects.values_list('id', 'recipe_name', 'recipe_url', 'ingredients')
-    saved_recipe = [{
-        'id': recipe[0],
-        'recipe_name': recipe[1],
+    saved_recipes = [{
         'recipe_url': recipe[2],
         'ingredients': recipe[3],
-    } for recipe in saved_object_obj if recipe[0] == recipe_id][0]
+    } for recipe in saved_object_obj if recipe[0] == recipe_id]
 
-    context = {
-        'saved_recipe': saved_recipe,
-    }
-
-    return render(request, 'drpapp/recipe_details.html', context=context)
+    if saved_recipes:
+        saved_recipe = saved_recipes[0]
+        comparison_args = urlencode({
+            'db_recipe_url' : saved_recipe['recipe_url'],
+            'db_ingredients' : "&".join([ingredient.lower() for ingredient in saved_recipe['ingredients']]),
+        })
+        return comparison(request, args=comparison_args)
+    
+    else:
+        return JsonResponse({'error': 'The requested recipe was not found'})
 
 def save_recipe(request):
     if request.method == 'POST':
