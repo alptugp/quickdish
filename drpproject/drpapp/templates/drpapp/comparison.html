@@ -576,63 +576,63 @@
     </div>
 
     <script>
-        // Function to remove elements
-        function removeElements(observer) {
-            // Remove the first div
-            var divToRemove = document.querySelector("#app > div > div > div.LayoutBlocks.fmE_z3WTf511n_ZOfe2oZ > div.LayoutBlock._3zeFT42ZyS_Qa7gPFmrmd2.AddToListBlock");
-            if (divToRemove) {
-                console.log("Removing Add to List div");
-                // Check if within shadow DOM
-                if (divToRemove.shadowRoot) {
-                    console.log("Removing shadow DOM");
-                    divToRemove.shadowRoot.remove();
+        function removeElements() {
+                var addToListBlock = document.querySelector("#app > div > div > div.LayoutBlocks.fmE_z3WTf511n_ZOfe2oZ > div.LayoutBlock._3zeFT42ZyS_Qa7gPFmrmd2.AddToListBlock");
+                if (addToListBlock) {
+                    addToListBlock.remove();
+                    console.log("AddToListBlock removed");
+                } else {
+                    console.log("AddToListBlock not found");
                 }
-                divToRemove.remove();
-            } else {
-                console.log("Add to List div not found");
-            }
-    
-            // Remove the anchor
-            var anchorToRemove = document.querySelector("#app > div > div > a");
-            if (anchorToRemove) {
-                console.log("Removing anchor");
-                // Check if within shadow DOM
-                if (anchorToRemove.shadowRoot) {
-                    console.log("Removing shadow DOM");
-                    anchorToRemove.shadowRoot.remove();
+
+                var poweredByWhisk = document.querySelector("#app > div > div > a");
+                if (poweredByWhisk) {
+                    poweredByWhisk.remove();
+                    console.log("Powered by Whisk removed");
+                } else {
+                    console.log("Powered by Whisk not found");
                 }
-                anchorToRemove.remove();
-            } else {
-                console.log("Anchor not found");
             }
-    
-            // Disconnect observer if both elements are removed
-            if (!divToRemove && !anchorToRemove) {
-                observer.disconnect();
-                console.log('Observer disconnected');
+
+        function handleIFrameLoad() {
+            var iframe = document.querySelector("iframe#c4fdb9350-3713-45e7-ba0c-b70e378efbbf");
+            if (iframe) {
+                console.log("iframe found");
+                var iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+                var iframeBody = iframeDocument.querySelector("body");
+                if (iframeBody) {
+                console.log("iframe body found");
+                removeElements();
+                observer.observe(iframeBody, config);
+                } else {
+                console.log("iframe body not found");
+                }
+            } else {
+                console.log("iframe not found");
             }
         }
-    
-        // Setting up the MutationObserver
+
         var observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
                 if (mutation.addedNodes.length) {
-                    removeElements(observer);
+                    console.log("DOM changes observed");
+                    removeElements();
                 }
             });
-        });
-    
-        // Configuration of the observer
+            });
+
         var config = {
             attributes: true,
             childList: true,
             characterData: true,
             subtree: true
         };
-    
-        // Pass the target node, as well as the observer options
-        observer.observe(document.body, config);
-    
+
+        window.addEventListener("DOMContentLoaded", function() {
+            console.log("DOMContentLoaded event triggered");
+            handleIFrameLoad();
+        });
+
     </script>
     
         
