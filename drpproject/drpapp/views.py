@@ -94,12 +94,6 @@ def show_all_recipes(request):
     saved_recipes = [{
         'id': recipe[0],
         'recipe_name': recipe[1],
-        'recipe_url': recipe[2],
-        'ingredients': recipe[3],
-        'comparison_args': urlencode({
-            'db_recipe_url' : recipe[2],
-            'db_ingredients' : "&".join([ingredient.lower() for ingredient in recipe[3]]),
-        }),
     } for recipe in saved_object_obj]
 
     context = {

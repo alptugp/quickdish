@@ -19,7 +19,7 @@ urlpatterns = [
     # Recipe saving
     path("recipe_saved/", views.save_recipe, name="recipe_saved"),
     path("all_saved_recipes/", views.show_all_recipes, name="all_saved_recipes"),
-    path('all_saved_recipes/<int:recipe_id>/', views.show_recipe_details, name='all_saved_recipes'),
+    path('all_saved_recipes/<int:recipe_id>/', views.show_recipe_details, name='show_saved_recipe'),
 
     # Proxy
     path("proxy_tesco_basket/", views.proxy_tesco_basket, name="proxy_tesco_basket"),
