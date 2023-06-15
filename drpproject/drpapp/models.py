@@ -1,20 +1,14 @@
 from django.db import models
 from django import forms
-import json
 
 class SavedRecipe(models.Model):
-    recipe_url = models.URLField(max_length=255)
+    recipe_url = models.CharField(max_length=255)
     ingredients = models.JSONField()
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, recipe_url, ingredients, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.ingredients:
-            self.set_ingredients(self.ingredients)
-
-    def set_ingredients(self, ingredients):
-        self.ingredients = json.dumps(ingredients)
-    def get_ingredients(self):
-        return list(json.loads(self.ingredients))
+        self.recipe_url = str(recipe_url).strip()
+        self.ingredients = ingredients
 
 class SavedShoppingList(models.Model):
     saved_recipes = models.ManyToManyField(SavedRecipe)

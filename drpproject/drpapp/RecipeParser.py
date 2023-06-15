@@ -2,8 +2,10 @@ from recipe_scrapers import scrape_me
 from urllib.parse import urlparse
 import requests
 
-def get_recipe_details(search_input, dietary_restrictions):
+def get_recipe_details(request, search_input, dietary_restrictions):
+    current_url_key = "current_url"
     if is_url(search_input):
+        request.session[current_url_key] = search_input
         scraper = scrape_me(search_input)
         return scraper.ingredients(), scraper.title(), scraper.image(), scraper.instructions_list()
     else:
@@ -22,6 +24,7 @@ def get_recipe_details(search_input, dietary_restrictions):
             diet_query = "&diet=" + ",".join(diet)
         
         url = f'https://api.spoonacular.com/recipes/complexSearch?query={search_input}{diet_query}{url_suffix}'
+        request.session[current_url_key] = url
         response = requests.get(url)
         data = response.json()
         print("DATATATA")

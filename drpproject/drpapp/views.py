@@ -84,27 +84,29 @@ def get_comp_price(total_price, links):
         return float(total_price)
 
 def show_all_recipes(request):
+    saved_object_obj = SavedRecipe.objects.values_list('recipe_url', 'ingredients')
+    saved_recipes = [{
+        'recipe_url': recipe[0],
+        'ingredients': recipe[1],
+    } for recipe in saved_object_obj]
+
     context = {
-        'saved_recipes': SavedRecipe.objects.all()
+        'saved_recipes': saved_recipes,
     }
     return render(request, 'drpapp/all_saved_recipes.html', context=context)
 
 def save_recipe(request):
     if request.method == 'POST':
-        # recipe_url = request.POST.get('recipe_url')
-        # ingredients = request.POST.get('ingredients')
-
-        recipe_url = "www.google.com"
+        recipe_url = request.session.get('current_url', "")
         ingredients = request.session.get('ingredients', [])
-        print(ingredients)
 
         saved_recipe = SavedRecipe.objects.create(recipe_url=recipe_url, ingredients=ingredients)
         saved_recipe.save()
         saved_recipe_id = saved_recipe.id
 
         context = {
-            'saved_recipe_id': saved_recipe_id,
             'saved_recipe': saved_recipe,
+            'saved_recipe_id': saved_recipe_id,
         }
 
         return render(request, 'drpapp/recipe_saved.html', context=context)
@@ -138,6 +140,8 @@ def comparison(request):
                         request.session[full_ingredients_key] = full_ingredients
                 else:
                     ingredients.append(key)
+        
+        request.session[ingredients_key] = ingredients
 
         #STARTS HERE
         preferences = request.session.get('dietary_preferences')
@@ -197,7 +201,7 @@ def comparison(request):
         query = request.GET.get('query', '')
         
         dietary_preferences = request.session.get('dietary_preferences')
-        original_ingredients, title, image, instrs = get_recipe_details(query, dietary_preferences)
+        original_ingredients, title, image, instrs = get_recipe_details(request, query, dietary_preferences)
         title = title.title()
         full_ingredients = cleanup_ingredients(original_ingredients)
         ingredients = full_ingredients
