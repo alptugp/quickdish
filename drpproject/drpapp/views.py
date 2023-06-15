@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
+from .SessionManager import session_save
 from .RecipeParser import get_recipe_details
 from .TescoSearch import searchTesco
 from .AsdaSearch import searchAsda
@@ -30,7 +31,7 @@ def index(request):
         diet_form = DietForm(request.POST)
         if diet_form.is_valid():
             preferences = diet_form.cleaned_data
-            request.session[dietary_preferences_key] = preferences
+            session_save(request, {dietary_preferences_key : preferences})
             for rec in possible_preferences:
                 if preferences.get(rec):
                     recommendation = rec
@@ -155,11 +156,11 @@ def comparison(request):
                     if new_ingredient != "":
                         ingredients.append(new_ingredient)
                         full_ingredients.append(new_ingredient)
-                        request.session[full_ingredients_key] = full_ingredients
+                        session_save(request, {full_ingredients_key : full_ingredients})
                 else:
                     ingredients.append(key)
         
-        request.session[ingredients_key] = ingredients
+        session_save(request, {ingredients_key : ingredients})
 
         #STARTS HERE
         preferences = request.session.get('dietary_preferences')
@@ -223,12 +224,16 @@ def comparison(request):
         title = title.title()
         full_ingredients = cleanup_ingredients(original_ingredients)
         ingredients = full_ingredients
-        request.session[original_ingredients_key] = original_ingredients
-        request.session[full_ingredients_key] = full_ingredients
-        request.session[ingredients_key] = ingredients
-        request.session['title'] = title
-        request.session['image'] = image
-        request.session['instrs'] = instrs
+
+        to_save = {
+            original_ingredients_key : original_ingredients,
+            full_ingredients_key : full_ingredients,
+            ingredients_key : ingredients,
+            'title' : title,
+            'image' : image,
+            'instrs' : instrs,
+        }
+        session_save(request, to_save)
 
         # STARTS HERE
         sainsburys_total_price, sainsburys_item_links = 0, []
@@ -275,7 +280,7 @@ def diet(request):
             # save form data to the database
             print("Form valid:", form)
             instance = form.save()
-            request.session['instance_id'] = instance.id
+            session_save(request, {'instance_id': instance.id})
             # redirect to home page (index)
             return redirect('index')
 
@@ -399,7 +404,7 @@ def tesco_worker(ingredient, items, preferences, request):
             price = money_value(price)
             item_id = most_relevant_item['id']
             items[ingredient] = item_id, '£' + f'{price:.2f}'
-            request.session[ingredient_key] = item_id, price 
+            request.session[ingredient_key] = item_id, price
             return price
         else:
             items[ingredient] = "INVALID", "0"
