@@ -19,11 +19,17 @@
             position: relative;
             z-index: 1;
         }
+        .back-button {
+            padding-top:25px;
+            padding-left: 20px;
+            display: block;
+            width: 250px; /* Adjust the width as needed */
+        }   
         .ingredients-recipe {
             margin-bottom: 20px;
             margin-right: 100px;
             margin-left: 100px;
-            margin-top: 80px;
+            margin-top: 30px;
             background-color: rgba(255, 255, 255, 0.93);
             padding: 50px;
             border-radius: 20px;
@@ -146,13 +152,16 @@
         }
         a {
             color: #FF6B35;
-            text-decoration: none;
+            text-underline-position: under;
         }
         .lowest-price {
             color: #00802b;
         }
         .not-lowest-price {
             color: #990000;
+        }
+        .market-column-name {
+            color: black;
         }
         .comparison-table-and-button-wrapper {
             display: flex;
@@ -248,6 +257,7 @@
             font-weight: bold;
             font-size: 20px;
             color: #FF6B35;
+            margin-bottom: 0px;
         }
 
         .add-ingredient-row {
@@ -279,102 +289,59 @@
             background-color: #cc5500;
         }
 
+        .subtitle {
+            text-align: center;
+            font-weight: bold;
+            font-size: 15px;
+            color: #FF6B35;
+            margin-bottom: 0px;
+        }
+
+        .result {
+            margin-bottom: 20px;
+            margin-right: 290px;
+            margin-left: 290px;
+            margin-top: 0px;
+            background-color: rgba(255, 255, 255, 0.93);
+            padding: 20px 30px;
+            border-radius: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 2;
+        }
+
+        .result-text {
+            text-align: center;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
 
     </style>
-    <script>
-        function getRandomInt(min, max) {
-            min = Math.ceil(min);
-            max = Math.floor(max);
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-        }
-
-        function addEmojis() {
-            const emojis = ['🍔', '🍛', '🌮', '🍣', '🧆', '🥘', '🥧', '🍲', '🥞', '🥗', '🥙', '🍕', '🌯', '🍮', '🍪'];
-            const body = document.querySelector('body');
-            const width = body.offsetWidth;
-            const height = body.offsetHeight;
-
-            const gridSize = 100; // Adjust this value to change the spacing between emojis
-            const numColumns = Math.floor(width / gridSize) + 1;
-            const numRows = Math.floor(height / gridSize) + 15;
-            const numEmojis = numColumns * numRows;
-            const emojiSizeRange = [20, 80]; // Range of font sizes for emojis
-
-            const emojiPositions = new Set();
-
-            for (let i = 0; i < numEmojis; i++) {
-                const emoji = emojis[getRandomInt(0, emojis.length - 1)];
-                const span = document.createElement('span');
-                span.style.fontSize = getRandomInt(emojiSizeRange[0], emojiSizeRange[1]) + 'px';
-                span.style.position = 'absolute';
-
-                let row, col, left, top;
-                do {
-                    row = getRandomInt(0, numRows - 1);
-                    col = getRandomInt(0, numColumns - 1);
-                    left = col * gridSize;
-                    top = row * gridSize;
-                } while (emojiPositions.has(`${row}-${col}`));
-
-                span.style.left = left + 'px';
-                span.style.top = top + 'px';
-                span.textContent = emoji;
-
-                // Check if the emoji is directly after the "Compare Prices" text
-                if (span.previousSibling && span.previousSibling.nodeType === Node.TEXT_NODE && span.previousSibling.textContent.trim() === 'Compare Prices') {
-                    span.previousSibling.remove(); // Remove the emoji's preceding text node
-                }
-
-                body.appendChild(span);
-                emojiPositions.add(`${row}-${col}`);
-            }
-        }
-
-        window.addEventListener('DOMContentLoaded', addEmojis);
-
-        function getRandomInt(min, max) {
-            min = Math.ceil(min);
-            max = Math.floor(max);
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-        }
-
-        window.addEventListener('DOMContentLoaded', addEmojis);
-
-        document.addEventListener('DOMContentLoaded', function() {
-            var table = document.getElementById('comparison-table');
-            var offsetTop = table.offsetTop;
-
-            // Calculate the scroll duration based on the distance to scroll
-            var distance = Math.abs(window.pageYOffset - offsetTop);
-            var duration = Math.min(2000, distance); // Adjust the duration as needed
-
-            // Smooth scroll function with reduced speed
-            function smoothScrollTo(element, targetOffset, duration) {
-                var startOffset = window.pageYOffset;
-                var startTime = performance.now();
-
-                function scrollStep(timestamp) {
-                    var timeElapsed = timestamp - startTime;
-                    var scrollProgress = Math.min(timeElapsed / duration, 1);
-                    var scrollOffset = Math.round(startOffset + scrollProgress * (targetOffset - startOffset));
-
-                    window.scrollTo(0, scrollOffset);
-
-                    if (timeElapsed < duration) {
-                        window.requestAnimationFrame(scrollStep);
-                    }
-                }
-
-                window.requestAnimationFrame(scrollStep);
-            }
-
-            // Scroll to the table using the smooth scroll function
-            smoothScrollTo(window, offsetTop, duration);
-        });
+     
+     <script type="application/ld+json">
+        {{ recipe_json|safe }}
     </script>
+
+     <!-- <script async="true" src="https://cdn.whisk.com/sdk/shopping-list.js" type="text/javascript"></script>
+     <script>
+        var whisk = whisk || {};
+        whisk.queue = whisk.queue || [];
+    
+        whisk.queue.push(function () {
+        whisk.shoppingList.defineFloatingWidget("MWEX-LOON-OVXM-NVIG", {
+            styles: {
+                type: "save-recipe"
+            }
+            })
+        });
+     </script> -->
+
 </head>
 <body>
-    <div class="container">
+    <div class="back-button">
+        <a href="{% url 'index' %}" class="btn">Back to Main Page</a>
+    </div> 
+    <div itemscope itemtype="http://schema.org/Recipe" class="container" >
         {% load custom_tags %}
         <!-- <h1>Ingredient Cost Comparison</h1> -->
         <!-- <a href="{% url 'index' %}" class="main-page-button">Back to Main Page</a> -->
@@ -424,65 +391,130 @@
             </div>
 
             <div class="right-section">
-                <h1> {{ recipe_title }} </h1>
-                <div class="image-box"></div>
+                <h1 itemprop="name"> {{ recipe_title }} </h1>
+                <div class="image-box" itemprop="image" content="{{ recipe_image }}"></div>
                 <h1>Ingredients</h1>
                 <ul>
                     {% for ingredient in original_ingredients %}
-                        <li>{{ ingredient }}</li>
+                        <li itemprop="recipeIngredient">{{ ingredient }}</li>
                     {% endfor %}
                 </ul>
             </div>
 
             <div class="far-right-section">
                 <h2>Method</h2>
-                <ol>
+                <ol itemprop="recipeInstructions">
                     {% for instr in method %}
                         <li>{{ instr }}</li>
                     {% endfor %}
                 </ol>
             </div>
         </div>
-         {% if show_table %}
+        
+        {% if show_table %}
+        {% if show_not_found_entries %}
         <table id="comparison-table">
             <thead>
                 <tr>
-                    <th colspan="5" class="table-title">Price Comparison</th>
+                    <th colspan="5" class="table-title">Price Comparison<div class="subtitle">(Only Contains Ingredients Not Found in At Least One of the Markets)</div></th>
+                </tr>
+                <tr>
+                    {% if show_not_found_entries %}
+                        <th>Ingredient</th> 
+                            <th class="market-column-name">Sainsbury's</th>
+                            <th class="market-column-name">Asda</th>
+                            <th class="market-column-name">Morrisons</th>
+                            <th class="market-column-name">Tesco</th>   
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% if show_not_found_entries %}
+                    {% for not_found_row_ingredient in not_found_row_ingredients %}
+                        <tr>
+                            <td>{{ not_found_row_ingredient }}</td> <!-- New column for row names -->
+                            <td>
+                                {% with sainsburys_result=sainsburys_item_links|dict_lookup:not_found_row_ingredient %}
+                                    {% if sainsburys_result.0 != "INVALID" %}
+                                        <b><a href="{{ sainsburys_result.0 }}" target="_blank">{{ sainsburys_result.1 }}</a></b>
+                                    {% else %}
+                                        Not Found
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with asda_result=asda_item_links|dict_lookup:not_found_row_ingredient %}
+                                    {% if asda_result.0 != "INVALID" %}
+                                        <b><a href="{{ asda_result.0 }}" target="_blank">{{ asda_result.1 }}</a></b>
+                                    {% else %}
+                                        Not Found
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with morrisons_result=morrisons_item_links|dict_lookup:not_found_row_ingredient %}
+                                    {% if morrisons_result.0 != "INVALID" %}
+                                        <b><a href="{{ morrisons_result.0 }}" target="_blank">{{ morrisons_result.1 }}</a></b>
+                                    {% else %}
+                                        Not Found
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with tesco_result=tesco_item_links|dict_lookup:not_found_row_ingredient %}
+                                    {% if tesco_result.0 != "INVALID" %}
+                                        <b><a href="{{ tesco_result.0 }}" target="_blank">{{ tesco_result.1 }}</a></b>
+                                    {% else %}
+                                        Not Found
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+        {% endif %}
+
+        <table id="comparison-table">
+            <thead>
+                <tr>
+                    <th colspan="5" class="table-title">Price Comparison {% if show_not_found_entries %}<div class="subtitle">(Only Contains Ingredients Found in All Four Markets)</div>{% endif %}</th>
                 </tr>
                 <tr>
                     <th>Ingredient</th> 
-                        {% if cheapest_total_market == "Sainsbury's" %}
-                            <th class="lowest-price">Sainsbury's<br>(Total Price: £{{ sainsburys_total_price }})</br></th>
+                        {% if cheapest_found_entries_market == "Sainsbury's" %}
+                            <th class="lowest-price">Sainsbury's<br>(Total Price: £{{ sainsburys_found_entries_total_price }})</br></th>
                         {% else %}    
-                            <th class="not-lowest-price">Sainsbury's<br>(Total Price: £{{ sainsburys_total_price }})</br></th>
+                            <th class="not-lowest-price">Sainsbury's<br>(Total Price: £{{ sainsburys_found_entries_total_price }})</br></th>
                         {% endif %}
 
-                        {% if cheapest_total_market == "Asda" %}
-                            <th class="lowest-price">Asda<br>(Total Price: £{{ asda_total_price }})</br></th>
+                        {% if cheapest_found_entries_market == "Asda" %}
+                            <th class="lowest-price">Asda<br>(Total Price: £{{ asda_found_entries_total_price }})</br></th>
                         {% else %}    
-                            <th class="not-lowest-price">Asda<br>(Total Price: £{{ asda_total_price }})</br></th>
+                            <th class="not-lowest-price">Asda<br>(Total Price: £{{ asda_found_entries_total_price }})</br></th>
                         {% endif %}
 
 
-                        {% if cheapest_total_market == "Morrisons" %}
-                            <th class="lowest-price">Morrisons<br>(Total Price: £{{ morrisons_total_price }})</br></th>
+                        {% if cheapest_found_entries_market == "Morrisons" %}
+                            <th class="lowest-price">Morrisons<br>(Total Price: £{{ morrisons_found_entries_total_price }})</br></th>
                         {% else %}    
-                            <th class="not-lowest-price">Morrisons<br>(Total Price: £{{ morrisons_total_price }})</br></th>
+                            <th class="not-lowest-price">Morrisons<br>(Total Price: £{{ morrisons_found_entries_total_price }})</br></th>
                         {% endif %}
 
-                        {% if cheapest_total_market == "Tesco" %}
-                            <th class="lowest-price">Tesco<br>(Total Price: £{{ tesco_total_price }})</br></th>
+                        {% if cheapest_found_entries_market == "Tesco" %}
+                            <th class="lowest-price">Tesco<br>(Total Price: £{{ tesco_found_entries_total_price }})</br></th>
                         {% else %}    
-                            <th class="not-lowest-price">Tesco<br>(Total Price: £{{ tesco_total_price }})</br></th>
+                            <th class="not-lowest-price">Tesco<br>(Total Price: £{{ tesco_found_entries_total_price }})</br></th>
                         {% endif %}
                 </tr>
             </thead>
             <tbody>
-                {% for ingredient, link in sainsburys_item_links.items %}
+                {% for found_row_ingredient in found_row_ingredients %}
                     <tr>
-                        <td>{{ ingredient }}</td> <!-- New column for row names -->
+                        <td>{{ found_row_ingredient }}</td> <!-- New column for row names -->
                         <td>
-                            {% with sainsburys_result=sainsburys_item_links|dict_lookup:ingredient %}
+                            {% with sainsburys_result=sainsburys_item_links|dict_lookup:found_row_ingredient %}
                                 {% if sainsburys_result.0 != "INVALID" %}
                                     <b><a href="{{ sainsburys_result.0 }}" target="_blank">{{ sainsburys_result.1 }}</a></b>
                                 {% else %}
@@ -491,7 +523,7 @@
                             {% endwith %}
                         </td>
                         <td>
-                            {% with asda_result=asda_item_links|dict_lookup:ingredient %}
+                            {% with asda_result=asda_item_links|dict_lookup:found_row_ingredient %}
                                 {% if asda_result.0 != "INVALID" %}
                                     <b><a href="{{ asda_result.0 }}" target="_blank">{{ asda_result.1 }}</a></b>
                                 {% else %}
@@ -500,7 +532,7 @@
                             {% endwith %}
                         </td>
                         <td>
-                            {% with morrisons_result=morrisons_item_links|dict_lookup:ingredient %}
+                            {% with morrisons_result=morrisons_item_links|dict_lookup:found_row_ingredient %}
                                 {% if morrisons_result.0 != "INVALID" %}
                                     <b><a href="{{ morrisons_result.0 }}" target="_blank">{{ morrisons_result.1 }}</a></b>
                                 {% else %}
@@ -509,7 +541,7 @@
                             {% endwith %}
                         </td>
                         <td>
-                            {% with tesco_result=tesco_item_links|dict_lookup:ingredient %}
+                            {% with tesco_result=tesco_item_links|dict_lookup:found_row_ingredient %}
                                 {% if tesco_result.0 != "INVALID" %}
                                     <b><a href="{{ tesco_result.0 }}" target="_blank">{{ tesco_result.1 }}</a></b>
                                 {% else %}
@@ -521,14 +553,20 @@
                 {% endfor %}
             </tbody>
         </table>
+        <div class="result">
+            <div class="result-text">
+                <span class="lowest-price">{{cheapest_found_entries_market }}</span> is the overall cheapest to buy the ingredients {% if show_not_found_entries %} found in all four markets {% endif %}
+            </div>
+        </div>
         {% endif %}
+        
 
-           <!-- <div class="basket-button-wrapper">
-            <div></div> 
-            <div><button id="go-to-basket-button-sainsburys">Basket<br/>(Requires Account)</button></div>
-            <div><button id="go-to-basket-button-asda">Basket<br/>(Requires Account)</button></div>
-            <div><button id="go-to-basket-button-morrisons">Basket<br/>(Requires Account)</button></div>
-            <div><button id="go-to-basket-button-tesco">Basket<br/>(Requires Account)</button></div>
+        <!-- <div id="MWEX-LOON-OVXM-NVIG">
+            <script>
+              whisk.queue.push(function () {
+                whisk.display("MWEX-LOON-OVXM-NVIG");
+              });
+            </script>
         </div> -->
     </div>
 
@@ -628,8 +666,5 @@
         button.addEventListener('click', addToTescoBasket);
     </script>
 
-    <!-- Dead Clicks -->
-    {% load static %}
-    <script src = "{% static '/drpapp/dead_click_listener.js' %}"></script>
 </body>
 </html>

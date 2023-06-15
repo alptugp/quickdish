@@ -8,10 +8,8 @@ from .SainsburysSearch import searchSainsburys
 from .MorrisonsSearch import search_morrisons
 from .IngredientParser import cleanup_ingredients
 from .models import SavedRecipe, DietForm, DietaryRestriction, IngredientsForm, DeadClick
-import concurrent.futures
-import requests
-import random
-import json
+import requests, random, json, concurrent.futures
+from typing import List, Dict
 
 dietary_preferences_key = 'dietary_preferences'
 possible_preferences = [
@@ -20,6 +18,8 @@ possible_preferences = [
     "gluten_free",
     "none",
 ]
+
+number_of_supermarkets = 4
 
 def index(request):
     saved_preferences = False
@@ -168,7 +168,7 @@ def comparison(request):
             total_price_sainsburys,
             total_price_asda,
             total_price_tesco,
-            total_price_morrisons,
+            #total_price_morrisons,
         ]
         num_threads = len(supermarket_functions)
         executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
@@ -179,7 +179,7 @@ def comparison(request):
         sainsburys_total_price, sainsburys_item_links = results[0].result()
         asda_total_price, asda_item_links = results[1].result()
         tesco_total_price, tesco_item_links = results[2].result()
-        morrisons_total_price, morrisons_item_links = results[3].result() #tesco_total_price, tesco_item_links 
+        morrisons_total_price, morrisons_item_links = tesco_total_price, tesco_item_links #results[3].result()
         executor.shutdown()
 
         cheapest_total_market = get_cheapest_market([
@@ -189,28 +189,30 @@ def comparison(request):
             get_comp_price(tesco_total_price, tesco_item_links)
         ])
 
-        # full_ingredients_sorted = []
-        # for ingredient in full_ingredients:
-        #     if any(link == 'INVALID' for link in [sainsburys_item_links[ingredient][0], 
-        #                                         asda_item_links[ingredient][0],
-        #                                         tesco_item_links[ingredient][0],
-        #                                         morrisons_item_links[ingredient][0]]):
-        #         full_ingredients_sorted.insert(0, ingredient)
-        #     else:
-        #         full_ingredients_sorted.append(ingredient)
-        
-        # ingredients_sorted = []
-        # for ingredient in ingredients:
-        #     if any(link == 'INVALID' for link in [sainsburys_item_links[ingredient][0], 
-        #                                         asda_item_links[ingredient][0],
-        #                                         tesco_item_links[ingredient][0],
-        #                                         morrisons_item_links[ingredient][0]]):
-        #         ingredients_sorted.insert(0, ingredient)
-        #     else:
-        #         ingredients_sorted.append(ingredient)
+        not_found_row_ingredients = []
 
-        # ingredients_form = IngredientsForm(full_ingredients=full_ingredients_sorted, ingredients=ingredients_sorted)
-        # print(ingredients_form)
+        for i in range(1, number_of_supermarkets + 1): 
+            for ingredient in ingredients:
+                if len(list(filter(lambda x: x == "INVALID", [sainsburys_item_links[ingredient][0], 
+                                                        asda_item_links[ingredient][0],
+                                                        tesco_item_links[ingredient][0],
+                                                        morrisons_item_links[ingredient][0]]))) == i: 
+                    not_found_row_ingredients.insert(0, ingredient)
+
+                    #invalid_item_links.update({ingredient: sainsburys_item_links[ingredient]})
+        
+        found_row_ingredients = [ingredient for ingredient in ingredients if ingredient not in not_found_row_ingredients] 
+
+        asda_found_entries_total_price = round(sum([float(asda_item_links[ingredient][1][1:]) for ingredient in found_row_ingredients]), 2)
+        tesco_found_entries_total_price = round(sum([float(tesco_item_links[ingredient][1][1:]) for ingredient in found_row_ingredients]), 2)
+        sainsburys_found_entries_total_price = round(sum([float(sainsburys_item_links[ingredient][1][1:]) for ingredient in found_row_ingredients]), 2)
+        morrisons_found_entries_total_price = round(sum([float(morrisons_item_links[ingredient][1][1:]) for ingredient in found_row_ingredients]), 2)
+        cheapest_found_entries_market = get_cheapest_market([
+                                                             sainsburys_found_entries_total_price, 
+                                                             asda_found_entries_total_price, 
+                                                             morrisons_found_entries_total_price, 
+                                                             tesco_found_entries_total_price
+                                                            ])
 
         show_table = True
         #ENDS HERE
@@ -240,15 +242,27 @@ def comparison(request):
         asda_total_price, asda_item_links = 0, []
         tesco_total_price, tesco_item_links = 0, []
         morrisons_total_price, morrisons_item_links = 0, [] #tesco_total_price, tesco_item_links 
-        cheapest_total_market = "Sainsbury's"
+        cheapest_total_market = ""
+        cheapest_found_entries_market = ""
         # ENDS HERE
 
         show_table = False
+        found_row_ingredients = []
+        not_found_row_ingredients = []
+        asda_found_entries_total_price = 0
+        tesco_found_entries_total_price = 0
+        sainsburys_found_entries_total_price = 0
+        morrisons_found_entries_total_price = 0
+
+
     
     ingredients = list(filter(None, list(map(lambda s: s.strip().title(), ingredients))))
     full_ingredients = list(filter(None, list(map(lambda s: s.strip().title(), full_ingredients)))) 
     ingredients_form = IngredientsForm(full_ingredients=full_ingredients, ingredients=ingredients)
 
+    recipe_json = generate_recipe_json(title, image, full_ingredients, instrs)
+    print("RECIPE JSON")
+    print(recipe_json)
 
     context = {
         original_ingredients_key : original_ingredients,
@@ -268,6 +282,16 @@ def comparison(request):
         'method'                 : instrs,
         'cheapest_total_market'  : cheapest_total_market,
         'show_table': show_table,
+        'found_row_ingredients': found_row_ingredients, 
+        'not_found_row_ingredients': not_found_row_ingredients,
+        'asda_found_entries_total_price': asda_found_entries_total_price,
+        'tesco_found_entries_total_price': tesco_found_entries_total_price,
+        'sainsburys_found_entries_total_price': sainsburys_found_entries_total_price,
+        'morrisons_found_entries_total_price': morrisons_found_entries_total_price,
+        'cheapest_found_entries_market': cheapest_found_entries_market,
+        'show_not_found_entries': not_found_row_ingredients != [],
+        
+        'recipe_json': recipe_json,
     }
     
     return render(request, "drpapp/comparison.html", context=context)
@@ -356,6 +380,32 @@ def proxy_tesco_basket(request):
         # Handle other HTTP methods if needed
         print("Invalid request method to proxy")
         return JsonResponse({'error': 'Invalid request method'})
+
+
+# Generates the json+ld for the recipe for Whisk to scrape
+def generate_recipe_json(name: str, image: str, ingredients: List[str], instructions: List[str]) -> str:
+    
+    # Each entry of instructions should be formatted as such: 
+    # { "@type": "HowToStep", "name": "", "text": <text from the instruction> }
+    instrs = []
+    for instr in instructions:
+        entry = {
+            "@type": "HowToStep",
+            "name": "",
+            "text": instr,
+        }
+        instrs.append(entry)
+    
+    recipe_data: Dict[str, any] = {
+        "@context": "http://schema.org",
+        "@type": "Recipe",
+        "name": name,
+        "image": image,
+        "recipeIngredient": ingredients,
+        "recipeInstructions": instrs
+    }
+    return json.dumps(recipe_data)
+
 
 
 
@@ -493,7 +543,7 @@ def morrisons_worker(ingredient, items, preferences, request):
 
 def total_price_tesco(ingredients, preferences, request):
     items = {}
-    num_threads = 2
+    num_threads = 5
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
 
     results = [executor.submit(tesco_worker, ingredient, items, preferences, request) for ingredient in ingredients]
@@ -513,7 +563,7 @@ def total_price_tesco(ingredients, preferences, request):
 
 def total_price_asda(ingredients, preferences, request):
     items = {}
-    num_threads = 10
+    num_threads = 5
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
 
     results = [executor.submit(asda_worker, ingredient, items, preferences, request) for ingredient in ingredients]
@@ -534,7 +584,7 @@ def total_price_asda(ingredients, preferences, request):
 
 def total_price_sainsburys(ingredients, preferences, request):
     items = {}
-    num_threads = 10
+    num_threads = 4
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
 
     results = [executor.submit(sainsburys_worker, ingredient, items, preferences, request) for ingredient in ingredients]
