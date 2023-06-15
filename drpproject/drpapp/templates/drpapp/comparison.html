@@ -19,11 +19,17 @@
             position: relative;
             z-index: 1;
         }
+        .back-button {
+            padding-top:25px;
+            padding-left: 20px;
+            display: block;
+            width: 250px; /* Adjust the width as needed */
+        }   
         .ingredients-recipe {
             margin-bottom: 20px;
             margin-right: 100px;
             margin-left: 100px;
-            margin-top: 80px;
+            margin-top: 30px;
             background-color: rgba(255, 255, 255, 0.93);
             padding: 50px;
             border-radius: 20px;
@@ -295,7 +301,7 @@
         });
      </script>
 
-    <script>
+    <!-- <script>
         function getRandomInt(min, max) {
             min = Math.ceil(min);
             max = Math.floor(max);
@@ -332,8 +338,8 @@
 
                 span.style.left = left + 'px';
                 span.style.top = top + 'px';
-                span.textContent = emoji;
-
+                span.textContent = emoji; -->
+<!-- 
                 // Check if the emoji is directly after the "Compare Prices" text
                 if (span.previousSibling && span.previousSibling.nodeType === Node.TEXT_NODE && span.previousSibling.textContent.trim() === 'Compare Prices') {
                     span.previousSibling.remove(); // Remove the emoji's preceding text node
@@ -385,10 +391,13 @@
             // Scroll to the table using the smooth scroll function
             smoothScrollTo(window, offsetTop, duration);
         });
-    </script>
+    </script> --> 
 </head>
 <body>
-    <div itemscope itemtype="http://schema.org/Recipe" class="container">
+    <div class="back-button">
+        <a href="{% url 'index' %}" class="btn">Back to Main Page</a>
+    </div> 
+    <div itemscope itemtype="http://schema.org/Recipe" class="container" >
         {% load custom_tags %}
         <!-- <h1>Ingredient Cost Comparison</h1> -->
         <!-- <a href="{% url 'index' %}" class="main-page-button">Back to Main Page</a> -->
@@ -425,10 +434,6 @@
                         <div class="ingredient-row">
                             <button type="submit" class="btn">Compare Prices</button>
                         </div>
-<!-- 
-                        <div class="ingredient-row2">
-                            <a href="{% url 'index' %}" class="btn">Back to Main Page</a>
-                        </div> -->
                         <!-- </ul> -->
                     </form>
                 </div>            
