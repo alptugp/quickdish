@@ -84,10 +84,11 @@ def get_comp_price(total_price, links):
         return float(total_price)
 
 def show_all_recipes(request):
-    saved_object_obj = SavedRecipe.objects.values_list('recipe_url', 'ingredients')
+    saved_object_obj = SavedRecipe.objects.values_list('recipe_name', 'recipe_url', 'ingredients')
     saved_recipes = [{
-        'recipe_url': recipe[0],
-        'ingredients': recipe[1],
+        'recipe_name': recipe[0],
+        'recipe_url': recipe[1],
+        'ingredients': recipe[2],
     } for recipe in saved_object_obj]
 
     context = {
@@ -97,10 +98,11 @@ def show_all_recipes(request):
 
 def save_recipe(request):
     if request.method == 'POST':
+        recipe_name = request.session.get('current_name', "")
         recipe_url = request.session.get('current_url', "")
         ingredients = request.session.get('ingredients', [])
 
-        saved_recipe = SavedRecipe.objects.create(recipe_url=recipe_url, ingredients=ingredients)
+        saved_recipe = SavedRecipe.objects.create(recipe_name=recipe_name, recipe_url=recipe_url, ingredients=ingredients)
         saved_recipe.save()
         saved_recipe_id = saved_recipe.id
 

@@ -4,9 +4,11 @@ import requests
 
 def get_recipe_details(request, search_input, dietary_restrictions):
     current_url_key = "current_url"
+    current_name_key = "current_name"
     if is_url(search_input):
-        request.session[current_url_key] = search_input
         scraper = scrape_me(search_input)
+        request.session[current_url_key] = search_input
+        request.session[current_name_key] = scraper.title()
         return scraper.ingredients(), scraper.title(), scraper.image(), scraper.instructions_list()
     else:
         spoonacular_api_key = "0e81b38f42374ec387c6bbdf7eda1408"
@@ -39,6 +41,7 @@ def get_recipe_details(request, search_input, dietary_restrictions):
 
             ingredients = [ingredient['original'] for ingredient in data['extendedIngredients']]
             title = data['title']
+            request.session[current_name_key] = title
             image = data['image']
             instructions = [step['step'] for step in data['analyzedInstructions'][0]['steps']]
 

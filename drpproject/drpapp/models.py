@@ -2,11 +2,13 @@ from django.db import models
 from django import forms
 
 class SavedRecipe(models.Model):
+    recipe_name = models.CharField(max_length=100)
     recipe_url = models.CharField(max_length=255)
     ingredients = models.JSONField()
 
-    def __init__(self, recipe_url, ingredients, *args, **kwargs):
+    def __init__(self, recipe_name, recipe_url, ingredients, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.recipe_name = str(recipe_name).strip()
         self.recipe_url = str(recipe_url).strip()
         self.ingredients = ingredients
 
