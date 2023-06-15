@@ -438,9 +438,9 @@
                 <h1 itemprop="name"> {{ recipe_title }} </h1>
                 <div class="image-box" itemprop="image" content="{{ recipe_image }}"></div>
                 <h1>Ingredients</h1>
-                <ul itemprop="recipeIngredient">
+                <ul>
                     {% for ingredient in original_ingredients %}
-                        <li>{{ ingredient }}</li>
+                        <li itemprop="recipeIngredient">{{ ingredient }}</li>
                     {% endfor %}
                 </ul>
             </div>
