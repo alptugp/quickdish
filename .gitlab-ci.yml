@@ -26,6 +26,8 @@ deploy-job-heroku:
   rules:
     - if: '$CI_COMMIT_REF_NAME == "main"'
   script:
+    # Install the Heroku CLI
+    - curl https://cli-assets.heroku.com/install.sh | sh
     # Login to Heroku's container registry
     - echo "${HEROKU_API_KEY}" | docker login --username=_ --password-stdin registry.heroku.com
     # Build the Docker image
