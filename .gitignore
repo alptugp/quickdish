@@ -1,6 +1,12 @@
+# Database/Migration
 drpproject/migrations
+drpproject/drpapp/migrations/00*_*.py
+*.sqlite3
+
+# Cache
 __pycache__
 *.pyc
+
+# Environment
 .env
 .DS_Store
-*.sqlite3
