@@ -6,11 +6,9 @@ from .SainsburysSearch import searchSainsburys
 from .MorrisonsSearch import search_morrisons
 from .IngredientParser import cleanup_ingredients
 from .models import DietForm, DietaryRestriction, IngredientsForm, DeadClick
-import concurrent.futures
 from django.http import JsonResponse
-import requests
-import random
-import json
+import requests, random, json, concurrent.futures
+from typing import List, Dict
 
 dietary_preferences_key = 'dietary_preferences'
 possible_preferences = [
@@ -191,6 +189,9 @@ def comparison(request):
     full_ingredients = list(filter(None, list(map(lambda s: s.strip().title(), full_ingredients)))) 
     ingredients_form = IngredientsForm(full_ingredients=full_ingredients, ingredients=ingredients)
 
+    recipe_json = generate_recipe_json(title, image, instrs, full_ingredients)
+    print("RECIPE JSON")
+    print(recipe_json)
 
     context = {
         original_ingredients_key : original_ingredients,
@@ -210,6 +211,7 @@ def comparison(request):
         'method'                 : instrs,
         'cheapest_total_market'  : cheapest_total_market,
         'show_table': show_table,
+        'recipe_json': recipe_json,
     }
     
     return render(request, "drpapp/comparison.html", context=context)
@@ -298,6 +300,20 @@ def proxy_tesco_basket(request):
         # Handle other HTTP methods if needed
         print("Invalid request method to proxy")
         return JsonResponse({'error': 'Invalid request method'})
+
+
+# Generates the json+ld for the recipe for Whisk to scrape
+def generate_recipe_json(name: str, image: str, ingredients: List[str], instructions: List[str]) -> str:
+    recipe_data: Dict[str, any] = {
+        "@context": "http://schema.org",
+        "@type": "Recipe",
+        "name": name,
+        "image": image,
+        "recipeIngredient": ingredients,
+        "recipeInstructions": instructions
+    }
+    return json.dumps(recipe_data)
+
 
 
 
