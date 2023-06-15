@@ -189,7 +189,7 @@ def comparison(request):
     full_ingredients = list(filter(None, list(map(lambda s: s.strip().title(), full_ingredients)))) 
     ingredients_form = IngredientsForm(full_ingredients=full_ingredients, ingredients=ingredients)
 
-    recipe_json = generate_recipe_json(title, image, instrs, full_ingredients)
+    recipe_json = generate_recipe_json(title, image, full_ingredients, instrs)
     print("RECIPE JSON")
     print(recipe_json)
 
@@ -304,13 +304,25 @@ def proxy_tesco_basket(request):
 
 # Generates the json+ld for the recipe for Whisk to scrape
 def generate_recipe_json(name: str, image: str, ingredients: List[str], instructions: List[str]) -> str:
+    
+    # Each entry of instructions should be formatted as such: 
+    # { "@type": "HowToStep", "name": "", "text": <text from the instruction> }
+    instrs = []
+    for instr in instructions:
+        entry = {
+            "@type": "HowToStep",
+            "name": "",
+            "text": instr,
+        }
+        instrs.append(entry)
+    
     recipe_data: Dict[str, any] = {
         "@context": "http://schema.org",
         "@type": "Recipe",
         "name": name,
         "image": image,
         "recipeIngredient": ingredients,
-        "recipeInstructions": instructions
+        "recipeInstructions": instrs
     }
     return json.dumps(recipe_data)
 
