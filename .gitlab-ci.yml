@@ -22,11 +22,13 @@ deploy-job-vm:
     - docker run --detach -p 8000:8000 drpapp
 
 deploy-job-heroku:
-  image: docker:latest
   stage: deploy
   rules:
     - if: '$CI_COMMIT_REF_NAME == "main"'
   script:
+    - curl https://cli-assets.heroku.com/heroku-linux-x64.tar.gz -o heroku.tar.gz
+    - tar -xzf heroku.tar.gz
+    - export PATH=$PATH:$PWD/heroku/bin
     # Login to Heroku's container registry
     - echo "${HEROKU_API_KEY}" | docker login --username=_ --password-stdin registry.heroku.com
     # Build the Docker image

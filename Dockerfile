@@ -30,8 +30,7 @@ RUN python3 -m pip install --upgrade pip && \
     pip3 install --no-cache-dir -r requirements.txt && \
     python3 -m nltk.downloader averaged_perceptron_tagger && \
     # SpaCy EN language pack
-    python3 -m spacy download en_core_web_sm && \ 
-    curl https://cli-assets.heroku.com/install.sh | sh
+    python3 -m spacy download en_core_web_sm 
 
 ##############################g
 # PRODUCTION STAGE
