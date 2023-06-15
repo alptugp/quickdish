@@ -18,6 +18,7 @@ original_ingredients_key = 'original_ingredients'
 full_ingredients_key = 'full_ingredients'
 ingredients_key = 'ingredients'
 new_ingredient_key = 'new_ingredient'
+latest_recipe_id_key = 'latest_recipe_id'
 
 possible_preferences = [
     "vegan",
@@ -129,12 +130,10 @@ def save_recipe(request):
         saved_recipe.save()
         saved_recipe_id = saved_recipe.id
 
-        context = {
-            'saved_recipe': saved_recipe,
-            'saved_recipe_id': saved_recipe_id,
-        }
+        to_save = {latest_recipe_id_key : saved_recipe_id,}
+        session_save(request, to_save)
 
-        return render(request, 'drpapp/recipe_saved.html', context=context)
+        return comparison(request)
     else:
         return JsonResponse({'message': 'Invalid request'})
 
@@ -144,6 +143,11 @@ def comparison(request, args=None):
     original_ingredients = []
     full_ingredients = []
     ingredients = []
+
+    # User has saved a recipe
+    current_recipe_id = request.session.get(latest_recipe_id_key, None)
+    if current_recipe_id:
+        request.session[latest_recipe_id_key] = None
 
     # User has submitted new ingredients
     if request.method == 'POST':
@@ -314,8 +318,8 @@ def comparison(request, args=None):
         'morrisons_found_entries_total_price': morrisons_found_entries_total_price,
         'cheapest_found_entries_market': cheapest_found_entries_market,
         'show_not_found_entries': not_found_row_ingredients != [],
-        
         'recipe_json': recipe_json,
+        'current_recipe_id': current_recipe_id,
     }
     
     return render(request, "drpapp/comparison.html", context=context)

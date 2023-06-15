@@ -340,7 +340,10 @@
 <body>
     <div class="back-button">
         <a href="{% url 'index' %}" class="btn">Back to Main Page</a>
-    </div> 
+    </div>
+    <div class="back-button">
+        <a href="{% url 'all_saved_recipes' %}" class="btn">My Saved Recipes</a>
+    </div>
     <div itemscope itemtype="http://schema.org/Recipe" class="container" >
         {% load custom_tags %}
         <!-- <h1>Ingredient Cost Comparison</h1> -->
@@ -387,7 +390,11 @@
                             <button type="submit" class="btn">Save this recipe</button>
                         </div>
                     </form>
-                </div>            
+                </div>
+                
+                {% if current_recipe_id %}
+                    <p style="color:green">Your recipe has been saved <a href="{% url 'show_saved_recipe' current_recipe_id %}">here</a>.</p>
+                {% endif %}
             </div>
 
             <div class="right-section">
