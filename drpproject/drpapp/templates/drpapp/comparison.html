@@ -291,6 +291,24 @@
             margin-bottom: 0px;
         }
 
+        .result {
+            margin-bottom: 20px;
+            margin-right: 290px;
+            margin-left: 290px;
+            margin-top: 0px;
+            background-color: rgba(255, 255, 255, 0.93);
+            padding: 20px 30px;
+            border-radius: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 2;
+        }
+
+        .result-text {
+            text-align: center;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
 
     </style>
     <script>
@@ -423,7 +441,7 @@
                         <div class="ingredient-row">
                             <button type="submit" class="btn">Compare Prices</button>
                         </div>
-<!-- 
+            <!-- 
                         <div class="ingredient-row2">
                             <a href="{% url 'index' %}" class="btn">Back to Main Page</a>
                         </div> -->
@@ -595,6 +613,11 @@
                 {% endfor %}
             </tbody>
         </table>
+        <div class="result">
+            <div class="result-text">
+                <span class="lowest-price">{{cheapest_found_entries_market }}</span> is the overall cheapest to buy the ingredients {% if show_not_found_entries %} found in all four markets {% endif %}
+            </div>
+        </div>
         {% endif %}
         
 
