@@ -225,6 +225,7 @@ def comparison(request):
         ingredients = full_ingredients
         request.session[original_ingredients_key] = original_ingredients
         request.session[full_ingredients_key] = full_ingredients
+        request.session[ingredients_key] = ingredients
         request.session['title'] = title
         request.session['image'] = image
         request.session['instrs'] = instrs
