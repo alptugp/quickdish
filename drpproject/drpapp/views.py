@@ -232,6 +232,8 @@ def comparison(request):
         'morrisons_found_entries_total_price': morrisons_found_entries_total_price,
         'cheapest_found_entries_market': cheapest_found_entries_market,
         'show_not_found_entries': not_found_row_ingredients != [],
+        
+        'recipe_json': recipe_json,
     }
     
     return render(request, "drpapp/comparison.html", context=context)
