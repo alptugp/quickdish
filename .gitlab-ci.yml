@@ -21,12 +21,23 @@ deploy-job-vm:
     - fuser -k 8000/tcp || true
     - docker run --detach -p 8000:8000 drpapp
 
-# deploy-job-heroku:
-#   stage: deploy
-#   rules:
-#     - if: '$CI_COMMIT_REF_NAME == "main"'
-#   script:
-#     - dpl heroku api --app ${HEROKU_APP_NAME} --api_key ${HEROKU_API_KEY}
+deploy-job-heroku:
+  stage: deploy
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "main"'
+  script:
+    - curl https://cli-assets.heroku.com/heroku-linux-x64.tar.gz -o heroku.tar.gz
+    - tar -xzf heroku.tar.gz
+    - export PATH=$PATH:$PWD/heroku/bin
+    # Login to Heroku's container registry
+    - echo "${HEROKU_API_KEY}" | docker login --username=_ --password-stdin registry.heroku.com
+    # Build the Docker image
+    - docker build -t registry.heroku.com/${HEROKU_APP_NAME}/web --build-arg DB_PASSWORD=${DB_PASSWORD} .
+    # Push the image to Heroku's container registry
+    - docker push registry.heroku.com/${HEROKU_APP_NAME}/web
+    # Release the image
+    - heroku container:release web --app ${HEROKU_APP_NAME}
+
 
 ##############################
 # Experimental
@@ -36,7 +47,7 @@ experiment-deploy-vm:
   tags:
     - experiment
   rules:
-    - if: '$CI_COMMIT_REF_NAME == "databaseSetup"'
+    - if: '$CI_COMMIT_REF_NAME == "main"'
   script:
     - docker build . --tag drpapp:latest --label drpapplabel --file ./Dockerfile --build-arg DB_PASSWORD=${DB_PASSWORD}
     - docker stop $(docker ps -a -q)

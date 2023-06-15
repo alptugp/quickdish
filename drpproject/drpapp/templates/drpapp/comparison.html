@@ -315,6 +315,11 @@
             font-size: 20px;
         }
 
+        #app > div > div > div.LayoutBlocks.fmE_z3WTf511n_ZOfe2oZ > div.LayoutBlock._3zeFT42ZyS_Qa7gPFmrmd2.AddToListBlock,
+        #app > div > div > a {
+            display: none;
+        }
+
 
     </style>
      
@@ -322,22 +327,34 @@
         {{ recipe_json|safe }}
     </script>
 
-     <!-- <script async="true" src="https://cdn.whisk.com/sdk/shopping-list.js" type="text/javascript"></script>
-     <script>
+    <script async="true" src="https://cdn.whisk.com/sdk/shopping-list.js" type="text/javascript"></script>
+    <script>
         var whisk = whisk || {};
         whisk.queue = whisk.queue || [];
-    
+
         whisk.queue.push(function () {
-        whisk.shoppingList.defineFloatingWidget("MWEX-LOON-OVXM-NVIG", {
+        whisk.shoppingList.defineWidget("XQJK-PLUB-JVRO-VNVE", {
             styles: {
-                type: "save-recipe"
+                type: "save-recipe",
+                size: "large"
             }
             })
         });
-     </script> -->
+
+    </script>
 
 </head>
 <body>
+
+    <div id="XQJK-PLUB-JVRO-VNVE">
+        <script>
+          whisk.queue.push(function () {
+            whisk.display("XQJK-PLUB-JVRO-VNVE");
+          });
+        </script>
+      </div>
+
+
     <div class="back-button">
         <a href="{% url 'index' %}" class="btn">Back to Main Page</a>
     </div>
@@ -566,112 +583,75 @@
             </div>
         </div>
         {% endif %}
-        
-
-        <!-- <div id="MWEX-LOON-OVXM-NVIG">
-            <script>
-              whisk.queue.push(function () {
-                whisk.display("MWEX-LOON-OVXM-NVIG");
-              });
-            </script>
-        </div> -->
     </div>
 
-    {{ tesco_item_links|json_script:"tesco-item-links" }}
     <script>
-        // Function to get the CSRF token from the cookie (https://docs.djangoproject.com/en/3.0/ref/csrf/#ajax)
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    // Does this cookie string begin with the name we want?
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
+        function removeElements() {
+        var addToListBlock = document.querySelector("#app > div > div > div.LayoutBlocks.fmE_z3WTf511n_ZOfe2oZ > div.LayoutBlock._3zeFT42ZyS_Qa7gPFmrmd2.AddToListBlock");
+        if (addToListBlock) {
+            addToListBlock.remove();
+            console.log("AddToListBlock removed");
+        } else {
+            console.log("AddToListBlock not found");
         }
-        // Function to handle the button click event
-        function addToTescoBasket() {
-            console.log("Hello from addToTescoBfdfdfasket()");
 
-            // Get tesco_item_links 
-            const tescoItemLinksElement = document.getElementById('tesco-item-links').textContent;
+        var poweredByWhisk = document.querySelector("#app > div > div > a");
+        if (poweredByWhisk) {
+            poweredByWhisk.remove();
+            console.log("Powered by Whisk removed");
+        } else {
+            console.log("Powered by Whisk not found");
+        }
+        }
 
-            console.log(tescoItemLinksElement);
-
-            const tescoItemLinksUnsanitised = JSON.parse(document.getElementById('tesco-item-links').textContent);
-
-            // Remove any items that were not found (i.e. INVALID)
-            const tescoItemLinks = []; 
-            Object.entries(tescoItemLinksUnsanitised).forEach(([ingredient, item]) => {
-                if (item[0] != "INVALID") {
-                    tescoItemLinks.push(item[0]);
-                }
-            });
-
-            // Get the product IDs from the links (e.g. "https://www.tesco.com/groceries/en-GB/products/305837834" -> "305837834")
-            const productIds = tescoItemLinks.map(link => link.split('/').pop());
-
-            const payload = {
-                items: [],
-                returnUrl: '/groceries/en-GB/trolley',
-            };
-
-            // Iterate over the product IDs and add them to the payload
-            productIds.forEach(productId => {
-                const item = {
-                    id: productId,
-                    newUnitChoice: 'pcs',
-                    newValue: 1,
-                    oldUnitChoice: 'pcs',
-                    oldValue: 0,
-                };
-                payload.items.push(item);
-                }
-            );
-
-            // Get the CSRF token
-            var csrftoken = getCookie('csrftoken');
-            console.log(csrftoken);
-
-            // Send the PUT request to add the items to the basket
-            fetch('/drpapp/proxy_tesco_basket/', { //'https://www.tesco.com/groceries/en-GB/trolley/items?_method=PUT'
-                method: 'PUT',
-                headers: {
-                    'x-csrf-token': csrftoken,
-                },
-                body: JSON.stringify(payload),
-            })
-                .then(response => {
-                if (response.ok) {
-                    // Redirect to the basket page
-                    console.log('Items added to basket');
-                    window.open('https://www.tesco.com/groceries/en-GB/trolley', '_blank')
+        function handleIFrames(iframes) {
+        if (iframes.length > 0) {
+            console.log("iframes found");
+            for (var i = 0; i < iframes.length; i++) {
+            var iframe = iframes[i];
+            if (iframe.src.match(/https:\/\/cdn\.whisk\.com\/sdk\/add-to-list-widget\.html/)) {
+                console.log("desired iframe found");
+                var iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+                var iframeBody = iframeDocument.querySelector("body");
+                if (iframeBody) {
+                console.log("iframe body found");
+                removeElements();
+                observer.disconnect(); // Disconnect the observer once the desired iframe is found and handled
                 } else {
-                    // Handle the error
-                    console.log('Error adding items to basket1');
-                    console.log(response);
-                    window.open('https://www.tesco.com/groceries/en-GB/trolley', '_blank')
+                console.log("iframe body not found");
                 }
-                })
-                .catch(error => {
-                // Handle the error)
-                console.log('Error adding items to basket2');
-                console.log('Response Error:', error);
-                window.open('https://www.tesco.com/groceries/en-GB/trolley', '_blank')
-                });
-            console.log("Goodbye from addToTescoBasket()");
+                break; // Exit the loop once the desired iframe is found
+            }
+            }
+        } else {
+            console.log("iframes not found");
         }
-    
-        // Add click event listener to the button
-        const button = document.getElementById("go-to-basket-button-tesco");
-        button.addEventListener('click', addToTescoBasket);
-    </script>
+        }
 
+        var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.addedNodes.length) {
+            console.log("DOM changes observed");
+            var iframes = document.querySelectorAll("iframe");
+            handleIFrames(iframes);
+            }
+        });
+        });
+
+        var config = {
+        childList: true,
+        subtree: true
+        };
+
+        window.addEventListener("DOMContentLoaded", function() {
+        console.log("DOMContentLoaded event triggered");
+        var iframes = document.querySelectorAll("iframe");
+        handleIFrames(iframes);
+        observer.observe(document.body, config); // Start observing changes in the DOM
+        });
+
+    </script>
+    
+        
 </body>
 </html>
