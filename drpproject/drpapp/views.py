@@ -11,7 +11,13 @@ from .models import SavedRecipe, DietForm, DietaryRestriction, IngredientsForm, 
 import requests, random, json, concurrent.futures
 from typing import List, Dict
 
+# Session storage keys
 dietary_preferences_key = 'dietary_preferences'
+original_ingredients_key = 'original_ingredients'
+full_ingredients_key = 'full_ingredients'
+ingredients_key = 'ingredients'
+new_ingredient_key = 'new_ingredient'
+
 possible_preferences = [
     "vegan",
     "vegetarian",
@@ -134,10 +140,6 @@ def save_recipe(request):
 
 
 def comparison(request):
-    original_ingredients_key = 'original_ingredients'
-    full_ingredients_key = 'full_ingredients'
-    ingredients_key = 'ingredients'
-    new_ingredient_key = 'new_ingredient'
     original_ingredients = []
     full_ingredients = []
     ingredients = []
