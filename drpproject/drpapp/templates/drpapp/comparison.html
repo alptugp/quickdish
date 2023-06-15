@@ -569,6 +569,22 @@
         </div>
         {% endif %}
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+        // Removing the element with classes 'LayoutBlock', '_3zeFT42ZyS_Qa7gPFmrmd2' and 'AddToListBlock'
+        const elementToRemove1 = document.querySelector('.LayoutBlock._3zeFT42ZyS_Qa7gPFmrmd2.AddToListBlock');
+        if (elementToRemove1) {
+            elementToRemove1.parentNode.removeChild(elementToRemove1);
+        }
+
+        // Removing the anchor with aria-label "Powered by Whisk.com"
+        const elementToRemove2 = document.querySelector('a[aria-label="Powered by Whisk.com"]');
+        if (elementToRemove2) {
+            elementToRemove2.parentNode.removeChild(elementToRemove2);
+        }
+        });
+    </script>
         
 </body>
 </html>
