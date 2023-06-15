@@ -594,8 +594,7 @@
         }
         }
 
-        function handleIFrameLoad() {
-        var iframes = document.querySelectorAll("iframe");
+        function handleIFrames(iframes) {
         if (iframes.length > 0) {
             console.log("iframes found");
             for (var i = 0; i < iframes.length; i++) {
@@ -607,7 +606,7 @@
                 if (iframeBody) {
                 console.log("iframe body found");
                 removeElements();
-                observer.observe(iframeBody, config);
+                observer.disconnect(); // Disconnect the observer once the desired iframe is found and handled
                 } else {
                 console.log("iframe body not found");
                 }
@@ -623,21 +622,22 @@
         mutations.forEach(function(mutation) {
             if (mutation.addedNodes.length) {
             console.log("DOM changes observed");
-            removeElements();
+            var iframes = document.querySelectorAll("iframe");
+            handleIFrames(iframes);
             }
         });
         });
 
         var config = {
-        attributes: true,
         childList: true,
-        characterData: true,
         subtree: true
         };
 
         window.addEventListener("DOMContentLoaded", function() {
         console.log("DOMContentLoaded event triggered");
-        handleIFrameLoad();
+        var iframes = document.querySelectorAll("iframe");
+        handleIFrames(iframes);
+        observer.observe(document.body, config); // Start observing changes in the DOM
         });
 
     </script>
