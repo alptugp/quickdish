@@ -358,7 +358,7 @@
                                 {% if ingredient.field.widget.input_type == "checkbox" %}
                                     <div class="ingredient-row">
                                         <div class="checkbox-container">
-                                            {{ingredient}}{{ingredient.label}}
+                                            {{ingredient}}{{ingredient.label.title}}
                                             <br>
                                         </div>
                                     </div>
@@ -432,7 +432,7 @@
                 {% if show_not_found_entries %}
                     {% for not_found_row_ingredient in not_found_row_ingredients %}
                         <tr>
-                            <td>{{ not_found_row_ingredient }}</td> <!-- New column for row names -->
+                            <td>{{ not_found_row_ingredient.title }}</td> <!-- New column for row names -->
                             <td>
                                 {% with sainsburys_result=sainsburys_item_links|dict_lookup:not_found_row_ingredient %}
                                     {% if sainsburys_result.0 != "INVALID" %}
@@ -512,7 +512,7 @@
             <tbody>
                 {% for found_row_ingredient in found_row_ingredients %}
                     <tr>
-                        <td>{{ found_row_ingredient }}</td> <!-- New column for row names -->
+                        <td>{{ found_row_ingredient.title }}</td> <!-- New column for row names -->
                         <td>
                             {% with sainsburys_result=sainsburys_item_links|dict_lookup:found_row_ingredient %}
                                 {% if sainsburys_result.0 != "INVALID" %}

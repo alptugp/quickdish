@@ -71,16 +71,13 @@ def splitAndGetUseful(original):
 
 def cleanup_ingredients(original_ingredients):
     to_process = []
-
-    # Step 1: Convert to lowercase
-    original_ingredients = [ingredient.lower() for ingredient in original_ingredients]
     
-    # Step 2: Remove bracketed text, split multiple, remove units
+    # Step 1: Remove bracketed text, split multiple, remove units
     for ingredient in original_ingredients:
         temps = splitAndGetUseful(ingredient)
         to_process.extend(temps)
     
-    # Step 3: Extract ingredient name using NLP library
+    # Step 2: Extract ingredient name using NLP library
     property = 'name'
     parsed = parse_multiple_ingredients(to_process)
 
@@ -89,7 +86,7 @@ def cleanup_ingredients(original_ingredients):
     # Step 3: Remove empty strings
     ingredients = remove_empty_strings(ingredients)
 
-    # Step 4: Remove duplicate ingredients
+    # Step 4: Remove duplicates and convert to lowercase
     ingredients = set(ingredient.lower() for ingredient in ingredients)
 
     return list(ingredients)

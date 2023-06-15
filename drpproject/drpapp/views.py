@@ -7,7 +7,7 @@ from .AsdaSearch import searchAsda
 from .SainsburysSearch import searchSainsburys
 from .MorrisonsSearch import search_morrisons
 from .IngredientParser import cleanup_ingredients
-from .models import SavedRecipe, DietForm, DietaryRestriction, IngredientsForm, DeadClick
+from .models import SavedRecipe, DietForm, IngredientsForm, DeadClick
 import requests, random, json, concurrent.futures
 from typing import List, Dict
 from urllib.parse import urlencode, parse_qs
@@ -231,7 +231,9 @@ def comparison(request, args=None):
             db_ingredients = args_parsed.get('db_ingredients', [None])[0].split("&")
 
             # User got here by direct link (retrieve from database)
-            if db_recipe_url:
+            if not db_recipe_url or not db_ingredients:
+                return redirect('index')
+            else:
                 # Extract recipe details
                 original_ingredients, title, image, instrs = get_recipe_details(request, db_recipe_url, dietary_preferences)
                 title = title.title()
@@ -283,8 +285,8 @@ def comparison(request, args=None):
         sainsburys_found_entries_total_price = 0
         morrisons_found_entries_total_price = 0
 
-    ingredients = list(filter(None, list(map(lambda s: s.strip().title(), ingredients))))
-    full_ingredients = list(filter(None, list(map(lambda s: s.strip().title(), full_ingredients)))) 
+    ingredients = list(filter(None, list(map(lambda s: s.strip(), ingredients))))
+    full_ingredients = list(filter(None, list(map(lambda s: s.strip(), full_ingredients)))) 
     ingredients_form = IngredientsForm(full_ingredients=full_ingredients, ingredients=ingredients)
 
     recipe_json = generate_recipe_json(title, image, full_ingredients, instrs)
