@@ -342,7 +342,39 @@
         });
 
     </script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var table = document.getElementById('comparison-table');
+        var offsetTop = table.offsetTop;
 
+        // Calculate the scroll duration based on the distance to scroll
+        var distance = Math.abs(window.pageYOffset - offsetTop);
+        var duration = Math.min(2000, distance); // Adjust the duration as needed
+
+        // Smooth scroll function with reduced speed
+        function smoothScrollTo(element, targetOffset, duration) {
+            var startOffset = window.pageYOffset;
+            var startTime = performance.now();
+
+            function scrollStep(timestamp) {
+                var timeElapsed = timestamp - startTime;
+                var scrollProgress = Math.min(timeElapsed / duration, 1);
+                var scrollOffset = Math.round(startOffset + scrollProgress * (targetOffset - startOffset));
+
+                window.scrollTo(0, scrollOffset);
+
+                if (timeElapsed < duration) {
+                    window.requestAnimationFrame(scrollStep);
+                }
+            }
+
+            window.requestAnimationFrame(scrollStep);
+        }
+
+        // Scroll to the table using the smooth scroll function
+        smoothScrollTo(window, offsetTop, duration);
+    });
+    </script>
 </head>
 <body>
 
@@ -499,7 +531,11 @@
             </tbody>
         </table>
         {% endif %}
-
+        <div class="result">
+            <div class="result-text">
+                <span class="lowest-price">{{cheapest_found_entries_market }}</span> is the overall cheapest to buy the ingredients {% if show_not_found_entries %} found in all four markets, {% endif %}
+            </div>
+        </div>
         <table id="comparison-table">
             <thead>
                 <tr>
@@ -508,28 +544,28 @@
                 <tr>
                     <th>Ingredient</th> 
                         {% if cheapest_found_entries_market == "Sainsbury's" %}
-                            <th class="lowest-price">Sainsbury's<br>(Total Price: £{{ sainsburys_found_entries_total_price }})</br></th>
+                            <th class="lowest-price">Sainsbury's<br>(£{{ sainsburys_found_entries_total_price }})</br></th>
                         {% else %}    
-                            <th class="not-lowest-price">Sainsbury's<br>(Total Price: £{{ sainsburys_found_entries_total_price }})</br></th>
+                            <th class="not-lowest-price">Sainsbury's<br>(£{{ sainsburys_found_entries_total_price }})</br></th>
                         {% endif %}
 
                         {% if cheapest_found_entries_market == "Asda" %}
-                            <th class="lowest-price">Asda<br>(Total Price: £{{ asda_found_entries_total_price }})</br></th>
+                            <th class="lowest-price">Asda<br>(£{{ asda_found_entries_total_price }})</br></th>
                         {% else %}    
-                            <th class="not-lowest-price">Asda<br>(Total Price: £{{ asda_found_entries_total_price }})</br></th>
+                            <th class="not-lowest-price">Asda<br>(£{{ asda_found_entries_total_price }})</br></th>
                         {% endif %}
 
 
                         {% if cheapest_found_entries_market == "Morrisons" %}
-                            <th class="lowest-price">Morrisons<br>(Total Price: £{{ morrisons_found_entries_total_price }})</br></th>
+                            <th class="lowest-price">Morrisons<br>(£{{ morrisons_found_entries_total_price }})</br></th>
                         {% else %}    
-                            <th class="not-lowest-price">Morrisons<br>(Total Price: £{{ morrisons_found_entries_total_price }})</br></th>
+                            <th class="not-lowest-price">Morrisons<br>(£{{ morrisons_found_entries_total_price }})</br></th>
                         {% endif %}
 
                         {% if cheapest_found_entries_market == "Tesco" %}
-                            <th class="lowest-price">Tesco<br>(Total Price: £{{ tesco_found_entries_total_price }})</br></th>
+                            <th class="lowest-price">Tesco<br>(£{{ tesco_found_entries_total_price }})</br></th>
                         {% else %}    
-                            <th class="not-lowest-price">Tesco<br>(Total Price: £{{ tesco_found_entries_total_price }})</br></th>
+                            <th class="not-lowest-price">Tesco<br>(£{{ tesco_found_entries_total_price }})</br></th>
                         {% endif %}
                 </tr>
             </thead>
@@ -577,11 +613,6 @@
                 {% endfor %}
             </tbody>
         </table>
-        <div class="result">
-            <div class="result-text">
-                <span class="lowest-price">{{cheapest_found_entries_market }}</span> is the overall cheapest to buy the ingredients {% if show_not_found_entries %} found in all four markets {% endif %}
-            </div>
-        </div>
         {% endif %}
     </div>
 
