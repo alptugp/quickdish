@@ -55,6 +55,7 @@
             margin-left: 0px;
             padding: 10px 20px;
             background-color: #FF6B35;
+            text-decoration: none;
             color: white;
             border: none;
             cursor: pointer;
@@ -436,7 +437,7 @@
                     <form method="POST" action="{% url 'recipe_saved' %}">
                         {% csrf_token %}
                         <div class="ingredient-row">
-                            <button type="submit" class="btn">Save this recipe</button>
+                            <button type="submit" class="btn">Save This Recipe</button>
                         </div>
                     </form>
                 </div>
@@ -533,7 +534,7 @@
         {% endif %}
         <div class="result">
             <div class="result-text">
-                <span class="lowest-price">{{cheapest_found_entries_market }}</span> is the overall cheapest to buy the ingredients {% if show_not_found_entries %} found in all four markets, {% endif %}
+                <span class="lowest-price">{{cheapest_found_entries_market }}</span> is the overall cheapest to buy the ingredients {% if show_not_found_entries %} found in all four markets {% endif %}
             </div>
         </div>
         <table id="comparison-table">
