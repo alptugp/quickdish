@@ -1,19 +1,86 @@
 <!DOCTYPE html>
-
+<html>
 <head>
     <title>Recipe Saved</title>
-    <a href="{% url 'index' %}">Return to Home</a>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #F6F6F6;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: rgba(255, 255, 255, 0.93);
+            border-radius: 10px;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+        }
+
+        .btn {
+            margin-top: 5px;
+            margin-left: 0px;
+            padding: 10px 20px;
+            background-color: #FF6B35;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-button {
+            padding-top:25px;
+            padding-left: 20px;
+            display: block;
+            width: 250px;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #FF6B35;
+            text-align: center;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            margin-top: 20px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #FF6B35;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: #FF924A;
+        }
+    </style>
 </head>
-
 <body>
-    <h1>Saved Recipes</h1>
-    <ul>
-        {% for saved_recipe in saved_recipes %}
-            <li>
-                <a href="{% url 'show_saved_recipe' saved_recipe.id %}">{{ saved_recipe.recipe_name }}</a>
-            </li>
-        {% endfor %}
-    </ul>
+    <div class="back-button">
+        <a href="{% url 'index' %}" class="btn">Back to Main Page</a>
+    </div>
+    <div class="container">
+        <h1>Saved Recipes</h1>
+        <ul>
+            {% for saved_recipe in saved_recipes %}
+                <li>
+                    <a href="{% url 'show_saved_recipe' saved_recipe.id %}">{{ saved_recipe.recipe_name }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
 </body>
-
 </html>
