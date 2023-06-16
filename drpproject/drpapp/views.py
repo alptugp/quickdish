@@ -144,6 +144,20 @@ def comparison(request, args=None):
     full_ingredients = []
     ingredients = []
 
+    # Initialise to zero/empty state
+    sainsburys_total_price, sainsburys_item_links = 0, []
+    asda_total_price, asda_item_links = 0, []
+    tesco_total_price, tesco_item_links = 0, []
+    morrisons_total_price, morrisons_item_links = 0, []
+    cheapest_total_market = ""
+    cheapest_found_entries_market = ""
+    found_row_ingredients = []
+    not_found_row_ingredients = []
+    asda_found_entries_total_price = 0
+    tesco_found_entries_total_price = 0
+    sainsburys_found_entries_total_price = 0
+    morrisons_found_entries_total_price = 0
+
     # User has saved a recipe
     current_recipe_id = request.session.get(latest_recipe_id_key, None)
     if current_recipe_id:
@@ -153,79 +167,81 @@ def comparison(request, args=None):
     if request.method == 'POST':
         original_ingredients = request.session.get(original_ingredients_key, [])
         full_ingredients = request.session.get(full_ingredients_key, [])
-        if current_recipe_id:
-            ingredients = full_ingredients
+        
         title = request.session.get('title', [])
         image = request.session.get('image', [])
         instrs = request.session.get('instrs', [])
-        for key in request.POST.keys():
-            if key != "csrfmiddlewaretoken":
-                if key == new_ingredient_key:
-                    new_ingredient = request.POST.get(new_ingredient_key)
-                    if new_ingredient != "":
-                        ingredients.append(new_ingredient)
-                        full_ingredients.append(new_ingredient)
-                else:
-                    ingredients.append(key)
-
-        to_save = {
-            full_ingredients_key: full_ingredients,
-            ingredients_key: ingredients,
-        }
-        session_save(request, to_save)
-
-        #STARTS HERE
-        preferences = request.session.get('dietary_preferences')
-        supermarket_functions = [
-            total_price_sainsburys,
-            total_price_asda,
-            total_price_tesco,
-            #total_price_morrisons,
-        ]
-        num_threads = len(supermarket_functions)
-        executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
-
-        results = [executor.submit(fun, ingredients, preferences, request) for fun in supermarket_functions]
-        concurrent.futures.wait(results)
-        
-        sainsburys_total_price, sainsburys_item_links = results[0].result()
-        asda_total_price, asda_item_links = results[1].result()
-        tesco_total_price, tesco_item_links = results[2].result()
-        morrisons_total_price, morrisons_item_links = tesco_total_price, tesco_item_links #results[3].result()
-        executor.shutdown()
-
-        cheapest_total_market = get_cheapest_market([
-            get_comp_price(sainsburys_total_price, sainsburys_item_links),
-            get_comp_price(asda_total_price, asda_item_links),
-            get_comp_price(morrisons_total_price, morrisons_item_links),
-            get_comp_price(tesco_total_price, tesco_item_links)
-        ])
-
-        not_found_row_ingredients = []
-
-        for i in range(1, number_of_supermarkets + 1): 
-            for ingredient in ingredients:
-                if len(list(filter(lambda x: x == "INVALID", [sainsburys_item_links[ingredient][0], 
-                                                        asda_item_links[ingredient][0],
-                                                        tesco_item_links[ingredient][0],
-                                                        morrisons_item_links[ingredient][0]]))) == i: 
-                    not_found_row_ingredients.insert(0, ingredient)
-
-        found_row_ingredients = [ingredient for ingredient in ingredients if ingredient not in not_found_row_ingredients] 
-
-        asda_found_entries_total_price = round(sum([float(asda_item_links[ingredient][1][1:]) for ingredient in found_row_ingredients]), 2)
-        tesco_found_entries_total_price = round(sum([float(tesco_item_links[ingredient][1][1:]) for ingredient in found_row_ingredients]), 2)
-        sainsburys_found_entries_total_price = round(sum([float(sainsburys_item_links[ingredient][1][1:]) for ingredient in found_row_ingredients]), 2)
-        morrisons_found_entries_total_price = round(sum([float(morrisons_item_links[ingredient][1][1:]) for ingredient in found_row_ingredients]), 2)
-        cheapest_found_entries_market = get_cheapest_market([
-                                                             sainsburys_found_entries_total_price, 
-                                                             asda_found_entries_total_price, 
-                                                             morrisons_found_entries_total_price, 
-                                                             tesco_found_entries_total_price
-                                                            ])
 
         show_table = True and not current_recipe_id
-        #ENDS HERE
+        if current_recipe_id:
+            ingredients = full_ingredients
+        else:
+            for key in request.POST.keys():
+                if key != "csrfmiddlewaretoken":
+                    if key == new_ingredient_key:
+                        new_ingredient = request.POST.get(new_ingredient_key)
+                        if new_ingredient != "":
+                            ingredients.append(new_ingredient)
+                            full_ingredients.append(new_ingredient)
+                    else:
+                        ingredients.append(key)
+
+            to_save = {
+                full_ingredients_key: full_ingredients,
+                ingredients_key: ingredients,
+            }
+            session_save(request, to_save)
+
+            #STARTS HERE
+            preferences = request.session.get('dietary_preferences')
+            supermarket_functions = [
+                total_price_sainsburys,
+                total_price_asda,
+                total_price_tesco,
+                #total_price_morrisons,
+            ]
+            num_threads = len(supermarket_functions)
+            executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_threads)
+
+            results = [executor.submit(fun, ingredients, preferences, request) for fun in supermarket_functions]
+            concurrent.futures.wait(results)
+            
+            sainsburys_total_price, sainsburys_item_links = results[0].result()
+            asda_total_price, asda_item_links = results[1].result()
+            tesco_total_price, tesco_item_links = results[2].result()
+            morrisons_total_price, morrisons_item_links = tesco_total_price, tesco_item_links #results[3].result()
+            executor.shutdown()
+
+            cheapest_total_market = get_cheapest_market([
+                get_comp_price(sainsburys_total_price, sainsburys_item_links),
+                get_comp_price(asda_total_price, asda_item_links),
+                get_comp_price(morrisons_total_price, morrisons_item_links),
+                get_comp_price(tesco_total_price, tesco_item_links)
+            ])
+
+            not_found_row_ingredients = []
+
+            for i in range(1, number_of_supermarkets + 1): 
+                for ingredient in ingredients:
+                    if len(list(filter(lambda x: x == "INVALID", [sainsburys_item_links[ingredient][0], 
+                                                            asda_item_links[ingredient][0],
+                                                            tesco_item_links[ingredient][0],
+                                                            morrisons_item_links[ingredient][0]]))) == i: 
+                        not_found_row_ingredients.insert(0, ingredient)
+
+            found_row_ingredients = [ingredient for ingredient in ingredients if ingredient not in not_found_row_ingredients] 
+
+            asda_found_entries_total_price = round(sum([float(asda_item_links[ingredient][1][1:]) for ingredient in found_row_ingredients]), 2)
+            tesco_found_entries_total_price = round(sum([float(tesco_item_links[ingredient][1][1:]) for ingredient in found_row_ingredients]), 2)
+            sainsburys_found_entries_total_price = round(sum([float(sainsburys_item_links[ingredient][1][1:]) for ingredient in found_row_ingredients]), 2)
+            morrisons_found_entries_total_price = round(sum([float(morrisons_item_links[ingredient][1][1:]) for ingredient in found_row_ingredients]), 2)
+            cheapest_found_entries_market = get_cheapest_market([
+                                                                sainsburys_found_entries_total_price, 
+                                                                asda_found_entries_total_price, 
+                                                                morrisons_found_entries_total_price, 
+                                                                tesco_found_entries_total_price
+                                                                ])
+            #ENDS HERE
 
     else:
         if args:
@@ -271,22 +287,7 @@ def comparison(request, args=None):
             }
             session_save(request, to_save)
 
-        # STARTS HERE
-        sainsburys_total_price, sainsburys_item_links = 0, []
-        asda_total_price, asda_item_links = 0, []
-        tesco_total_price, tesco_item_links = 0, []
-        morrisons_total_price, morrisons_item_links = 0, [] #tesco_total_price, tesco_item_links 
-        cheapest_total_market = ""
-        cheapest_found_entries_market = ""
-        # ENDS HERE
-
         show_table = False
-        found_row_ingredients = []
-        not_found_row_ingredients = []
-        asda_found_entries_total_price = 0
-        tesco_found_entries_total_price = 0
-        sainsburys_found_entries_total_price = 0
-        morrisons_found_entries_total_price = 0
 
     ingredients = list(filter(None, list(map(lambda s: s.strip(), ingredients))))
     full_ingredients = list(filter(None, list(map(lambda s: s.strip(), full_ingredients)))) 
