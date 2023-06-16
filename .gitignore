@@ -10,3 +10,9 @@ __pycache__
 # Environment
 .env
 .DS_Store
+
+# Images/PDFs
+*.png
+*.jpg
+*.jpeg
+*.pdf
