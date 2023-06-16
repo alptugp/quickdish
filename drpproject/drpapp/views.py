@@ -153,6 +153,8 @@ def comparison(request, args=None):
     if request.method == 'POST':
         original_ingredients = request.session.get(original_ingredients_key, [])
         full_ingredients = request.session.get(full_ingredients_key, [])
+        if current_recipe_id:
+            ingredients = full_ingredients
         title = request.session.get('title', [])
         image = request.session.get('image', [])
         instrs = request.session.get('instrs', [])
@@ -222,7 +224,7 @@ def comparison(request, args=None):
                                                              tesco_found_entries_total_price
                                                             ])
 
-        show_table = True
+        show_table = True and not current_recipe_id
         #ENDS HERE
 
     else:
