@@ -323,6 +323,7 @@
         .url-input {
             flex-grow: 1;
             margin-right: 10px;
+            color: #AAAAAA;
         }
 
 
@@ -415,16 +416,16 @@
                     <form method="POST" action="{% url 'recipe_saved' %}">
                         {% csrf_token %}
                         <div class="ingredient-row">
-                            <button type="submit" class="btn">Save this recipe</button>
+                            <button type="submit" class="btn">Share</button>
                         </div>
                     </form>
                 </div>
                 
                 {% if current_recipe_id %}
-                    <p style="color:green">Your recipe has been saved here:</p>
+                    <p style="color:green">Your recipe is ready to be shared!</p>
                     <div class="url-box">
-                        <input type="text" class="url-input" default="www.google.com" readonly>
-                        <button onclick="copyToClipboard()">Copy</button>
+                        <input type="text" class="url-input" readonly>
+                        <button class="btn" onclick="copyToClipboard()">Copy</button>
                     </div>
                 {% endif %}
             </div>
