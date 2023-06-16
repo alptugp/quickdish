@@ -413,12 +413,14 @@
                     </form>
 
                     <!-- Button: Save Recipe -->
-                    <form method="POST" action="{% url 'recipe_saved' %}">
-                        {% csrf_token %}
-                        <div class="ingredient-row">
-                            <button type="submit" class="btn">Share</button>
-                        </div>
-                    </form>
+                    {% if not current_recipe_id %}
+                        <form method="POST" action="{% url 'recipe_saved' %}">
+                            {% csrf_token %}
+                            <div class="ingredient-row">
+                                <button type="submit" class="btn">Share</button>
+                            </div>
+                        </form>
+                    {% endif %}
                 </div>
                 
                 {% if current_recipe_id %}
