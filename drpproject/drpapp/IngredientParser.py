@@ -1,11 +1,14 @@
 import os
 import certifi
 import re
+import spacy
 import nltk
 from ingredient_parser import parse_multiple_ingredients
 
 os.environ["SSL_CERT_FILE"] = certifi.where()
 nltk.download('averaged_perceptron_tagger')
+
+nlp = spacy.load("en_core_web_sm")
 
 units = ["teaspoon", "tablespoon",
          "tsp", "tbsp",
@@ -32,8 +35,9 @@ def unit_list_to_regex(strings):
     return f"({disj})"
 
 def remove_units(original):
+    number_pattern = '(\d+(\.\d+)?|½|¼)'
     unit_pattern = unit_list_to_regex(units)
-    pattern = fr'\b\d+(\.\d+)?\s*{unit_pattern}\b'
+    pattern = fr'\b{number_pattern}(\s*-\s*{number_pattern})?\s*{unit_pattern}\b'
     modified_string = re.sub(pattern, '', original)
     return modified_string.strip()
 
@@ -46,27 +50,34 @@ def split_3_a_comma_b_and_c(original):
     else:
         return [original]
 
+def contains_nouns(original):
+    tokens = nlp(original)
+    for token in tokens:
+        if token.pos_ == "NOUN":
+            return True
+    return False
+
 def splitAndGetUseful(original):
     toProcess = []
     original = remove_bracketed_text(original)
-    temps = [original] #split_3_a_comma_b_and_c(original)
+    temps = split_3_a_comma_b_and_c(original)
 
     for temp in temps:
+        if not contains_nouns(temp):
+            temps = [original]
+            break
+
+    for temp in temps:
+        if " of " in temp:
+            temp = temp.split(" of ")[1]
         if " or " in temp:
             temp = temp.split(" or ")[1]
         if " such as " in temp:
             temp = temp.split(" such as ")[1]
         if " like " in temp:
             temp = temp.split(" like ")[1]
-        # if "sized " in temp:
-        #     temp = temp.split("sized ")[1]
-        # if " and " in temp:
-        #     [l, r] = [remove_units(x) for x in temp.split(" and ", 1)]
-        #     toProcess.append(l)
-        #     toProcess.append(r)
-        else:
-            temp = remove_units(temp)
-            toProcess.append(temp)
+        temp = remove_units(temp)
+        toProcess.append(temp)
     return toProcess
 
 def cleanup_ingredients(original_ingredients):
@@ -83,10 +94,13 @@ def cleanup_ingredients(original_ingredients):
 
     ingredients = [ingredient[property] for ingredient in parsed]
     
-    # Step 3: Remove empty strings
+    # Step 3: Remove units
     ingredients = remove_empty_strings(ingredients)
 
-    # Step 4: Remove duplicates and convert to lowercase
+    # Step 4: Remove empty strings
+    ingredients = [remove_units(ingredient) for ingredient in ingredients]
+
+    # Step 5: Remove duplicates and convert to lowercase
     ingredients = set(ingredient.lower() for ingredient in ingredients)
 
     return list(ingredients)
