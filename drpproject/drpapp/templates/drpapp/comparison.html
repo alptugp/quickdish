@@ -424,7 +424,7 @@
                     <p style="color:green">Your recipe has been saved here:</p>
                     <div class="url-box">
                         <input type="text" class="url-input" default="www.google.com" readonly>
-                        <button onclick="copyToClipboard()">Copy URL</button>
+                        <button onclick="copyToClipboard()">Copy</button>
                     </div>
                 {% endif %}
             </div>
@@ -665,8 +665,7 @@
         observer.observe(document.body, config); // Start observing changes in the DOM
         });
 
-        function copyToClipboard() {
-            /* Get the URL from the view function or any other source */
+        function getRecipeLink() {
             var hostname = window.location.hostname;
             var port = window.location.port;
             var url = "{% if current_recipe_id %}{% url 'show_saved_recipe' current_recipe_id %}{% else %}{% endif %}";
@@ -676,6 +675,12 @@
             } else {
                 url = hostname + (port ? ':' + port : '') + '/' + url;
             }
+            return url;
+        }
+
+        function copyToClipboard() {
+            /* Get the URL from the view */
+            var url = getRecipeLink()
 
             /* Create a temporary input element */
             var input = document.createElement("input");
@@ -691,7 +696,7 @@
             document.body.removeChild(input);
 
             /* Update the button text temporarily */
-            var copyButton = document.querySelector("#url-box button");
+            var copyButton = document.querySelector(".url-box button");
             var originalButtonText = copyButton.textContent;
             copyButton.textContent = "Copied!";
             setTimeout(
@@ -701,9 +706,9 @@
             );
         }
 
-        // /* Update the URL input field with the URL provided by the view function */
-        // var urlInput = document.querySelector("#url-box #url-input");
-        // urlInput.value = "https://example.com/my-url";
+        /* Update the URL input field with the URL provided by the view function */
+        var urlInput = document.querySelector(".url-box .url-input");
+        urlInput.value = getRecipeLink();
 
     </script>
         
