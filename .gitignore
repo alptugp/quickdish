@@ -3,9 +3,10 @@ drpproject/migrations
 drpproject/drpapp/migrations/00*_*.py
 *.sqlite3
 
-# Cache
+# Cache/Temporary
 __pycache__
 *.pyc
+staticfiles/
 
 # Environment
 .env
