@@ -11,9 +11,14 @@ staticfiles/
 # Environment
 .env
 .DS_Store
+.gitignore
 
 # Images/PDFs
 *.png
 *.jpg
 *.jpeg
 *.pdf
+
+# Drawio
+*.drawio.bkp
+*.drawio.dtmp
