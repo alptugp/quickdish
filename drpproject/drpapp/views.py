@@ -37,7 +37,8 @@ def index(request):
     # User will be finding a new recipe (not an existing one)
     to_save = {
         updating_existing_recipe_key : False,
-        latest_recipe_id_key : None
+        latest_recipe_id_key : None,
+        'just_saved_recipe' : False,
     }
     session_save(request, to_save)
     
@@ -143,8 +144,9 @@ def save_recipe(request):
         ingredients = request.session.get('ingredients', [])
 
         updating_existing_recipe = request.session.get(updating_existing_recipe_key, False)
+        just_saved_recipe = request.session.get('just_saved_recipe', False)
 
-        if updating_existing_recipe:
+        if updating_existing_recipe or just_saved_recipe:
             recipe_id = request.session.get(latest_recipe_id_key)
             saved_recipes = SavedRecipe.objects.filter(id=recipe_id)
 
@@ -162,6 +164,7 @@ def save_recipe(request):
             to_save = {
                 latest_recipe_id_key : saved_recipe_id,
                 'just_saved_recipe' : True,
+                'updating_existing_recipe' : True,
             }
             session_save(request, to_save)
 
@@ -213,6 +216,7 @@ def comparison(request, args=None):
                     new_ingredient = request.POST.get(new_ingredient_key)
                     if new_ingredient != "":
                         full_ingredients.append(new_ingredient)
+                        ingredients.append(new_ingredient)
                 else:
                     ingredients.append(key)
         
