@@ -19,6 +19,7 @@ full_ingredients_key = 'full_ingredients'
 ingredients_key = 'ingredients'
 new_ingredient_key = 'new_ingredient'
 latest_recipe_id_key = 'latest_recipe_id'
+updating_existing_recipe_key = 'updating_existing_recipe'
 
 possible_preferences = [
     "vegan",
@@ -32,6 +33,9 @@ number_of_supermarkets = 4
 def index(request):
     saved_preferences = False
     recommendation = "none"
+
+    # User will be finding a new recipe (not an existing one)
+    session_save(request, {updating_existing_recipe_key : False})
     
     # User has submitted new dietary preferences (arriving from index's form submission)
     if request.method == 'POST':
@@ -115,6 +119,14 @@ def show_recipe_details(request, recipe_id):
             'db_recipe_url' : saved_recipe['recipe_url'],
             'db_ingredients' : "&".join([ingredient.lower() for ingredient in saved_recipe['ingredients']]),
         })
+
+        # Inform comparison that we are updating an existing recipe
+        to_save = {
+            latest_recipe_id_key : recipe_id,
+            updating_existing_recipe_key : True,
+        }
+        session_save(request, to_save)
+
         return comparison(request, args=comparison_args)
     
     else:
@@ -126,12 +138,29 @@ def save_recipe(request):
         recipe_url = request.session.get('current_url', "")
         ingredients = request.session.get('ingredients', [])
 
-        saved_recipe = SavedRecipe.objects.create(recipe_name=recipe_name, recipe_url=recipe_url, ingredients=ingredients)
-        saved_recipe.save()
-        saved_recipe_id = saved_recipe.id
+        updating_existing_recipe = request.session.get(updating_existing_recipe_key, False)
 
-        to_save = {latest_recipe_id_key : saved_recipe_id,}
-        session_save(request, to_save)
+        if updating_existing_recipe:
+            recipe_id = request.session.get(latest_recipe_id_key)
+            saved_recipes = SavedRecipe.objects.filter(id=recipe_id)
+
+            if saved_recipes:
+                saved_recipes.update(
+                    recipe_name=recipe_name,
+                    recipe_url=recipe_url,
+                    ingredients=ingredients,
+                )
+        else:
+            saved_recipe = SavedRecipe.objects.create(recipe_name=recipe_name, recipe_url=recipe_url, ingredients=ingredients)
+            saved_recipe.save()
+        
+            saved_recipe_id = saved_recipe.id
+            just_saved_recipe = True
+            to_save = {
+                latest_recipe_id_key : saved_recipe_id,
+                'just_saved_recipe' : just_saved_recipe,
+            }
+            session_save(request, to_save)
 
         return comparison(request)
     else:
@@ -159,9 +188,10 @@ def comparison(request, args=None):
     morrisons_found_entries_total_price = 0
 
     # User has saved a recipe
+    just_saved_recipe = request.session.get('just_saved_recipe', False)
+    session_save(request, {'just_saved_recipe' : False})
+    updating_existing_recipe = request.session.get(updating_existing_recipe_key, False)
     current_recipe_id = request.session.get(latest_recipe_id_key, None)
-    if current_recipe_id:
-        request.session[latest_recipe_id_key] = None
 
     # User has submitted new ingredients
     if request.method == 'POST':
@@ -322,7 +352,9 @@ def comparison(request, args=None):
         'cheapest_found_entries_market': cheapest_found_entries_market,
         'show_not_found_entries': not_found_row_ingredients != [],
         'recipe_json': recipe_json,
+        'just_saved_recipe': just_saved_recipe,
         'current_recipe_id': current_recipe_id,
+        updating_existing_recipe_key: updating_existing_recipe,
     }
     
     return render(request, "drpapp/comparison.html", context=context)

@@ -443,17 +443,21 @@
                     </form>
 
                     <!-- Button: Save Recipe -->
-                    {% if not current_recipe_id %}
-                        <form method="POST" action="{% url 'recipe_saved' %}">
-                            {% csrf_token %}
-                            <div class="ingredient-row">
-                                <button type="submit" class="btn">Share</button>
-                            </div>
-                        </form>
-                    {% endif %}
+                    <form method="POST" action="{% url 'recipe_saved' %}">
+                        {% csrf_token %}
+                        <div class="ingredient-row">
+                            <button type="submit" class="btn">
+                                {% if updating_existing_recipe %}
+                                    Update
+                                {% else %}
+                                    Share
+                                {% endif %}
+                            </button>
+                        </div>
+                    </form>
                 </div>
                 
-                {% if current_recipe_id %}
+                {% if just_saved_recipe %}
                     <p style="color:green">Your recipe is ready to be shared!</p>
                     <div class="url-box">
                         <input type="text" class="url-input" readonly>

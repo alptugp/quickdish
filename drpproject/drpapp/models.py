@@ -11,6 +11,13 @@ class SavedRecipe(models.Model):
         self.recipe_name = str(recipe_name).strip()
         self.recipe_url = str(recipe_url).strip()
         self.ingredients = ingredients
+    
+    def set_recipe_name(self, recipe_name):
+        self.recipe_name = str(recipe_name).strip()
+    def set_recipe_url(self, recipe_url):
+        self.recipe_url = str(recipe_url).strip()
+    def set_ingredients(self, ingredients):
+        self.ingredients = ingredients
 
 class DietaryRestriction(models.Model):
     vegan = models.BooleanField(default = False)
