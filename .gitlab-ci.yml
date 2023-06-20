@@ -1,13 +1,5 @@
 stages:
-  - test
   - deploy
-
-# test-job:
-#   stage: test
-#   script:
-#     - pip3 install -r requirements.txt
-#     - cd ./drpproject
-#     - python3 manage.py test drpapp/test
 
 deploy-job-vm:
   stage: deploy
@@ -29,15 +21,11 @@ deploy-job-heroku:
     - curl https://cli-assets.heroku.com/heroku-linux-x64.tar.gz -o heroku.tar.gz
     - tar -xzf heroku.tar.gz
     - export PATH=$PATH:$PWD/heroku/bin
-    # Login to Heroku's container registry
     - echo "${HEROKU_API_KEY}" | docker login --username=_ --password-stdin registry.heroku.com
-    # Build the Docker image
-    - docker build -t registry.heroku.com/${HEROKU_APP_NAME}/worker --build-arg DB_PASSWORD=${DB_PASSWORD} .
-    # Push the image to Heroku's container registry
+    - docker build --label drpapplabel -t registry.heroku.com/${HEROKU_APP_NAME}/worker --build-arg DB_PASSWORD=${DB_PASSWORD} .
     - docker push registry.heroku.com/${HEROKU_APP_NAME}/worker
-    # Release the image
     - heroku container:release worker --app ${HEROKU_APP_NAME}
-
+    - docker image prune --force --filter='label=drpapplabel'
 
 ##############################
 # Experimental
