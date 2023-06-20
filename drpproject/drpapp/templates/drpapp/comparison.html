@@ -664,42 +664,42 @@
         }
 
         function handleIFrames(iframes) {
-        if (iframes.length > 0) {
-            console.log("iframes found");
-            for (var i = 0; i < iframes.length; i++) {
-            var iframe = iframes[i];
-            if (iframe.src.match(/https:\/\/cdn\.whisk\.com\/sdk\/add-to-list-widget\.html/)) {
-                console.log("desired iframe found");
-                var iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
-                var iframeBody = iframeDocument.querySelector("body");
-                if (iframeBody) {
-                console.log("iframe body found");
-                removeElements();
-                observer.disconnect(); // Disconnect the observer once the desired iframe is found and handled
-                } else {
-                console.log("iframe body not found");
+            if (iframes.length > 0) {
+                console.log("iframes found");
+                for (var i = 0; i < iframes.length; i++) {
+                var iframe = iframes[i];
+                if (iframe.src.match(/https:\/\/cdn\.whisk\.com\/sdk\/add-to-list-widget\.html/)) {
+                    console.log("desired iframe found");
+                    var iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+                    var iframeBody = iframeDocument.querySelector("body");
+                    if (iframeBody) {
+                    console.log("iframe body found");
+                    removeElements();
+                    observer.disconnect(); // Disconnect the observer once the desired iframe is found and handled
+                    } else {
+                    console.log("iframe body not found");
+                    }
+                    break; // Exit the loop once the desired iframe is found
                 }
-                break; // Exit the loop once the desired iframe is found
+                }
+            } else {
+                console.log("iframes not found");
             }
-            }
-        } else {
-            console.log("iframes not found");
-        }
         }
 
         var observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-            if (mutation.addedNodes.length) {
-            console.log("DOM changes observed");
-            var iframes = document.querySelectorAll("iframe");
-            handleIFrames(iframes);
-            }
-        });
+            mutations.forEach(function(mutation) {
+                if (mutation.addedNodes.length) {
+                console.log("DOM changes observed");
+                var iframes = document.querySelectorAll("iframe");
+                handleIFrames(iframes);
+                }
+            });
         });
 
         var config = {
-        childList: true,
-        subtree: true
+            childList: true,
+            subtree: true
         };
 
         window.addEventListener("DOMContentLoaded", function() {
