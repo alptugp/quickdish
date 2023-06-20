@@ -1,0 +1,1 @@
+heroku ps:scale web=3 queue=3
