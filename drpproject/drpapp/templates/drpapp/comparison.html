@@ -324,10 +324,16 @@
         }
 
         .basket {
-            display: block; 
+            /* display: block; 
             width: 100%;
             text-align: center; 
-            margin-top: 20px; 
+            margin-top: 20px;  */
+            position: fixed;
+            bottom: 20px; 
+            left: 0; 
+            right: 0; 
+            text-align: center;
+            z-index: 999;
         }
 
     </style>
@@ -627,7 +633,7 @@
         {% endif %}
     </div>
 
-     {% if show_table %}
+     <!-- {% if show_table %} -->
         <div class="basket" id="XQJK-PLUB-JVRO-VNVE">
             <script>
             whisk.queue.push(function () {
@@ -635,8 +641,8 @@
             });
             </script>
         </div>
-    {% else %}
-    {% endif %}
+    <!-- {% else %}
+    {% endif %} -->
 
     <script>
         function removeElements() {
