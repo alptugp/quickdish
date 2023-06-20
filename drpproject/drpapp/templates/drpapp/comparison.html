@@ -341,27 +341,6 @@
      <script type="application/ld+json">
         {{ recipe_json|safe }}
     </script>
-
-
-    <script async="true" src="https://cdn.whisk.com/sdk/shopping-list.js" type="text/javascript"></script>
-    <script>
-        var whisk = whisk || {};
-        whisk.queue = whisk.queue || [];
-
-        whisk.queue.push(function () {
-            whisk.shoppingList.defineWidget("WDVE-KBEB-IYII-OWUR", {
-                styles: {
-                    type: "save-recipe",
-                    size: "large",
-                    linkColor: "#FF6B35",
-                    button: {
-                    borderRadius: 9
-                    }
-                }
-                })
-        });
-
-    </script>
     
     <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -395,6 +374,26 @@
         // Scroll to the table using the smooth scroll function
         smoothScrollTo(window, offsetTop, duration);
     });
+    </script>
+    
+    <script async="true" src="https://cdn.whisk.com/sdk/shopping-list.js" type="text/javascript"></script>
+    <script>
+        var whisk = whisk || {};
+        whisk.queue = whisk.queue || [];
+
+        whisk.queue.push(function () {
+            whisk.shoppingList.defineWidget("WDVE-KBEB-IYII-OWUR", {
+                styles: {
+                    type: "save-recipe",
+                    size: "large",
+                    linkColor: "#FF6B35",
+                    button: {
+                    borderRadius: 9
+                    }
+                }
+                })
+        });
+
     </script>
 </head>
 <body>
