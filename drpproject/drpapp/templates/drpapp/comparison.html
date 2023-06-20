@@ -37,11 +37,19 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             z-index: 2;
             flex-direction: row;
+            flex-wrap: wrap;
         }
 
         @media only screen and (max-width: 375px) {
             .ingredients-recipe {
                 flex-direction: column;
+            }
+            .far-right-section {
+                order: 3;
+                width: 100%;
+            }
+            .left-section, .right-section {
+                width: 100%;
             }
         }
 
@@ -92,6 +100,7 @@
             margin-left: 20px;
         }
         .far-right-section{
+            order: 1;
             margin-top: 15px;
             margin-left: 20px;
             margin-right: 15px;
