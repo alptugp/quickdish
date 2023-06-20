@@ -703,10 +703,10 @@
         };
 
         window.addEventListener("DOMContentLoaded", function() {
-        console.log("DOMContentLoaded event triggered");
-        var iframes = document.querySelectorAll("iframe");
-        handleIFrames(iframes);
-        observer.observe(document.body, config); // Start observing changes in the DOM
+            console.log("DOMContentLoaded event triggered");
+            var iframes = document.querySelectorAll("iframe");
+            handleIFrames(iframes);
+            observer.observe(document.body, config); // Start observing changes in the DOM
         });
 
         function getRecipeLink() {
