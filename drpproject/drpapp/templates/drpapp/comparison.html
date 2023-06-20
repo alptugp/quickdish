@@ -36,7 +36,15 @@
             display: flex;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             z-index: 2;
+            flex-direction: row;
         }
+
+        @media only screen and (max-width: 600px) {
+            .ingredients-recipe {
+                flex-direction: column;
+            }
+        }
+
         h1 {
             margin-top: 0px;
             margin-bottom: 2px;
@@ -169,33 +177,6 @@
             flex-direction: column;
             align-items: center;
             width: 100%;
-        }
-        /* table {
-            width: 100%;
-        } */
-        .basket-button-wrapper {
-            width: 100%;
-            margin-top: 20px; /* space between table and button */
-            justify-content: space-between;
-            display: flex;
-        }
-        .basket-button-wrapper button {
-            width: 50%;
-            text-align: center;
-            padding: 10px 20px; /* Add some padding */
-            border: none; /* Remove the border */
-            border-radius: 5px; /* Add rounded corners */
-            background-color: #007bff; /* Add a background color */
-            color: white; /* Change the text color */
-            font-size: 14px; /* Adjust the font size */
-            transition: background-color 0.1s ease; /* Add a transition effect */
-        }
-        .basket-button-wrapper button:hover {
-            background-color: #0056b3; /* Add a hover effect */
-        }
-        .basket-button-wrapper div {
-            width: 20%; 
-            text-align: center;
         }
 
         span {
