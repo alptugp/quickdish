@@ -334,10 +334,11 @@
         }
 
         .basket {
-            z-index: 30;
-            margin-top: 800px;
+            display: block; 
+            width: 100%;
+            text-align: center; 
+            margin-top: 20px; 
         }
-
 
     </style>
      
@@ -351,11 +352,11 @@
         whisk.queue = whisk.queue || [];
 
         whisk.queue.push(function () {
-        whisk.shoppingList.defineWidget("XQJK-PLUB-JVRO-VNVE", {
-            styles: {
-                type: "save-recipe",
-                size: "large"
-            }
+            whisk.shoppingList.defineWidget("XQJK-PLUB-JVRO-VNVE", {
+                styles: {
+                    type: "save-recipe",
+                    size: "large"
+                }
             })
         });
 
@@ -636,13 +637,15 @@
         {% endif %}
     </div>
 
-    <div class="basket" id="XQJK-PLUB-JVRO-VNVE">
-        <script>
-          whisk.queue.push(function () {
-            whisk.display("XQJK-PLUB-JVRO-VNVE");
-          });
-        </script>
-      </div>
+     { % if show_table % }
+        <div class="basket" id="XQJK-PLUB-JVRO-VNVE">
+            <script>
+            whisk.queue.push(function () {
+                whisk.display("XQJK-PLUB-JVRO-VNVE");
+            });
+            </script>
+        </div>
+    {% endif %}
 
     <script>
         function removeElements() {
