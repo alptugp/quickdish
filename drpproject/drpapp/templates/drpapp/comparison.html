@@ -756,38 +756,39 @@
 
     </script>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        var timerInterval;
-        var isClicked = false;
+    {% if updating_existing_recipe %}
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            var timerInterval;
+            var isClicked = false;
 
-        function refreshPage() {
-            if (!isClicked) {
-                location.reload();
+            function refreshPage() {
+                if (!isClicked) {
+                    location.reload();
+                }
             }
-        }
 
-        function startTimer() {
-            // Clear the previous interval, if any
-            clearInterval(timerInterval);
+            function startTimer() {
+                // Clear the previous interval, if any
+                clearInterval(timerInterval);
 
-            // Start the countdown
-            timerInterval = setInterval(refreshPage, 5000);
-        }
+                // Start the countdown
+                timerInterval = setInterval(refreshPage, 5000);
+            }
 
-        // Start the timer initially
-        startTimer();
-
-        // Reset the timer on mouse movement
-        $(document).on('mousemove', function() {
+            // Start the timer initially
             startTimer();
-        });
 
-        // Disable page refresh on click
-        $(document).on('click', function() {
-            isClicked = true;
-        });
-    </script>
-        
+            // Reset the timer on mouse movement
+            $(document).on('mousemove', function() {
+                startTimer();
+            });
+
+            // Disable page refresh on click
+            $(document).on('click', function() {
+                isClicked = true;
+            });
+        </script>
+    {% endif %} 
 </body>
 </html>
