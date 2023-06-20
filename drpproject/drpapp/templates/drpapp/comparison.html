@@ -342,21 +342,27 @@
         {{ recipe_json|safe }}
     </script>
 
+
     <script async="true" src="https://cdn.whisk.com/sdk/shopping-list.js" type="text/javascript"></script>
     <script>
         var whisk = whisk || {};
         whisk.queue = whisk.queue || [];
 
         whisk.queue.push(function () {
-            whisk.shoppingList.defineWidget("XQJK-PLUB-JVRO-VNVE", {
+            whisk.shoppingList.defineWidget("WDVE-KBEB-IYII-OWUR", {
                 styles: {
                     type: "save-recipe",
-                    size: "large"
+                    size: "large",
+                    linkColor: "#FF6B35",
+                    button: {
+                    borderRadius: 9
+                    }
                 }
-            })
+                })
         });
 
     </script>
+    
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         var table = document.getElementById('comparison-table');
@@ -633,16 +639,13 @@
         {% endif %}
     </div>
 
-     <!-- {% if show_table %} -->
-        <div class="basket" id="XQJK-PLUB-JVRO-VNVE">
-            <script>
-            whisk.queue.push(function () {
-                whisk.display("XQJK-PLUB-JVRO-VNVE");
-            });
-            </script>
-        </div>
-    <!-- {% else %}
-    {% endif %} -->
+    <div id="WDVE-KBEB-IYII-OWUR">
+        <script>
+          whisk.queue.push(function () {
+            whisk.display("WDVE-KBEB-IYII-OWUR");
+          });
+        </script>
+    </div>
 
     <script>
         function removeElements() {
