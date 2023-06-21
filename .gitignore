@@ -20,5 +20,5 @@ staticfiles/
 *.pdf
 
 # Drawio
-*.drawio.bkp
-*.drawio.dtmp
+*.bkp
+*.dtmp
